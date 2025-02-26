@@ -1,0 +1,61 @@
+/* Основные стили для главной страницы */
+.mainContainer {
+  background: white;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 20px;
+}
+
+/* 🔹 Новый контейнер для поиска и фильтров */
+.searchFilterContainer {
+  display: flex;
+  justify-content: center; /* Центрируем */
+  align-items: center;
+  gap: 15px; /* Расстояние между элементами */
+  width: 100%;
+  max-width: 800px;
+  margin-top: 10px; /* Отступ сверху */
+}
+
+/* Поиск */
+.searchContainer {
+  flex: 1; /* Равномерное распределение */
+  max-width: 300px; /* Фиксируем ширину */
+  display: flex;
+  justify-content: center;
+}
+
+/* Фильтры */
+.filterSortContainer {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+/* Сетка продуктов */
+.productsGrid {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+  max-width: 1200px;
+  width: 100%;
+  padding: 20px;
+}
+
+/* 🔹 Адаптивность */
+@media (max-width: 768px) {
+  .searchFilterContainer {
+      flex-direction: column; /* На мобильных в колонку */
+      gap: 10px;
+  }
+
+  .searchContainer, .filterSortContainer {
+      max-width: 100%;
+  }
+}

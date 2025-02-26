@@ -1,0 +1,81 @@
+/* Основные стили футера */
+.footer {
+    background: #fff;
+    padding: 20px;
+    text-align: center;
+    border-top: 1px solid #f3c6d3;
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+    width: 100%;
+  }
+  
+  .container {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+  
+  .branding h2 {
+    color: #e91e63;
+    font-size: 24px;
+  }
+  
+  .contactInfo p {
+    margin: 5px 0;
+    color: #333;
+  }
+  
+  .socials {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .icon {
+    font-size: 20px;
+    color: #e91e63;
+    transition: transform 0.2s;
+  }
+  
+  .icon:hover {
+    transform: scale(1.1);
+  }
+  
+  .newsletter {
+    margin-top: 20px;
+  }
+  
+  .input {
+    padding: 10px;
+    border: 1px solid #f3c6d3;
+    border-radius: 5px;
+    font-size: 16px;
+    width: 250px;
+  }
+  
+  .subscribeButton {
+    background: #e91e63;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  
+  .subscribeButton:hover {
+    background: #d81b60;
+  }
+  
+  /* Адаптивность */
+  @media (max-width: 768px) {
+    .container {
+      flex-direction: column;
+      align-items: center;
+    }
+  
+    .input {
+      width: 100%;
+      max-width: 300px;
+    }
+  }
+  

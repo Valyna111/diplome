@@ -1,0 +1,63 @@
+/* Контейнер */
+.catalogContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 20px;
+    background-color: #fff;
+    min-height: 100vh;
+  }
+  
+  /* Заголовок */
+  .title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #e91e63;
+    margin-bottom: 20px;
+  }
+  
+  /* Сетка кнопок */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 15px;
+    max-width: 800px;
+    width: 100%;
+    justify-items: center;
+  }
+  
+  /* Кнопки */
+  .categoryButton {
+    background: #f8e1e7;
+    color: #e91e63;
+    border: none;
+    padding: 15px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    width: 100%;
+    max-width: 250px;
+    text-align: center;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .categoryButton:hover {
+    background: #e91e63;
+    color: white;
+  }
+  
+  /* Адаптивность */
+  @media (max-width: 768px) {
+    .grid {
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    }
+  
+    .categoryButton {
+      max-width: 200px;
+      font-size: 14px;
+    }
+  }
+  

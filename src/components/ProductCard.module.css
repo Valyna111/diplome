@@ -1,0 +1,79 @@
+.card {
+    background: white;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    padding: 16px;
+    text-align: center;
+    border: 1px solid #f3c6d3;
+    max-width: 320px;
+    width: 100%;
+    transition: transform 0.2s;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+  }
+  
+  .card:hover {
+    transform: scale(1.02);
+  }
+  
+  .image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+  
+  .title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-top: 10px;
+    color: #333;
+  }
+  
+  .description {
+    color: gray;
+    font-size: 14px;
+    margin: 5px 0;
+  }
+  
+  .price {
+    font-size: 20px;
+    font-weight: bold;
+    color: #e91e63;
+    margin: 10px 0;
+  }
+  
+  .button {
+    background: #e91e63;
+    color: white;
+    padding: 10px;
+    border: none; /* Убираем границу */
+    border-radius: 5px;
+    width: 100%;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  
+  .button:hover {
+    background: #d81b60;
+  }
+  .favorite {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none; /* Убираем фон */
+    border: none; /* Убираем границу */
+    outline: none; /* Убираем контур при фокусе */
+    color: #e91e63;
+    font-size: 24px;
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+  
+  .favorite:hover {
+    transform: scale(1.1);
+  }
+  

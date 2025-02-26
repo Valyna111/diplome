@@ -1,0 +1,65 @@
+import React, { useState, useEffect } from "react";
+import { FaShoppingCart, FaUser, FaBars, FaTimes } from "react-icons/fa";
+import { Link } from "react-router-dom";
+import styles from "./NavBar.module.css";
+import AccountSidebar from "./AccountSidebar";
+import { useNavigate } from "react-router-dom";
+
+const Navbar = () => {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [accountMenuOpen, setAccountMenuOpen] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (menuOpen || accountMenuOpen) {
+      document.body.classList.add("menu-open");
+    } else {
+      document.body.classList.remove("menu-open");
+    }
+  }, [menuOpen, accountMenuOpen]);
+
+  return (
+    <>
+      {/* Затемнение при открытии меню */}
+      {/* {menuOpen && (
+        <div className={`${styles.overlay} active`} onClick={() => setMenuOpen(false)}></div>
+      )} */}
+
+      <nav className={styles.navbar}>
+        {/* Логотип */}
+        <div className={styles.logo}>FlowerShop</div>
+
+        {/* Меню */}
+        <p className={`${styles.menu} ${menuOpen ? styles.open : ""}`}>
+          <p><Link to="/" className={styles.link} onClick={() => setMenuOpen(false)}>Главная</Link></p>
+          <p><Link to="/catalog" className={styles.link} onClick={() => setMenuOpen(false)}>Каталог</Link></p>
+          <p><Link to="/articles" className={styles.link} onClick={() => setMenuOpen(false)}>Полезные статьи</Link></p>
+          <p><Link to="/polici" className={styles.link} onClick={() => setMenuOpen(false)}>Политика</Link></p>
+        </p>
+
+        {/* Иконки корзины и аккаунта */}
+        <div className={styles.icons}>
+          <FaShoppingCart className={styles.icon} onClick={() => navigate("/cart")}/>
+          <FaUser 
+            className={styles.icon} 
+            onClick={() => setAccountMenuOpen(!accountMenuOpen)}
+          />
+        </div>
+
+        {/* Бургер-кнопка */}
+        <button className={styles.burger} onClick={() => setMenuOpen(!menuOpen)}>
+          {menuOpen ? <FaTimes /> : <FaBars />}
+        </button>
+      </nav>
+
+      {/* Sidebar для аккаунта */}
+      <AccountSidebar 
+        isAuthenticated={true} 
+        isOpen={accountMenuOpen} 
+        onClose={() => setAccountMenuOpen(false)} 
+      />
+    </>
+  );
+};
+
+export default Navbar;

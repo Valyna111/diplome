@@ -1,0 +1,66 @@
+.articlesContainer {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 20px;
+  }
+  
+  /* Карточка статьи */
+  .articleCard {
+    display: flex;
+    flex-direction: column;
+    border: 2px solid #e91e63; /* Розовая граница */
+    border-radius: 10px;
+    overflow: hidden;
+    background: white;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s;
+  }
+  
+  .articleCard:hover {
+    transform: scale(1.02);
+  }
+  
+  /* Ссылка на статью (убираем подчеркивание) */
+  .articleLink {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+  }
+  
+  /* Изображение статьи */
+  .articleImage {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+  }
+  
+  /* Контент */
+  .articleContent {
+    padding: 15px;
+    text-align: center;
+  }
+  
+  /* Заголовок */
+  .articleTitle {
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 8px;
+  }
+  
+  /* Описание */
+  .articleDescription {
+    font-size: 16px;
+    color: #666;
+  }
+  
+  /* 🔹 Адаптивность */
+  @media (max-width: 768px) {
+    .articlesContainer {
+      grid-template-columns: 1fr; /* В один столбик */
+    }
+  }
+  

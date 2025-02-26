@@ -1,0 +1,27 @@
+.articlePage {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 20px;
+    text-align: center;
+  }
+  
+  .title {
+    font-size: 24px;
+    color: #e91e63;
+    margin-bottom: 20px;
+  }
+  
+  .image {
+    width: 100%;
+    max-height: 400px;
+    object-fit: cover;
+    border-radius: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .content {
+    font-size: 18px;
+    color: #333;
+    line-height: 1.6;
+  }
+  

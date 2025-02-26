@@ -1,0 +1,35 @@
+/* Основные стили фильтра и сортировки */
+.filterSortContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: white;
+    border: 1px solid #f3c6d3;
+    border-radius: 8px;
+    padding: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 500px;
+    margin: 10px auto;
+  }
+  
+  .select {
+    border: 1px solid #f3c6d3;
+    border-radius: 6px;
+    padding: 8px;
+    font-size: 16px;
+    color: #333;
+    background: white;
+    cursor: pointer;
+    outline: none;
+  }
+  
+  /* Адаптивность */
+  @media (max-width: 768px) {
+    .filterSortContainer {
+      flex-direction: column;
+      gap: 10px;
+      padding: 12px;
+    }
+  }
+  

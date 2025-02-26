@@ -1,0 +1,59 @@
+/* Основные стили слайдера */
+.sliderContainer {
+  position: relative;
+  width: 600px;  /* Фиксированная ширина */
+  height: 400px; /* Фиксированная высота */
+  margin: 20px auto;
+  overflow: hidden;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Изображения слайдера */
+.sliderImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Обрезает изображение, сохраняя пропорции */
+  display: block;
+  cursor: pointer;
+  transition: transform 0.3s ease-in-out;
+}
+
+/* Кнопки переключения */
+.prevButton, .nextButton {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  border-radius: 50%;
+  font-size: 18px;
+  transition: background 0.3s;
+  z-index: 10;
+}
+
+.prevButton { left: 10px; }
+.nextButton { right: 10px; }
+
+.prevButton:hover, .nextButton:hover {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+/* 🔹 Адаптивность для мобильных устройств */
+@media (max-width: 768px) {
+  .sliderContainer {
+      width: 90%;  /* Подгоняем ширину под экран */
+      height: 300px; /* Уменьшаем высоту */
+  }
+
+  .prevButton, .nextButton {
+      padding: 8px;
+      font-size: 16px;
+  }
+}
