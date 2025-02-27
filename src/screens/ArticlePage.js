@@ -1,29 +1,47 @@
 import React from "react";
-import { useParams } from "react-router-dom";
 import styles from "./ArticlePage.module.css";
-
-const articles = [
-  { id: 1, image: "/images/slider1.jpg", title: "Как ухаживать за цветами", content: "Полный текст статьи про уход за цветами..." },
-  { id: 2, image: "/images/article2.jpg", title: "Как выбрать букет", content: "Полный текст статьи про выбор букета..." },
-  { id: 3, image: "/images/article3.jpg", title: "Значение цветов", content: "Полный текст статьи про значения цветов..." },
-  { id: 4, image: "/images/article4.jpg", title: "Цветы и их аромат", content: "Полный текст статьи про ароматы цветов..." }
-];
-
-const ArticlePage = () => {
-  const { id } = useParams();
-  const article = articles.find(a => a.id === Number(id));
-
-  if (!article) {
-    return <h2>Статья не найдена</h2>;
-  }
-
+import Navbar from "../components/NavBar";
+import Footer from "../components/Footer";
+const Article1 = () => {
   return (
+    <>
+      <Navbar />
     <div className={styles.articlePage}>
-      <h1 className={styles.title}>{article.title}</h1>
-      <img src={article.image} alt={article.title} className={styles.image} />
-      <p className={styles.content}>{article.content}</p>
+      
+      {/* Заголовок статьи */}
+      <h1 className={styles.articleTitle}>Как продлить жизнь букета</h1>
+
+      {/* 🔹 Первый блок с текстом и изображением */}
+      <div className={styles.section}>
+        <img src="/images/slider1.jpg" alt="Букет" />
+        <div className={styles.textContainer}>
+          <h2>Обрезка стеблей</h2>
+          <p>Перед тем как поставить букет в вазу, подрежьте стебли под углом 45 градусов...</p>
+        </div>
+      </div>
+
+      {/* 🔹 Второй блок (зеркальный) */}
+      <div className={`${styles.section} ${styles.reverse}`}>
+        <img src="/images/slider2.jpg" alt="Чистая вода" />
+        <div className={styles.textContainer}>
+          <h2>Чистая вода</h2>
+          <p>Меняйте воду каждые два дня и промывайте вазу, чтобы предотвратить размножение бактерий.</p>
+        </div>
+      </div>
+
+      {/* 🔹 Третий блок (обычный) */}
+      <div className={styles.section}>
+        <img src="/images/slider3.jpg" alt="Оптимальная температура" />
+        <div className={styles.textContainer}>
+          <h2>Оптимальная температура</h2>
+          <p>Избегайте прямых солнечных лучей и сквозняков, чтобы цветы не увядали раньше времени.</p>
+        </div>
+      </div>
+      
     </div>
+    <Footer />
+    </>
   );
 };
 
-export default ArticlePage;
+export default Article1;

@@ -20,12 +20,6 @@ const articles = [
     image: "/images/slider3.jpg",
     title: "Значение цветов",
     description: "Что символизируют разные цветы и их оттенки.",
-  },
-  {
-    id: 4,
-    image: "/images/slider1.jpg",
-    title: "Цветы и их аромат",
-    description: "Какие цветы обладают самым приятным запахом и как их сочетать.",
   }
 ];
 

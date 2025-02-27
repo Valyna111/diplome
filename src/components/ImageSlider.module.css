@@ -1,59 +1,100 @@
-/* Основные стили слайдера */
 .sliderContainer {
   position: relative;
-  width: 600px;  /* Фиксированная ширина */
-  height: 400px; /* Фиксированная высота */
-  margin: 20px auto;
+  width: 100%;
+  max-width: 900px;
+  height: 400px;
+  margin: auto;
   overflow: hidden;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
 }
 
-/* Изображения слайдера */
-.sliderImage {
+.sliderWrapper {
+  display: flex;
   width: 100%;
+  position: relative;
   height: 100%;
-  object-fit: cover; /* Обрезает изображение, сохраняя пропорции */
-  display: block;
+}
+
+.sliderImage {
+  position: absolute;
+  width: 60%;
+  max-width: 600px;
+  height: auto;
+  border-radius: 10px;
+  transition: transform 0.5s ease, opacity 0.5s ease;
   cursor: pointer;
-  transition: transform 0.3s ease-in-out;
+}
+
+/* Центральное активное изображение */
+.activeSlide {
+  transform: scale(1);
+  z-index: 3;
+  opacity: 1;
+}
+
+/* Левое (предыдущий слайд) */
+.prevSlide {
+  transform: translateX(-50%) scale(0.8);
+  opacity: 0.6;
+  z-index: 2;
+}
+
+/* Правое (следующий слайд) */
+.nextSlide {
+  transform: translateX(50%) scale(0.8);
+  opacity: 0.6;
+  z-index: 2;
+}
+
+/* Остальные (невидимые) */
+.hiddenSlide {
+  opacity: 0;
+  z-index: 1;
 }
 
 /* Кнопки переключения */
-.prevButton, .nextButton {
+.prevButton,
+.nextButton {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
   background: rgba(0, 0, 0, 0.5);
   color: white;
   border: none;
-  padding: 10px;
+  padding: 12px;
   cursor: pointer;
   border-radius: 50%;
-  font-size: 18px;
+  font-size: 20px;
   transition: background 0.3s;
-  z-index: 10;
 }
 
-.prevButton { left: 10px; }
-.nextButton { right: 10px; }
+.prevButton {
+  left: 10px;
+}
 
-.prevButton:hover, .nextButton:hover {
+.nextButton {
+  right: 10px;
+}
+
+.prevButton:hover,
+.nextButton:hover {
   background: rgba(0, 0, 0, 0.8);
 }
 
-/* 🔹 Адаптивность для мобильных устройств */
+/* Адаптивность */
 @media (max-width: 768px) {
-  .sliderContainer {
-      width: 90%;  /* Подгоняем ширину под экран */
-      height: 300px; /* Уменьшаем высоту */
+  .sliderImage {
+    width: 70%;
+  }
+
+  .prevSlide, .nextSlide {
+    transform: translateX(0) scale(0.85);
   }
 
   .prevButton, .nextButton {
-      padding: 8px;
-      font-size: 16px;
+    padding: 8px;
+    font-size: 16px;
   }
 }

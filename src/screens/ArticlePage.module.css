@@ -1,27 +1,57 @@
+/* 🔹 Основной контейнер */
 .articlePage {
-    max-width: 800px;
-    margin: 40px auto;
-    padding: 20px;
-    text-align: center;
-  }
-  
-  .title {
-    font-size: 24px;
-    color: #e91e63;
-    margin-bottom: 20px;
-  }
-  
-  .image {
+    width: 100vw;
+    min-height: 100vh;
+    padding: 40px 5%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #fff;
+    box-sizing: border-box;
+}
+
+/* 🔹 Блок секции */
+.section {
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Центрируем содержимое */
     width: 100%;
-    max-height: 400px;
+    max-width: 1200px;
+    gap: 30px;
+    margin-bottom: 40px;
+}
+
+/* 🔹 Картинка */
+.section img {
+    width: 40%;
+    height: 300px; /* Фиксированная высота */
     object-fit: cover;
     border-radius: 10px;
-    margin-bottom: 20px;
-  }
-  
-  .content {
+    box-shadow: 4px 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* 🔹 Текстовый блок */
+.textContainer {
+    width: 50%;
     font-size: 18px;
-    color: #333;
     line-height: 1.6;
-  }
-  
+    color: #333;
+}
+
+/* 🔹 Для мобильных устройств */
+@media (max-width: 768px) {
+    .section {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .section img {
+        width: 90%;
+        height: auto; /* Автоматическая высота */
+    }
+
+    .textContainer {
+        width: 90%;
+    }
+}

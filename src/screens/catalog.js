@@ -1,6 +1,8 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./catalog.module.css";
+import Navbar from "../components/NavBar";
+import Footer from "../components/Footer";
 
 const categories = [
   { id: 1, name: "Классические букеты", emoji: "🌸", link: "/category/classic" },
@@ -19,20 +21,24 @@ const CatalogCategories = () => {
   const navigate = useNavigate();
 
   return (
-    <div className={styles.catalogContainer}>
-      <h2 className={styles.title}>Выберите категорию</h2>
-      <div className={styles.grid}>
-        {categories.map((category) => (
-          <button
-            key={category.id}
-            className={styles.categoryButton}
-            onClick={() => navigate(category.link)}
-          >
-            {category.emoji} {category.name}
-          </button>
-        ))}
+    <>
+      <Navbar /> {/* Навбар теперь сверху */}
+      <div className={styles.catalogContainer}>
+        <h2 className={styles.title}>Выберите категорию</h2>
+        <div className={styles.grid}>
+          {categories.map((category) => (
+            <button
+              key={category.id}
+              className={styles.categoryButton}
+              onClick={() => navigate(category.link)}
+            >
+              {category.emoji} {category.name}
+            </button>
+          ))}
+        </div>
       </div>
-    </div>
+      <Footer /> {/* Футер теперь снизу */}
+    </>
   );
 };
 
