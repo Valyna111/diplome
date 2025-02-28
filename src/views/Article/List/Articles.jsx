@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import styles from "./article.module.css";
-import Navbar from "../components/NavBar";
-import Footer from "../components/Footer";
+import styles from "../styles/article.module.css";
 
 const articles = [
   {
@@ -63,7 +61,6 @@ const Articles = () => {
 
   return (
     <>
-      <Navbar />
       <div className={styles.articlesContainer}>
         <h2 className={styles.title}>Полезные статьи</h2>
 
@@ -96,7 +93,6 @@ const Articles = () => {
           ))}
         </div>
       </div>
-      <Footer />
     </>
   );
 };

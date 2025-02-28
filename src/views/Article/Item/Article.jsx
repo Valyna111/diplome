@@ -1,11 +1,11 @@
 import React from "react";
-import styles from "./ArticlePage.module.css";
-import Navbar from "../components/NavBar";
-import Footer from "../components/Footer";
-const Article1 = () => {
+import styles from "../styles/ArticlePage.module.css";
+import Slider1 from '@/assets/images/slider1.jpg';
+import Slider2 from '@/assets/images/slider2.jpg';
+import Slider3 from '@/assets/images/slider3.jpg';
+const Article = () => {
   return (
     <>
-      <Navbar />
     <div className={styles.articlePage}>
       
       {/* Заголовок статьи */}
@@ -13,7 +13,7 @@ const Article1 = () => {
 
       {/* 🔹 Первый блок с текстом и изображением */}
       <div className={styles.section}>
-        <img src="/images/slider1.jpg" alt="Букет" />
+        <img src={Slider1} alt="Букет" />
         <div className={styles.textContainer}>
           <h2>Обрезка стеблей</h2>
           <p>Перед тем как поставить букет в вазу, подрежьте стебли под углом 45 градусов...</p>
@@ -22,7 +22,7 @@ const Article1 = () => {
 
       {/* 🔹 Второй блок (зеркальный) */}
       <div className={`${styles.section} ${styles.reverse}`}>
-        <img src="/images/slider2.jpg" alt="Чистая вода" />
+        <img src={Slider2} alt="Чистая вода" />
         <div className={styles.textContainer}>
           <h2>Чистая вода</h2>
           <p>Меняйте воду каждые два дня и промывайте вазу, чтобы предотвратить размножение бактерий.</p>
@@ -31,7 +31,7 @@ const Article1 = () => {
 
       {/* 🔹 Третий блок (обычный) */}
       <div className={styles.section}>
-        <img src="/images/slider3.jpg" alt="Оптимальная температура" />
+        <img src={Slider3} alt="Оптимальная температура" />
         <div className={styles.textContainer}>
           <h2>Оптимальная температура</h2>
           <p>Избегайте прямых солнечных лучей и сквозняков, чтобы цветы не увядали раньше времени.</p>
@@ -39,9 +39,8 @@ const Article1 = () => {
       </div>
       
     </div>
-    <Footer />
     </>
   );
 };
 
-export default Article1;
+export default Article;

@@ -2,11 +2,14 @@ import React, { useState, useEffect } from "react";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import styles from "./ImageSlider.module.css";
 import { useNavigate } from "react-router-dom";
+import Slider1 from '@/assets/images/slider1.jpg' 
+import Slider2 from '@/assets/images/slider2.jpg'
+import Slider3 from '@/assets/images/slider3.jpg'
 
 const images = [
-  { src: "/images/slider1.jpg", link: "/flower1" },
-  { src: "/images/slider2.jpg", link: "/flower2" },
-  { src: "/images/slider3.jpg", link: "/flower3" },
+  { src: Slider1, link: "/flower1" },
+  { src: Slider2, link: "/flower2" },
+  { src: Slider3, link: "/flower3" },
 ];
 
 const ImageSlider = () => {

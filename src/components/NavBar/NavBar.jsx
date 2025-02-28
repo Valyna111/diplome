@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { FaShoppingCart, FaUser, FaBars, FaTimes } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import styles from "./NavBar.module.css";
-import AccountSidebar from "./AccountSidebar";
+import AccountSidebar from "@/components/AccountSidebar/AccountSidebar";
 import { useNavigate } from "react-router-dom";
 
 const Navbar = () => {
@@ -33,7 +33,7 @@ const Navbar = () => {
         <p className={`${styles.menu} ${menuOpen ? styles.open : ""}`}>
           <p><Link to="/" className={styles.link} onClick={() => setMenuOpen(false)}>Главная</Link></p>
           <p><Link to="/catalog" className={styles.link} onClick={() => setMenuOpen(false)}>Каталог</Link></p>
-          <p><Link to="/articles" className={styles.link} onClick={() => setMenuOpen(false)}>Полезные статьи</Link></p>
+          <p><Link to="/article" className={styles.link} onClick={() => setMenuOpen(false)}>Полезные статьи</Link></p>
           <p><Link to="/polici" className={styles.link} onClick={() => setMenuOpen(false)}>Политика</Link></p>
         </p>
 

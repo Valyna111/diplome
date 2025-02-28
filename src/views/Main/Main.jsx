@@ -1,17 +1,14 @@
 import React from "react";
-import Navbar from "../components/NavBar";
-import ImageSlider from "../components/ImageSlider";
-import SearchBar from "../components/SearchBar";
-import FilterSort from "../components/FilterSort";
-import ProductCard from "../components/ProductCard";
-import Footer from "../components/Footer";
+import ImageSlider from "@/components/ImageSlider/ImageSlider";
+import SearchBar from "@/components/SearchBar/SearchBar";
+import FilterSort from "@/components/FilterSort/FilterSort";
+import ProductCard from "@/components/ProductCard/ProductCard";
 import styles from "./Main.module.css";
-import ArticlesComp from "../components/ArticlesComp";
+import ArticlesComp from "@/components/ArticlesComp/ArticlesComp";
 
 const Main = () => {
   return (
     <div className={styles.mainContainer}>
-      <Navbar />
       <ImageSlider />
       <ArticlesComp/>
       {/* Объединяем поиск и фильтры в один контейнер */}
@@ -31,8 +28,6 @@ const Main = () => {
           />
         ))}
       </div>
-
-      <Footer />
     </div>
   );
 };
