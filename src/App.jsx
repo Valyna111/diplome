@@ -4,6 +4,7 @@ import s from './App.module.css'
 
 import Main from "@/routs/Main";
 import Article from "@/routs/Article";
+import UserProfile from "@/routs/UserProfile";
 
 import CatalogCategories from "@/views/Catalog/CatalogCategories";
 import Navbar from "@/components/NavBar/NavBar";
@@ -21,8 +22,8 @@ const App = () => {
               <Route path="/main" element={<Main />} />
               <Route path="/catalog" element={<CatalogCategories/>} />
               <Route path="/article/*" element={<Article/>} />
+              <Route path="/profile/*" element={<UserProfile/>} />
               <Route path="*" element={<Navigate to="/main" replace={true} />} />
-              
             </Routes>
           </main>
         <Footer/>

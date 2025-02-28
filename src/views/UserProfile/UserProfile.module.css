@@ -8,7 +8,7 @@
     text-align: center;
   }
   
-  h2 {
+  .profileContainer h2 {
     color: #e91e63;
   }
   
@@ -17,13 +17,13 @@
     text-align: left;
   }
   
-  label {
+  .profileContainer label {
     font-weight: bold;
     color: #333;
     display: block;
   }
   
-  p, input {
+  .profileContainer p, .profileContainer input {
     font-size: 16px;
     width: 100%;
     padding: 8px;
@@ -31,11 +31,11 @@
     border-radius: 5px;
   }
   
-  input {
+  .profileContainer input {
     background: #f9f9f9;
   }
   
-  button {
+  .profileContainer button {
     background: #e91e63;
     color: white;
     border: none;
@@ -46,7 +46,7 @@
     width: 100%;
   }
   
-  button:hover {
+  .profileContainer button:hover {
     background: #d81b60;
   }
   
