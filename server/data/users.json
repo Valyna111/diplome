@@ -1,0 +1,18 @@
+[
+  {
+    "id": 1,
+    "firstName": "John",
+    "lastName": "Doe",
+    "email": "john.doe@example.com",
+    "phone": "1234567890",
+    "password": "$2b$10$74JtqvNXVP1hUOYfGaFw7eX1aoKrZ7SwC1Yej9MwUSwL9RERKZxZ6"
+  },
+  {
+    "id": 2,
+    "firstName": "Max",
+    "lastName": "Klochko",
+    "email": "max.doe@example.com",
+    "phone": "1234567890",
+    "password": "$2b$10$0Ztsb420eja0XHELqNgA6eR0I7C/NuB4n6sF623ZFIZub69xwEITK"
+  }
+]

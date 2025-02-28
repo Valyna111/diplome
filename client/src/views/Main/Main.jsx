@@ -1,12 +1,15 @@
-import React from "react";
+import React, { useContext } from "react";
 import ImageSlider from "@/components/ImageSlider/ImageSlider";
 import SearchBar from "@/components/SearchBar/SearchBar";
 import FilterSort from "@/components/FilterSort/FilterSort";
 import ProductCard from "@/components/ProductCard/ProductCard";
 import styles from "./Main.module.css";
 import ArticlesComp from "@/components/ArticlesComp/ArticlesComp";
+import { observer } from "mobx-react-lite";
+import StoreContext from "@/store/StoreContext";
 
-const Main = () => {
+const Main = observer(() => {
+  const rootStore = useContext(StoreContext);
   return (
     <div className={styles.mainContainer}>
       <ImageSlider />
@@ -30,6 +33,6 @@ const Main = () => {
       </div>
     </div>
   );
-};
+});
 
 export default Main;
