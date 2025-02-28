@@ -1,0 +1,60 @@
+.profileContainer {
+    max-width: 400px;
+    margin: 40px auto;
+    padding: 20px;
+    background: white;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    text-align: center;
+  }
+  
+  h2 {
+    color: #e91e63;
+  }
+  
+  .infoBlock {
+    margin: 15px 0;
+    text-align: left;
+  }
+  
+  label {
+    font-weight: bold;
+    color: #333;
+    display: block;
+  }
+  
+  p, input {
+    font-size: 16px;
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+  }
+  
+  input {
+    background: #f9f9f9;
+  }
+  
+  button {
+    background: #e91e63;
+    color: white;
+    border: none;
+    padding: 10px;
+    margin-top: 15px;
+    cursor: pointer;
+    border-radius: 5px;
+    width: 100%;
+  }
+  
+  button:hover {
+    background: #d81b60;
+  }
+  
+  /* 🔹 Адаптивность */
+  @media (max-width: 480px) {
+    .profileContainer {
+      width: 90%;
+      padding: 15px;
+    }
+  }
+  

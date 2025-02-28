@@ -36,7 +36,7 @@ const Footer = () => {
       </div>
 
       {/* Авторские права */}
-      <p className={styles.copyright}>© 2024 FlowerShop. Все права защищены.</p>
+      <p className={styles.copyright}>© 2025 FlowerShop</p>
     </footer>
   );
 };

@@ -4,9 +4,12 @@ import s from './App.module.css'
 
 import Main from "@/routs/Main";
 import Article from "@/routs/Article";
+
 import CatalogCategories from "@/views/Catalog/CatalogCategories";
 import Navbar from "@/components/NavBar/NavBar";
 import Footer from "@/components/Footer/Footer";
+
+
 
 const App = () => {
   return (
@@ -19,6 +22,7 @@ const App = () => {
               <Route path="/catalog" element={<CatalogCategories/>} />
               <Route path="/article/*" element={<Article/>} />
               <Route path="*" element={<Navigate to="/main" replace={true} />} />
+              
             </Routes>
           </main>
         <Footer/>
