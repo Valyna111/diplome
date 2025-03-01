@@ -46,7 +46,7 @@ const Navbar = observer(() => {
           <FaShoppingCart className={styles.icon} onClick={() => navigate("/cart")}/>
           <FaUser 
             className={styles.icon} 
-            onClick={() => setAccountMenuOpen(!accountMenuOpen)}
+            onClick={() => rootStore.authStore?.currentUser ? setAccountMenuOpen(!accountMenuOpen) : rootStore.authStore.setIsModalLogin(true)}
           />
         </div>
 
@@ -57,8 +57,7 @@ const Navbar = observer(() => {
       </nav>
 
       {/* Sidebar для аккаунта */}
-      <AccountSidebar 
-        isAuthenticated={true} 
+      <AccountSidebar
         isOpen={accountMenuOpen} 
         onClose={() => setAccountMenuOpen(false)} 
       />
