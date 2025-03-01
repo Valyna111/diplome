@@ -55,7 +55,7 @@ app.post('/register', async (req, res) => {
   const userExists = users.find(user => user.email === email);
 
   if (userExists) {
-    return res.status(400).json({ error: 'User already exists' });
+    return res.status(400).json({ error: 'Пользователь уже зарегестрирован' });
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -82,12 +82,12 @@ app.post('/login', async (req, res) => {
   const user = users.find(user => user.email === email);
 
   if (!user) {
-    return res.status(400).json({ error: 'User not found' });
+    return res.status(400).json({ error: 'Пользователь не найден' });
   }
 
   const validPassword = await bcrypt.compare(password, user.password);
   if (!validPassword) {
-    return res.status(400).json({ error: 'Invalid password' });
+    return res.status(400).json({ error: 'Неверный пароль' });
   }
 
   // Создание JWT токена

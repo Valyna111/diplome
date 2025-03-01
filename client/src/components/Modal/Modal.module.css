@@ -1,0 +1,77 @@
+.modal__overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 14;
+}
+.modal__container{
+    display: flex;
+    width: 400px;
+    padding: 12px 20px;
+    gap: 20px;
+    flex-direction: column;
+    align-items: flex-start;
+    flex-shrink: 0;
+    border-radius: 10px;
+    background: var(--Background-White, #FFF);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+.header{
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    align-self: stretch;
+}
+.header .title{
+    color: #000;
+    font-feature-settings: 'clig' off, 'liga' off;
+
+    /* Web/Semibold/S-20 */
+    font-family: Inter;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 26px; /* 130% */
+    display: flex;
+    flex: 1;
+}
+.header .close{
+    width: 24px;
+    height: 24px;
+    display: flex;
+    flex: 0 0 0;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.header .close:hover{
+  background: var(--Background-Light-gray-2, #F2F2F2);
+}
+.body{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    align-self: stretch;
+    position: relative;
+}
+.body .input label{
+    top: 12px;
+}
+.footer{
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    align-self: stretch;
+  }
+  .disabled{
+    pointer-events: none;
+    opacity: 0.5;
+  }

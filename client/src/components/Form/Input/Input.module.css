@@ -1,0 +1,90 @@
+.container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 8px;
+    height: 28px;
+    transition: border-color 0.3s ease;
+    margin-bottom: 8px;
+}
+
+.container:focus-within {
+    border-color: #d81b60; /* Цвет рамки при фокусе */
+}
+
+.input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 16px;
+    background: transparent;
+    padding-top: 12px; /* Добавляем отступ сверху для плейсхолдера */
+}
+
+.placeholder {
+    position: absolute;
+    left: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 16px;
+    color: #999;
+    pointer-events: none; /* Чтобы клик проходил сквозь плейсхолдер */
+    transition: all 0.2s ease;
+}
+
+.placeholderFocused {
+    top: 8px; /* Перемещаем плейсхолдер вверх */
+    font-size: 12px; /* Уменьшаем размер текста */
+    color: #5e5c5c; /* Меняем цвет при фокусе */
+}
+
+.icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 8px;
+    color: #666;
+}
+
+.icon.left {
+    order: -1;
+}
+
+.icon.right {
+    order: 1;
+}
+
+.error {
+    border-color: #ff4d4f;
+}
+
+.errorMessage {
+    position: absolute;
+    bottom: -20px;
+    left: 0;
+    color: #ff4d4f;
+    font-size: 12px;
+}
+
+.success {
+    border-color: #52c41a;
+}
+
+.warning {
+    border-color: #faad14;
+}
+
+.error .icon {
+    color: #ff4d4f;
+}
+
+.success .icon {
+    color: #52c41a;
+}
+
+.warning .icon {
+    color: #faad14;
+}

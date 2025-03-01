@@ -13,6 +13,7 @@ import CatalogCategories from "@/views/Catalog/CatalogCategories";
 import Navbar from "@/components/NavBar/NavBar";
 import Footer from "@/components/Footer/Footer";
 import AuthTestButtons from "@/views/Test/AuthTestButtons";
+import AuthModal from "./views/Modals/Auth/AuthModal";
 
 let rootStore;
 
@@ -22,6 +23,7 @@ const App = () => {
     <StoreContext.Provider value={rootStore}>
         <div className={s.conteiner}>
           <Router>
+            <AuthModal />
             <Navbar/>
               <main className={s.main}>
                 <Routes>

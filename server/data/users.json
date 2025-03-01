@@ -14,5 +14,13 @@
     "email": "max.doe@example.com",
     "phone": "1234567890",
     "password": "$2b$10$0Ztsb420eja0XHELqNgA6eR0I7C/NuB4n6sF623ZFIZub69xwEITK"
+  },
+  {
+    "id": 3,
+    "firstName": "Max",
+    "lastName": "Klochko",
+    "email": "max@mail.ru",
+    "phone": "+375 (33) 630-84-21",
+    "password": "$2b$10$JY6eL.pBYH8RDxeKLrg96uLEz.BE7nf1f.015drSGbDbMFyNbXZA."
   }
 ]

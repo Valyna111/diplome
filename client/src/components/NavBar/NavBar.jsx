@@ -1,11 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { FaShoppingCart, FaUser, FaBars, FaTimes } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import styles from "./NavBar.module.css";
 import AccountSidebar from "@/components/AccountSidebar/AccountSidebar";
 import { useNavigate } from "react-router-dom";
+import { observer } from "mobx-react-lite";
+import StoreContext from "@/store/StoreContext";
 
-const Navbar = () => {
+const Navbar = observer(() => {
+  const rootStore = useContext(StoreContext);
+
   const [menuOpen, setMenuOpen] = useState(false);
   const [accountMenuOpen, setAccountMenuOpen] = useState(false);
   const navigate = useNavigate();
@@ -60,6 +64,6 @@ const Navbar = () => {
       />
     </>
   );
-};
+});
 
 export default Navbar;

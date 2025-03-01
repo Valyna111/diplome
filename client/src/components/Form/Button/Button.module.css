@@ -1,0 +1,53 @@
+.button {
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s;
+    outline: none;
+    background-color: rgb(233, 30, 99);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.button:disabled {
+    opacity: 0.5;
+    pointer-events: none;
+}
+.button:hover {
+    background: #d81b60;
+}
+.button:hover .placeholder  {
+    font-weight: 500;
+}
+.button.second {
+    color: black;
+    background-color: azure;
+    border: 1px solid black;
+}
+.button.second:hover {
+    background: #f7bbd1;
+}
+.icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 8px;
+    color: #666;
+}
+
+.icon.left {
+    order: -1;
+}
+
+.icon.right {
+    order: 1;
+}
+
+.placeholder {
+    display: flex;
+    font-weight: 400;
+    font-size: 16px;
+    cursor: pointer;
+}

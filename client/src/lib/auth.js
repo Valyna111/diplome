@@ -26,11 +26,14 @@ const registerUser = async (userData) => {
       body: JSON.stringify(credentials),
     });
   
+    const data = await response.json(); // Парсим ответ сервера
+  
     if (!response.ok) {
-      throw new Error('Login failed');
+      // Если статус ответа не 200-299, выбрасываем ошибку с сообщением от сервера
+      throw new Error(data.error || 'Произошла ошибка при входе');
     }
   
-    return response.json();
+    return data; // Возвращаем данные, если всё успешно
   };
   
   // Функция для получения информации о пользователе

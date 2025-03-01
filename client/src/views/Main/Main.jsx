@@ -8,6 +8,7 @@ import ArticlesComp from "@/components/ArticlesComp/ArticlesComp";
 import { observer } from "mobx-react-lite";
 import StoreContext from "@/store/StoreContext";
 
+
 const Main = observer(() => {
   const rootStore = useContext(StoreContext);
   return (
