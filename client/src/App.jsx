@@ -7,12 +7,15 @@ import StoreContext from "@/store/StoreContext";
 import Main from "@/routs/Main";
 import Article from "@/routs/Article";
 import UserProfile from "@/routs/UserProfile";
+import Favorite from "@/routs/Favorite";
+import LoyaltyPage from "@/routs/Loyalty";
 
 import CatalogCategories from "@/views/Catalog/CatalogCategories";
 
 import Navbar from "@/components/NavBar/NavBar";
 import Footer from "@/components/Footer/Footer";
 import AuthTestButtons from "@/views/Test/AuthTestButtons";
+
 
 let rootStore;
 
@@ -29,6 +32,8 @@ const App = () => {
                   <Route path="/catalog" element={<CatalogCategories/>} />
                   <Route path="/article/*" element={<Article/>} />
                   <Route path="/profile/*" element={<UserProfile/>} />
+                  <Route path="/favorites" element={<Favorite/>} />
+                  <Route path="/loyalty-program" element={<LoyaltyPage/>} />
                   <Route path="/test" element={<AuthTestButtons/>} />
                   <Route path="*" element={<Navigate to="/main" replace={true} />} />
                 </Routes>

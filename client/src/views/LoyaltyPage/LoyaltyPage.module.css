@@ -1,0 +1,102 @@
+.loyaltyPage {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+  }
+  
+  .title {
+    text-align: center;
+    font-size: 2.5rem;
+    color: #333;
+    margin-bottom: 40px;
+  }
+  
+  .cardContainer {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+  
+  .card {
+    background-image: url('@/assets/images/loyalty-card-bg.jpg'); /* Фон для карты */
+    background-size: cover;
+    background-position: center;
+    width: 300px;
+    height: 180px;
+    margin: 0 auto;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+  }
+  
+  .cardContent {
+    text-align: center;
+  }
+  
+  .cardTitle {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+  }
+  
+  .cardText {
+    font-size: 1rem;
+    opacity: 0.8;
+  }
+  
+  .bonusPoints {
+    font-size: 1.2rem;
+    color: #333;
+    margin-top: 15px;
+  }
+  
+  .bonusPoints span {
+    font-weight: bold;
+    color: #e91e63;
+  }
+  
+  .infoSection {
+    margin-bottom: 30px;
+  }
+  
+  .sectionTitle {
+    font-size: 1.8rem;
+    color: #333;
+    margin-bottom: 10px;
+  }
+  
+  .sectionText {
+    font-size: 1.1rem;
+    color: #555;
+    line-height: 1.6;
+  }
+  
+  /* Адаптивность */
+  @media (max-width: 768px) {
+    .title {
+      font-size: 2rem;
+    }
+  
+    .card {
+      width: 250px;
+      height: 150px;
+    }
+  
+    .cardTitle {
+      font-size: 1.3rem;
+    }
+  
+    .cardText {
+      font-size: 0.9rem;
+    }
+  
+    .sectionTitle {
+      font-size: 1.5rem;
+    }
+  
+    .sectionText {
+      font-size: 1rem;
+    }
+  }

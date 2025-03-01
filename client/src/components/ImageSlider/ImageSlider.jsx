@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import styles from "./ImageSlider.module.css";
-import { useNavigate } from "react-router-dom";
-import Slider1 from '@/assets/images/slider1.jpg' 
-import Slider2 from '@/assets/images/slider2.jpg'
-import Slider3 from '@/assets/images/slider3.jpg'
+import Slider1 from '@/assets/images/slider1.jpg';
+import Slider2 from '@/assets/images/slider2.jpg';
+import Slider3 from '@/assets/images/slider3.jpg';
 
 const images = [
   { src: Slider1, link: "/flower1" },
@@ -15,7 +14,6 @@ const images = [
 const ImageSlider = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -42,27 +40,29 @@ const ImageSlider = () => {
     >
       <div className={styles.sliderWrapper}>
         {images.map((image, index) => {
-          const position =
-            index === currentIndex
-              ? styles.activeSlide
-              : index === (currentIndex - 1 + images.length) % images.length
-              ? styles.prevSlide
-              : index === (currentIndex + 1) % images.length
-              ? styles.nextSlide
-              : styles.hiddenSlide;
+          let position;
+          if (index === currentIndex) {
+            position = styles.activeSlide;
+          } else if (index === (currentIndex - 1 + images.length) % images.length) {
+            position = styles.prevSlide;
+          } else if (index === (currentIndex + 1) % images.length) {
+            position = styles.nextSlide;
+          } else {
+            position = styles.hiddenSlide;
+          }
 
           return (
             <img
               key={index}
               src={image.src}
-              alt={`Flower ${index + 1}`}
+              alt={`Slide ${index + 1}`}
               className={`${styles.sliderImage} ${position}`}
-              onClick={() => navigate(image.link)}
             />
           );
         })}
       </div>
 
+      {/* Кнопки навигации */}
       <button className={styles.prevButton} onClick={prevSlide}>
         <FaArrowLeft />
       </button>

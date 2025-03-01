@@ -1,100 +1,124 @@
 .sliderContainer {
   position: relative;
   width: 100%;
-  max-width: 900px;
-  height: 400px;
-  margin: auto;
+  max-width: 1200px; /* Увеличиваем максимальную ширину */
+  margin: 0 auto;
   overflow: hidden;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  height: 500px; /* Увеличиваем высоту контейнера */
 }
 
 .sliderWrapper {
   display: flex;
+  align-items: center;
+  justify-content: center;
   width: 100%;
-  position: relative;
   height: 100%;
+  position: relative;
 }
 
 .sliderImage {
-  position: absolute;
-  width: 60%;
-  max-width: 600px;
+  width: 70%; /* Увеличиваем ширину слайда */
   height: auto;
   border-radius: 10px;
-  transition: transform 0.5s ease, opacity 0.5s ease;
+  transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
   cursor: pointer;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
-/* Центральное активное изображение */
 .activeSlide {
-  transform: scale(1);
-  z-index: 3;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  z-index: 2;
   opacity: 1;
 }
 
-/* Левое (предыдущий слайд) */
 .prevSlide {
-  transform: translateX(-50%) scale(0.8);
-  opacity: 0.6;
-  z-index: 2;
-}
-
-/* Правое (следующий слайд) */
-.nextSlide {
-  transform: translateX(50%) scale(0.8);
-  opacity: 0.6;
-  z-index: 2;
-}
-
-/* Остальные (невидимые) */
-.hiddenSlide {
-  opacity: 0;
+  left: 10%;
+  transform: translateX(-50%) translateY(-50%);
   z-index: 1;
+  opacity: 0.7;
 }
 
-/* Кнопки переключения */
+.nextSlide {
+  left: 90%;
+  transform: translateX(-50%) translateY(-50%);
+  z-index: 1;
+  opacity: 0.7;
+}
+
+.hiddenSlide {
+  display: none;
+}
+
 .prevButton,
 .nextButton {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  background: rgba(0, 0, 0, 0.5);
+  background-color: rgba(233, 30, 99, 0.7); /* Цвет #e91e63 с прозрачностью */
   color: white;
   border: none;
-  padding: 12px;
+  padding: 15px;
   cursor: pointer;
   border-radius: 50%;
-  font-size: 20px;
-  transition: background 0.3s;
+  z-index: 3;
+  font-size: 1.5rem;
+  opacity: 0; /* По умолчанию кнопки невидимы */
+  transition: opacity 0.3s ease, background-color 0.3s ease;
 }
 
 .prevButton {
-  left: 10px;
+  left: 20px; /* Увеличиваем отступ слева */
 }
 
 .nextButton {
-  right: 10px;
+  right: 20px; /* Увеличиваем отступ справа */
 }
-
+.sliderContainer:hover .prevButton,
+.sliderContainer:hover .nextButton {
+  opacity: 1; /* Кнопки становятся видимыми */
+}
+/* Изменяем цвет кнопок при наведении на них */
 .prevButton:hover,
 .nextButton:hover {
-  background: rgba(0, 0, 0, 0.8);
+  background-color: rgba(233, 30, 99, 1); /* Цвет #e91e63 без прозрачности */
 }
 
 /* Адаптивность */
 @media (max-width: 768px) {
+  .sliderContainer {
+    height: 400px; /* Уменьшаем высоту для планшетов */
+  }
+
   .sliderImage {
-    width: 70%;
+    width: 80%; /* Увеличиваем ширину слайда на мобильных устройствах */
   }
 
-  .prevSlide, .nextSlide {
-    transform: translateX(0) scale(0.85);
+  .prevSlide {
+    left: 5%;
   }
 
-  .prevButton, .nextButton {
-    padding: 8px;
-    font-size: 16px;
+  .nextSlide {
+    left: 95%;
+  }
+}
+
+@media (max-width: 480px) {
+  .sliderContainer {
+    height: 300px; /* Уменьшаем высоту для мобильных устройств */
+  }
+
+  .sliderImage {
+    width: 90%; /* Еще больше увеличиваем ширину слайда на маленьких экранах */
+  }
+
+  .prevSlide {
+    left: 2%;
+  }
+
+  .nextSlide {
+    left: 98%;
   }
 }

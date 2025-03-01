@@ -2,13 +2,11 @@ import React, { useState } from "react";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
 import styles from "./ProductCard.module.css"; // Подключаем CSS-модуль
 
-const ProductCard = ({ image, title, description, price, onAddToCart }) => {
-  const [isFavorite, setIsFavorite] = useState(false);
-
+const ProductCard = ({ image, title, description, price, onAddToCart, onToggleFavorite, isFavorite }) => {
   return (
     <div className={styles.card}>
       {/* Кнопка "Избранное" в верхнем правом углу */}
-      <button className={styles.favorite} onClick={() => setIsFavorite(!isFavorite)}>
+      <button className={styles.favorite} onClick={onToggleFavorite}>
         {isFavorite ? <FaHeart /> : <FaRegHeart />}
       </button>
       
