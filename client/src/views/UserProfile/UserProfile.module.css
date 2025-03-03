@@ -1,60 +1,87 @@
-.profileContainer {
-    max-width: 400px;
-    margin: 40px auto;
-    padding: 20px;
-    background: white;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-    text-align: center;
+.container {
+  display: flex; /* Используем Flexbox для разделения на две колонки */
+  gap: 40px; /* Расстояние между колонками */
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.profileSection {
+  flex: 1; /* Левая часть занимает доступное пространство */
+  max-width: 600px; /* Ограничиваем ширину */
+}
+
+.sideSection {
+  flex: 1; /* Правая часть занимает доступное пространство */
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.title {
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.infoBlock {
+  margin-bottom: 20px;
+}
+
+.label {
+  display: block;
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #555;
+}
+
+.text {
+  font-size: 16px;
+  color: #333;
+  margin: 0;
+}
+
+.input {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+  margin-top: 5px;
+}
+
+.input:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+.button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 20px;
+  transition: background-color 0.3s ease;
+}
+
+.button:hover {
+  background-color: #0056b3;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column; /* На мобильных колонки становятся вертикальными */
   }
-  
-  .profileContainer h2 {
-    color: #e91e63;
+
+  .profileSection,
+  .sideSection {
+    max-width: 100%; /* На мобильных занимают всю ширину */
   }
-  
-  .infoBlock {
-    margin: 15px 0;
-    text-align: left;
-  }
-  
-  .profileContainer label {
-    font-weight: bold;
-    color: #333;
-    display: block;
-  }
-  
-  .profileContainer p, .profileContainer input {
-    font-size: 16px;
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-  }
-  
-  .profileContainer input {
-    background: #f9f9f9;
-  }
-  
-  .profileContainer button {
-    background: #e91e63;
-    color: white;
-    border: none;
-    padding: 10px;
-    margin-top: 15px;
-    cursor: pointer;
-    border-radius: 5px;
-    width: 100%;
-  }
-  
-  .profileContainer button:hover {
-    background: #d81b60;
-  }
-  
-  /* 🔹 Адаптивность */
-  @media (max-width: 480px) {
-    .profileContainer {
-      width: 90%;
-      padding: 15px;
-    }
-  }
-  
+}

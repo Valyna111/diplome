@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
+import { FaAngleLeft,  FaAngleRight } from "react-icons/fa";
 import styles from "./ImageSlider.module.css";
 import Slider1 from '@/assets/images/slider1.jpg';
 import Slider2 from '@/assets/images/slider2.jpg';
@@ -64,10 +64,10 @@ const ImageSlider = () => {
 
       {/* Кнопки навигации */}
       <button className={styles.prevButton} onClick={prevSlide}>
-        <FaArrowLeft />
+        <FaAngleLeft/>
       </button>
       <button className={styles.nextButton} onClick={nextSlide}>
-        <FaArrowRight />
+        < FaAngleRight />
       </button>
     </div>
   );

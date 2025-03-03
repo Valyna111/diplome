@@ -4,7 +4,7 @@ import styles from "./UserProfile.module.css";
 const UserProfile = () => {
   const [isEditing, setIsEditing] = useState(false);
 
-  // Данные пользователя (пока заглушка, потом заменишь API-запрос)
+  // Данные пользователя (заглушка)
   const [userData, setUserData] = useState({
     name: "Иван Иванов",
     email: "ivan@example.com",
@@ -28,49 +28,78 @@ const UserProfile = () => {
   };
 
   return (
-    <div className={styles.profileContainer}>
-      <h2>Личная информация</h2>
-      
-      <div className={styles.infoBlock}>
-        <label>Имя:</label>
-        {isEditing ? (
-          <input type="text" name="name" value={editableData.name} onChange={handleChange} />
-        ) : (
-          <p>{userData.name}</p>
-        )}
+    <div className={styles.container}>
+      {/* Левая часть: информация о пользователе */}
+      <div className={styles.profileSection}>
+        <h2 className={styles.title}>Личная информация</h2>
+
+        <div className={styles.infoBlock}>
+          <label className={styles.label}>Имя:</label>
+          {isEditing ? (
+            <input
+              type="text"
+              name="name"
+              value={editableData.name}
+              onChange={handleChange}
+              className={styles.input}
+            />
+          ) : (
+            <p className={styles.text}>{userData.name}</p>
+          )}
+        </div>
+
+        <div className={styles.infoBlock}>
+          <label className={styles.label}>Email:</label>
+          {isEditing ? (
+            <input
+              type="email"
+              name="email"
+              value={editableData.email}
+              onChange={handleChange}
+              className={styles.input}
+            />
+          ) : (
+            <p className={styles.text}>{userData.email}</p>
+          )}
+        </div>
+
+        <div className={styles.infoBlock}>
+          <label className={styles.label}>Телефон:</label>
+          {isEditing ? (
+            <input
+              type="tel"
+              name="phone"
+              value={editableData.phone}
+              onChange={handleChange}
+              className={styles.input}
+            />
+          ) : (
+            <p className={styles.text}>{userData.phone}</p>
+          )}
+        </div>
+
+        <div className={styles.infoBlock}>
+          <label className={styles.label}>Логин:</label>
+          <p className={styles.text}>{userData.login} (нельзя изменить)</p>
+        </div>
+
+        <div className={styles.infoBlock}>
+          <label className={styles.label}>Дата рождения:</label>
+          <p className={styles.text}>{userData.birthdate} (нельзя изменить)</p>
+        </div>
+
+        <button
+          onClick={isEditing ? handleSave : () => setIsEditing(true)}
+          className={styles.button}
+        >
+          {isEditing ? "Сохранить" : "Редактировать"}
+        </button>
       </div>
 
-      <div className={styles.infoBlock}>
-        <label>Email:</label>
-        {isEditing ? (
-          <input type="email" name="email" value={editableData.email} onChange={handleChange} />
-        ) : (
-          <p>{userData.email}</p>
-        )}
+      {/* Правая часть: место для дополнительного контента */}
+      <div className={styles.sideSection}>
+        <p>Здесь может быть дополнительный контент.</p>
       </div>
-
-      <div className={styles.infoBlock}>
-        <label>Телефон:</label>
-        {isEditing ? (
-          <input type="tel" name="phone" value={editableData.phone} onChange={handleChange} />
-        ) : (
-          <p>{userData.phone}</p>
-        )}
-      </div>
-
-      <div className={styles.infoBlock}>
-        <label>Логин:</label>
-        <p>{userData.login} (нельзя изменить)</p>
-      </div>
-
-      <div className={styles.infoBlock}>
-        <label>Дата рождения:</label>
-        <p>{userData.birthdate} (нельзя изменить)</p>
-      </div>
-
-      <button onClick={isEditing ? handleSave : () => setIsEditing(true)}>
-        {isEditing ? "Сохранить" : "Редактировать"}
-      </button>
     </div>
   );
 };
