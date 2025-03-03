@@ -38,7 +38,7 @@ const Navbar = observer(() => {
           <Link to="/" className={styles.link} onClick={() => setMenuOpen(false)}>Главная</Link>
           <Link to="/catalog" className={styles.link} onClick={() => setMenuOpen(false)}>Каталог</Link>
           <Link to="/article" className={styles.link} onClick={() => setMenuOpen(false)}>Полезные статьи</Link>
-          <Link to="/polici" className={styles.link} onClick={() => setMenuOpen(false)}>Политика</Link>
+
         </p>
 
         {/* Иконки корзины и аккаунта */}

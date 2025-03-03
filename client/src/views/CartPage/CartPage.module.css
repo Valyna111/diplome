@@ -1,0 +1,123 @@
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .clearButton {
+    background-color: #ff4d4d;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .clearButton:hover {
+    background-color: #ff1a1a;
+  }
+  
+  .cartItems {
+    display: flex;
+    flex-wrap: wrap; /* Перенос карточек на новую строку */
+    gap: 20px; /* Расстояние между карточками */
+  }
+  
+  .cartItem {
+    flex: 1 1 calc(50% - 20px); /* Две карточки в ряд с отступом */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    box-sizing: border-box; /* Учитываем padding в ширине */
+  }
+  
+  .controls {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-top: 10px;
+  }
+  
+  .removeButton {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #ff4d4d;
+    font-size: 20px;
+  }
+  
+  .removeButton:hover {
+    color: #ff1a1a;
+  }
+  
+  .counter {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .counter button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .counter button:hover {
+    background-color: #0056b3;
+  }
+  
+  .counter span {
+    font-size: 18px;
+    font-weight: bold;
+  }
+  
+  .footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid #ddd;
+  }
+  
+  .totalPrice {
+    font-size: 24px;
+    font-weight: bold;
+  }
+  
+  .checkoutButton {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    font-size: 18px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .checkoutButton:hover {
+    background-color: #218838;
+  }
+  
+  /* Адаптивность */
+  @media (max-width: 768px) {
+    .cartItem {
+      flex: 1 1 100%; /* Одна карточка в ряд на мобильных */
+    }
+  }

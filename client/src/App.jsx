@@ -9,13 +9,16 @@ import Article from "@/routs/Article";
 import UserProfile from "@/routs/UserProfile";
 import Favorite from "@/routs/Favorite";
 import LoyaltyPage from "@/routs/Loyalty";
-
+import CreditPage from "@/routs/CreditCard"
+import Purchase from "@/routs/PurchaseHistory"
+import Cart from "@/routs/CartPage"
 import CatalogCategories from "@/views/Catalog/CatalogCategories";
-
 import Navbar from "@/components/NavBar/NavBar";
 import Footer from "@/components/Footer/Footer";
 import AuthTestButtons from "@/views/Test/AuthTestButtons";
 import AuthModal from "./views/Modals/Auth/AuthModal";
+
+
 
 
 let rootStore;
@@ -36,6 +39,9 @@ const App = () => {
                   <Route path="/profile/*" element={<UserProfile/>} />
                   <Route path="/favorites" element={<Favorite/>} />
                   <Route path="/loyalty-program" element={<LoyaltyPage/>} />
+                  <Route path="/payment-card" element={<CreditPage/>} />
+                  <Route path="/order-history" element={<Purchase/>} />
+                  <Route path="/cart" element={<Cart/>} />
                   <Route path="/test" element={<AuthTestButtons/>} />
                   <Route path="*" element={<Navigate to="/main" replace={true} />} />
                 </Routes>

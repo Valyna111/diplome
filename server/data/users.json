@@ -22,5 +22,13 @@
     "email": "max@mail.ru",
     "phone": "+375 (33) 630-84-21",
     "password": "$2b$10$JY6eL.pBYH8RDxeKLrg96uLEz.BE7nf1f.015drSGbDbMFyNbXZA."
+  },
+  {
+    "id": 4,
+    "firstName": "лиза",
+    "lastName": "волынец",
+    "email": "volynecelizaveta110@gmail.com",
+    "phone": "+375 (29) 764-76-46",
+    "password": "$2b$10$xdUpcQxCFEnyg86gX8YevO4M09dYJmv2dDnd5LeMfrFmCBC7pvI82"
   }
 ]

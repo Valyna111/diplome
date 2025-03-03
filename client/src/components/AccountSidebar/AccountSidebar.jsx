@@ -16,7 +16,6 @@ const AccountSidebar = observer(({ isAuthenticated, isOpen, onClose }) => {
           <Link to="/loyalty-program" className={styles.accountLink}>Программа лояльности</Link>
           <Link to="/payment-card" className={styles.accountLink}>Карта для оплаты</Link>
           <Link to="/order-history" className={styles.accountLink}>История покупок</Link>
-          <Link to="/reviews" className={styles.accountLink}>Отзывы</Link>
           <button className={styles.logoutButton} onClick={async () => { await rootStore.authStore.logout(); onClose(); }}>Выйти</button>
       </div>
     </>

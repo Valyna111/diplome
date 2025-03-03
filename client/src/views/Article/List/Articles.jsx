@@ -45,6 +45,20 @@ const articles = [
     description: "Некоторые цветы плохо уживаются друг с другом – узнайте какие.",
     link: "/article/6"
   },
+  {
+    id: 7,
+    image: "/images/slider3.jpg",
+    title: "Какие цветы нельзя ставить рядом",
+    description: "Некоторые цветы плохо уживаются друг с другом – узнайте какие.",
+    link: "/article/6"
+  },
+  {
+    id: 8,
+    image: "/images/slider3.jpg",
+    title: "Какие цветы нельзя ставить рядом",
+    description: "Некоторые цветы плохо уживаются друг с другом – узнайте какие.",
+    link: "/article/6"
+  },
 ];
 
 const Articles = () => {

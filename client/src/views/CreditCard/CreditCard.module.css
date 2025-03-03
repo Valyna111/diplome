@@ -1,0 +1,134 @@
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  text-align: left; /* Сдвигаем всё влево */
+}
+
+.cardList {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.card {
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 20px;
+  width: 100%;
+  max-width: 400px;
+  position: relative;
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.cardNumber {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.addButton {
+  background-color: #e91e63;
+  color: white;
+  border: none;
+  padding: 15px 30px;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+.deleteButton {
+  background-color: #ff4d4d;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  font-size: 14px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.formOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.formContainer {
+  background-color: white;
+  padding: 30px;
+  border-radius: 10px;
+  width: 100%;
+  max-width: 400px;
+}
+
+.formGroup {
+  margin-bottom: 20px;
+}
+
+.formGroup label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.formGroup input {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+.formActions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.cancelButton {
+  background-color: #ccc;
+  color: black;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.submitButton {
+  background-color: #e91e63;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  .container {
+    padding: 10px;
+  }
+
+  .card {
+    max-width: 100%;
+  }
+
+  .formContainer {
+    padding: 20px;
+  }
+}
