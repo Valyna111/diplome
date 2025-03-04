@@ -12,11 +12,19 @@ import LoyaltyPage from "@/routs/Loyalty";
 import CreditPage from "@/routs/CreditCard"
 import Purchase from "@/routs/PurchaseHistory"
 import Cart from "@/routs/CartPage"
+import Client from "@/routs/ClientsList"
+import Order from "@/routs/OrderHistory";
+import Sales from "@/routs/SalesReport";
+import Delivery from "@/routs/Deliveries";
+
 import CatalogCategories from "@/views/Catalog/CatalogCategories";
 import Navbar from "@/components/NavBar/NavBar";
 import Footer from "@/components/Footer/Footer";
 import AuthTestButtons from "@/views/Test/AuthTestButtons";
 import AuthModal from "./views/Modals/Auth/AuthModal";
+
+
+
 
 
 
@@ -43,6 +51,10 @@ const App = () => {
                   <Route path="/order-history" element={<Purchase/>} />
                   <Route path="/cart" element={<Cart/>} />
                   <Route path="/test" element={<AuthTestButtons/>} />
+                  <Route path="/clientlist/*" element={<Client/>} />
+                  <Route path="/orders" element={<Order/>} />
+                  <Route path="/sales" element={<Sales/>} />
+                  <Route path="/delivery" element={<Delivery/>} />
                   <Route path="*" element={<Navigate to="/main" replace={true} />} />
                 </Routes>
               </main>

@@ -30,5 +30,13 @@
     "email": "volynecelizaveta110@gmail.com",
     "phone": "+375 (29) 764-76-46",
     "password": "$2b$10$xdUpcQxCFEnyg86gX8YevO4M09dYJmv2dDnd5LeMfrFmCBC7pvI82"
+  },
+  {
+    "id": 5,
+    "firstName": "жаба",
+    "lastName": "болотная",
+    "email": "volynecelizaveta@gmail.com",
+    "phone": "+375 (29) 764-76-46",
+    "password": "$2b$10$hmbIzqnys6Plnbw/3ux7hOx2A9BrTCbojpKeNxcmZnWLnBlJzuUam"
   }
 ]
