@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
-import styles from "./ProductCard.module.css"; // Подключаем CSS-модуль
+import styles from "./ProductCard.module.css"; 
 
 const ProductCard = ({ image, title, description, price, onAddToCart, onToggleFavorite, isFavorite }) => {
   return (

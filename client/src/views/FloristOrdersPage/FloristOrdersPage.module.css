@@ -1,0 +1,134 @@
+/* Основные стили контейнера */
+.container {
+    display: flex;
+    gap: 20px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    min-height: 100vh;
+  }
+  
+  /* Левая колонка (список заказов) */
+  .leftColumn {
+    flex: 1;
+    max-width: 300px;
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  .leftColumn h2 {
+    margin-top: 0;
+    font-size: 24px;
+    color: #333;
+  }
+  
+  /* Список заказов */
+  .ordersList {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  /* Карточка заказа */
+  .orderCard {
+    padding: 15px;
+    background-color: #f1f1f1;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .orderCard:hover {
+    background-color: #e1e1e1;
+  }
+  
+  .orderCard h3 {
+    margin: 0;
+    font-size: 18px;
+    color: #333;
+  }
+  
+  .orderCard p {
+    margin: 5px 0;
+    font-size: 14px;
+    color: #555;
+  }
+  
+  /* Правая колонка (детали заказа) */
+  .rightColumn {
+    flex: 2;
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  .rightColumn h2 {
+    margin-top: 0;
+    font-size: 24px;
+    color: #333;
+  }
+  
+  .rightColumn h3 {
+    font-size: 20px;
+    color: #333;
+  }
+  
+  /* Состав заказа */
+  .itemsList {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .itemCard {
+    padding: 10px;
+    background-color: #f1f1f1;
+    border-radius: 8px;
+  }
+  
+  .itemCard p {
+    margin: 5px 0;
+    font-size: 14px;
+    color: #555;
+  }
+  
+  /* Кнопки изменения статуса */
+  .statusButtons {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+  }
+  
+  .button:hover:not(:disabled) {
+    background-color: #0056b3;
+  }
+  
+  /* Адаптивность */
+  @media (max-width: 768px) {
+    .container {
+      flex-direction: column;
+      padding: 10px;
+    }
+  
+    .leftColumn {
+      max-width: 100%;
+    }
+  }

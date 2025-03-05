@@ -16,12 +16,23 @@ import Client from "@/routs/ClientsList"
 import Order from "@/routs/OrderHistory";
 import Sales from "@/routs/SalesReport";
 import Delivery from "@/routs/Deliveries";
+import ConstuctorArt from "@/routs/ArticleConstructor"
+import Promotion from "@/routs/PromotionConstructor";
+import PromotionPage from "@/routs/PromotionDetail";
+import FloristOrders from "@/routs/FloristOrdersPage";
+import EditStock from "@/routs/EditStockPage";
+import EditCatalog from "@/routs/EditCatalogPage";
 
 import CatalogCategories from "@/views/Catalog/CatalogCategories";
 import Navbar from "@/components/NavBar/NavBar";
 import Footer from "@/components/Footer/Footer";
 import AuthTestButtons from "@/views/Test/AuthTestButtons";
 import AuthModal from "./views/Modals/Auth/AuthModal";
+
+
+
+
+
 
 
 
@@ -55,6 +66,12 @@ const App = () => {
                   <Route path="/orders" element={<Order/>} />
                   <Route path="/sales" element={<Sales/>} />
                   <Route path="/delivery" element={<Delivery/>} />
+                  <Route path="/article-constructor" element={<ConstuctorArt/>} />
+                  <Route path="/promotion-constructor" element={<Promotion/>} />
+                  <Route path="/promotion-page" element={<PromotionPage/>} />
+                  <Route path="/florist-orders" element={<FloristOrders/>} />
+                  <Route path="/florist-edit-stock" element={<EditStock/>} />
+                  <Route path="/edit-catalog" element={<EditCatalog/>} />
                   <Route path="*" element={<Navigate to="/main" replace={true} />} />
                 </Routes>
               </main>
