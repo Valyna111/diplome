@@ -1,0 +1,90 @@
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    text-align: left;
+  }
+  
+  h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #333;
+  }
+  
+  .deliveriesGrid {
+    display: flex;
+    flex-wrap: wrap; /* Перенос карточек на новую строку */
+    gap: 20px; /* Расстояние между карточками */
+  }
+  
+  .deliveryCard {
+    flex: 1 1 calc(33.333% - 40px); /* Три карточки в ряд с учётом отступов */
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box; /* Учитываем padding в ширине */
+  }
+  
+  .deliveryInfo {
+    margin-bottom: 15px;
+  }
+  
+  .deliveryInfo p {
+    margin: 5px 0;
+    font-size: 16px;
+    color: #555;
+  }
+  
+  .buttons {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .takeButton,
+  .rejectButton {
+    padding: 10px 20px;
+    font-size: 14px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .takeButton {
+    background-color: #28a745;
+    color: white;
+  }
+  
+  .takeButton:hover {
+    background-color: #218838;
+  }
+  
+  .rejectButton {
+    background-color: #dc3545;
+    color: white;
+  }
+  
+  .rejectButton:hover {
+    background-color: #c82333;
+  }
+  
+  .statusMessage {
+    font-size: 14px;
+    color: #555;
+    margin: 0;
+  }
+  
+  /* Адаптивность */
+  @media (max-width: 768px) {
+    .deliveryCard {
+      flex: 1 1 calc(50% - 20px); /* Две карточки в ряд на планшетах */
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .deliveryCard {
+      flex: 1 1 100%; /* Одна карточка в ряд на мобильных */
+    }
+  }

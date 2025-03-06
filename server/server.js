@@ -5,12 +5,40 @@ const bcrypt = require('bcrypt');
 const fs = require('fs');
 const path = require('path');
 const cors = require('cors'); 
+const {Pool} = require('pg')
+const authRoutes = require('./routes/auth');
+const { ApolloServer } = require('apollo-server-express');
+const typeDefs = require("./graphql/schema");
+const resolvers = require("./graphql/resolvers");
 
 const app = express();
 app.use(express.json());
 app.use(cookieParser());
 
 const DATA_PATH = path.join(__dirname, 'data');
+
+const pool = new Pool({
+  user :'postgres',
+  host : 'localhost',
+  database: 'flowerShop',
+  password:'112233',
+  port:'5432'
+})
+pool.connect()
+    .then(() => console.log(' Подключено к PostgreSQL'))
+    .catch(err => console.error(' Ошибка подключения:', err));
+
+    const server = new ApolloServer({
+      typeDefs,
+      resolvers,
+      context: ({ req }) => ({ pool }), // Передаем pool в контекст
+    });
+
+    server.start().then(() => {
+      server.applyMiddleware({ app, path: '/graphql' });
+    });
+
+
 
 app.use(
     cors({
@@ -129,4 +157,5 @@ app.post('/logout', (req, res) => {
 const PORT = 3000;
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
+  console.log(`GraphQL endpoint: http://localhost:${PORT}${server.graphqlPath}`);
 });
