@@ -151,7 +151,30 @@ CREATE TABLE public.wishlist (
                                  bouquetid integer NOT NULL
 );
 ALTER TABLE public.wishlist OWNER TO postgres;
-
+CREATE TABLE IF NOT EXISTS public.events
+(
+    events integer NOT NULL DEFAULT nextval('events_events_seq'::regclass),
+    description text COLLATE pg_catalog."default" NOT NULL,
+    image text COLLATE pg_catalog."default" NOT NULL,
+    bouqueteid integer NOT NULL,
+    CONSTRAINT events_pkey PRIMARY KEY (events),
+    CONSTRAINT bouqueteid FOREIGN KEY (bouqueteid)
+        REFERENCES public.buoquets (bouquetid) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+)
+CREATE TABLE IF NOT EXISTS public.articles
+(
+    arcticleid integer NOT NULL DEFAULT nextval('articles_arcticleid_seq'::regclass),
+    headerarct text COLLATE pg_catalog."default" NOT NULL,
+    image1 text COLLATE pg_catalog."default",
+    image2 text COLLATE pg_catalog."default",
+    image3 text COLLATE pg_catalog."default",
+    description1 text COLLATE pg_catalog."default",
+    description2 text COLLATE pg_catalog."default",
+    description3 text COLLATE pg_catalog."default",
+    CONSTRAINT articles_pkey PRIMARY KEY (arcticleid)
+)
 
 ALTER TABLE ONLY public.flowers_in_buoquets
     ADD CONSTRAINT bouqueteid FOREIGN KEY (bouquetid) REFERENCES public.buoquets(bouquetid) NOT VALID;

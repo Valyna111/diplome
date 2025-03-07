@@ -79,7 +79,7 @@ const ItemInput = () => {
         <div className={s.buttonsContainer}>
           <Button
             type="primary"
-            placeholder="Добавить цветок"
+            placeholder="Добавить компоненты"
             onClick={toggleAddItemForm}
             className={s.button}
           />
@@ -94,10 +94,10 @@ const ItemInput = () => {
         {/* Форма добавления цветка */}
         {showAddItemForm && (
           <div className={s.formContainer}>
-            <h2 className={s.formTitle}>Добавить цветок</h2>
+            <h2 className={s.formTitle}>Добавить конпонент</h2>
             <form className={s.form}>
               <Input
-                placeholder="Название цветка"
+                placeholder="Название компонента"
                 className={s.input}
               />
               <Input
