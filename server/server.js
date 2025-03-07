@@ -6,7 +6,6 @@ const fs = require('fs');
 const path = require('path');
 const cors = require('cors'); 
 const {Pool} = require('pg')
-const authRoutes = require('./routes/auth');
 const { ApolloServer } = require('apollo-server-express');
 const typeDefs = require("./graphql/schema");
 const resolvers = require("./graphql/resolvers");
@@ -21,17 +20,17 @@ const pool = new Pool({
   user :'postgres',
   host : 'localhost',
   database: 'flowerShop',
-  password:'112233',
+  password: process.env.DB_PASSWORD,
   port:'5432'
 })
-pool.connect()
-    .then(() => console.log(' Подключено к PostgreSQL'))
+pool.connect(undefined)
+    .then(() => console.log(' Подключено к PostgresSQL'))
     .catch(err => console.error(' Ошибка подключения:', err));
 
     const server = new ApolloServer({
       typeDefs,
       resolvers,
-      context: ({ req }) => ({ pool }), // Передаем pool в контекст
+      context: () => ({ pool }), // Передаем pool в контекст
     });
 
     server.start().then(() => {

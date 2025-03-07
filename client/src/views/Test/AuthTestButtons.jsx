@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
 import { observer } from 'mobx-react-lite';
 import StoreContext from '@/store/StoreContext';
+import TypeTestButtons from "@/views/Test/TypeTestButtons";
 
 const AuthTestButtons = observer(() => {
   const rootStore = useContext(StoreContext);
@@ -53,6 +54,7 @@ const AuthTestButtons = observer(() => {
 
   return (
     <div>
+      <TypeTestButtons />
       <h2>Тестирование аутентификации</h2>
       <button onClick={handleRegister}>Регистрация</button>
       <button onClick={handleLogin}>Вход</button>
