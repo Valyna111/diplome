@@ -3,6 +3,8 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 import s from './App.module.css'
 import RootStore from "@/store/RootStore";
 import StoreContext from "@/store/StoreContext";
+import { ApolloProvider } from '@apollo/client';
+import client from './apolloClient';
 
 import Main from "@/routs/Main";
 import Article from "@/routs/Article";
@@ -29,56 +31,47 @@ import Footer from "@/components/Footer/Footer";
 import AuthTestButtons from "@/views/Test/AuthTestButtons";
 import AuthModal from "./views/Modals/Auth/AuthModal";
 
-
-
-
-
-
-
-
-
-
-
-
 let rootStore;
 
 const App = () => {
   if (!rootStore) rootStore = new RootStore();
   return (
-    <StoreContext.Provider value={rootStore}>
-        <div className={s.conteiner}>
-          <Router>
-            <AuthModal />
-            <Navbar/>
-              <main className={s.main}>
-                <Routes>
-                  <Route path="/main/*" element={<Main />} />
-                  <Route path="/catalog" element={<CatalogCategories/>} />
-                  <Route path="/article/*" element={<Article/>} />
-                  <Route path="/profile/*" element={<UserProfile/>} />
-                  <Route path="/favorites" element={<Favorite/>} />
-                  <Route path="/loyalty-program" element={<LoyaltyPage/>} />
-                  <Route path="/payment-card" element={<CreditPage/>} />
-                  <Route path="/order-history" element={<Purchase/>} />
-                  <Route path="/cart" element={<Cart/>} />
-                  <Route path="/test" element={<AuthTestButtons/>} />
-                  <Route path="/clientlist/*" element={<Client/>} />
-                  <Route path="/orders" element={<Order/>} />
-                  <Route path="/sales" element={<Sales/>} />
-                  <Route path="/delivery" element={<Delivery/>} />
-                  <Route path="/article-constructor" element={<ConstuctorArt/>} />
-                  <Route path="/promotion-constructor" element={<Promotion/>} />
-                  <Route path="/promotion-page" element={<PromotionPage/>} />
-                  <Route path="/florist-orders" element={<FloristOrders/>} />
-                  <Route path="/florist-edit-stock" element={<EditStock/>} />
-                  <Route path="/edit-catalog" element={<EditCatalog/>} />
-                  <Route path="*" element={<Navigate to="/main" replace={true} />} />
-                </Routes>
-              </main>
-            <Footer/>
-          </Router>
-        </div>
-    </StoreContext.Provider>
+      <ApolloProvider client={client}>
+        <StoreContext.Provider value={rootStore}>
+            <div className={s.conteiner}>
+              <Router>
+                <AuthModal />
+                <Navbar/>
+                  <main className={s.main}>
+                    <Routes>
+                      <Route path="/main/*" element={<Main />} />
+                      <Route path="/catalog" element={<CatalogCategories/>} />
+                      <Route path="/article/*" element={<Article/>} />
+                      <Route path="/profile/*" element={<UserProfile/>} />
+                      <Route path="/favorites" element={<Favorite/>} />
+                      <Route path="/loyalty-program" element={<LoyaltyPage/>} />
+                      <Route path="/payment-card" element={<CreditPage/>} />
+                      <Route path="/order-history" element={<Purchase/>} />
+                      <Route path="/cart" element={<Cart/>} />
+                      <Route path="/test" element={<AuthTestButtons/>} />
+                      <Route path="/clientlist/*" element={<Client/>} />
+                      <Route path="/orders" element={<Order/>} />
+                      <Route path="/sales" element={<Sales/>} />
+                      <Route path="/delivery" element={<Delivery/>} />
+                      <Route path="/article-constructor" element={<ConstuctorArt/>} />
+                      <Route path="/promotion-constructor" element={<Promotion/>} />
+                      <Route path="/promotion-page" element={<PromotionPage/>} />
+                      <Route path="/florist-orders" element={<FloristOrders/>} />
+                      <Route path="/florist-edit-stock" element={<EditStock/>} />
+                      <Route path="/edit-catalog" element={<EditCatalog/>} />
+                      <Route path="*" element={<Navigate to="/main" replace={true} />} />
+                    </Routes>
+                  </main>
+                <Footer/>
+              </Router>
+            </div>
+        </StoreContext.Provider>
+      </ApolloProvider>
   );
 };
 
