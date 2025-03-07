@@ -28,6 +28,7 @@ import Navbar from "@/components/NavBar/NavBar";
 import Footer from "@/components/Footer/Footer";
 import AuthTestButtons from "@/views/Test/AuthTestButtons";
 import AuthModal from "./views/Modals/Auth/AuthModal";
+import Item from "./routs/ItemInput";
 
 
 
@@ -72,6 +73,7 @@ const App = () => {
                   <Route path="/florist-orders" element={<FloristOrders/>} />
                   <Route path="/florist-edit-stock" element={<EditStock/>} />
                   <Route path="/edit-catalog" element={<EditCatalog/>} />
+                  <Route path="/item-input" element={<Item/>} />
                   <Route path="*" element={<Navigate to="/main" replace={true} />} />
                 </Routes>
               </main>

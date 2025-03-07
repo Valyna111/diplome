@@ -1,0 +1,223 @@
+.container {
+  display: flex;
+  gap: 200px;
+  padding: 20px;
+  height: 100vh; /* Занимаем всю высоту экрана */
+}
+
+/* Левая часть: Формы */
+.leftSide {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 600px; /* Ограничиваем ширину форм */
+}
+
+.buttonsContainer {
+  display: flex;
+  gap: 10px;
+}
+
+.button {
+  width: 100%;
+  text-align: center;
+}
+
+.formContainer {
+  width:600px;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.formTitle {
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.input {
+  width: 575px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+.submitButton {
+  margin-top: 10px;
+}
+
+.fileInputContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.fileInputLabel {
+  display: inline-block;
+  padding: 10px;
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  text-align: center;
+  font-size: 14px;
+  color: #333;
+}
+
+.fileInput {
+  display: none;
+}
+
+.previewImage {
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
+  margin-top: 10px;
+}
+
+/* Правая часть: Список компонентов */
+.rightSide {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width:1000px; /* Ограничиваем ширину списка */
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+}
+
+.componentsTitle {
+  font-size: 20px;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.searchInput {
+  width: 100%;
+  margin-bottom: 15px;
+}
+
+.componentsList {
+  flex: 1;
+  overflow-y: auto; /* Прокрутка списка */
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.componentItem {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 15px;
+  background-color: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  transition: box-shadow 0.3s ease;
+}
+
+.componentItem:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.componentInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.componentName {
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+}
+
+.componentPrice {
+  font-size: 14px;
+  color: #666;
+}
+
+.componentControls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.quantityInput {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.checkbox {
+  display: none;
+}
+
+.checkboxCustom {
+  width: 16px;
+  height: 16px;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+  position: relative;
+  transition: background-color 0.3s ease;
+}
+
+.checkbox:checked + .checkboxCustom {
+  background-color: #007bff;
+  border-color: #007bff;
+}
+
+.checkboxCustom::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 8px;
+  height: 8px;
+  background-color: white;
+  border-radius: 2px;
+  transform: translate(-50%, -50%) scale(0);
+  transition: transform 0.3s ease;
+}
+
+.checkbox:checked + .checkboxCustom::after {
+  transform: translate(-50%, -50%) scale(1);
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .leftSide,
+  .rightSide {
+    max-width: 100%;
+  }
+
+  .rightSide {
+    margin-top: 20px;
+  }
+}
