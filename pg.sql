@@ -1,218 +1,243 @@
--- Таблица Item
-CREATE TABLE public."Item" (
-                               itemid SERIAL PRIMARY KEY,
-                               itemname character varying(50) NOT NULL,
-                               typeid integer NOT NULL,
-                               cost money NOT NULL
+-- Таблица item
+CREATE TABLE public.item (
+                             id SERIAL PRIMARY KEY,
+                             name VARCHAR(50) NOT NULL,
+                             type_id INT NOT NULL,
+                             cost MONEY NOT NULL
 );
-ALTER TABLE public."Item" OWNER TO postgres;
+ALTER TABLE public.item OWNER TO postgres;
 
 -- Таблица bonuses
 CREATE TABLE public.bonuses (
-                                bonusid SERIAL PRIMARY KEY,
-                                bonus integer,
-                                userid integer
+                                id SERIAL PRIMARY KEY,
+                                bonus INT,
+                                user_id INT
 );
 ALTER TABLE public.bonuses OWNER TO postgres;
 
--- Таблица buoquets
-CREATE TABLE public.buoquets (
-                                 bouquetid SERIAL PRIMARY KEY,
-                                 bouquetname character varying(50) NOT NULL,
-                                 category integer NOT NULL,
-                                 price money NOT NULL,
-                                 image text NOT NULL,
-                                 description character varying(250) NOT NULL,
-                                 amount integer NOT NULL,
-                                 sale integer,
-                                 "secondImage" text
+-- Таблица bouquets
+CREATE TABLE public.bouquets (
+                                 id SERIAL PRIMARY KEY,
+                                 name VARCHAR(50) NOT NULL,
+                                 category_id INT NOT NULL,
+                                 price MONEY NOT NULL,
+                                 image TEXT NOT NULL,
+                                 description VARCHAR(250) NOT NULL,
+                                 amount INT NOT NULL,
+                                 sale INT,
+                                 second_image TEXT
 );
-ALTER TABLE public.buoquets OWNER TO postgres;
+ALTER TABLE public.bouquets OWNER TO postgres;
 
 -- Таблица cart
 CREATE TABLE public.cart (
-                             cartid SERIAL PRIMARY KEY,
-                             userid integer NOT NULL,
-                             bouquetid integer NOT NULL
+                             id SERIAL PRIMARY KEY,
+                             user_id INT NOT NULL,
+                             bouquet_id INT NOT NULL
 );
 ALTER TABLE public.cart OWNER TO postgres;
 
 -- Таблица category
 CREATE TABLE public.category (
-                                 categoryid SERIAL PRIMARY KEY,
-                                 category character varying(50) NOT NULL
+                                 id SERIAL PRIMARY KEY,
+                                 name VARCHAR(50) NOT NULL
 );
 ALTER TABLE public.category OWNER TO postgres;
 
--- Таблица creditinfo
-CREATE TABLE public.creditinfo (
-                                   creditid SERIAL PRIMARY KEY,
-                                   cardnumber integer NOT NULL,
-                                   cvv integer NOT NULL,
-                                   userid integer NOT NULL,
-                                   ownername character varying(50) NOT NULL
+-- Таблица credit_info
+CREATE TABLE public.credit_info (
+                                    id SERIAL PRIMARY KEY,
+                                    card_number INT NOT NULL,
+                                    cvv INT NOT NULL,
+                                    user_id INT NOT NULL,
+                                    owner_name VARCHAR(50) NOT NULL
 );
-ALTER TABLE public.creditinfo OWNER TO postgres;
+ALTER TABLE public.credit_info OWNER TO postgres;
 
--- Таблица diliverymaninfo
-CREATE TABLE public.diliverymaninfo (
-                                        diliverymanid SERIAL PRIMARY KEY,
-                                        userid integer NOT NULL,
-                                        ocpid integer NOT NULL
+-- Таблица deliveryman_info
+CREATE TABLE public.deliveryman_info (
+                                         id SERIAL PRIMARY KEY,
+                                         user_id INT NOT NULL,
+                                         ocp_id INT NOT NULL
 );
-ALTER TABLE public.diliverymaninfo OWNER TO postgres;
+ALTER TABLE public.deliveryman_info OWNER TO postgres;
 
 -- Таблица feedback
 CREATE TABLE public.feedback (
-                                 feedbackid SERIAL PRIMARY KEY,
-                                 orderid integer NOT NULL,
-                                 userid integer NOT NULL,
-                                 text character varying(300) NOT NULL,
-                                 score integer NOT NULL
+                                 id SERIAL PRIMARY KEY,
+                                 order_id INT NOT NULL,
+                                 user_id INT NOT NULL,
+                                 text VARCHAR(300) NOT NULL,
+                                 score INT NOT NULL
 );
 ALTER TABLE public.feedback OWNER TO postgres;
 
--- Таблица flowers_in_buoquets
-CREATE TABLE public.flowers_in_buoquets (
-                                            fbid SERIAL PRIMARY KEY,
-                                            flowerid integer NOT NULL,
-                                            amount integer NOT NULL,
-                                            bouquetid integer NOT NULL
+-- Таблица flowers_in_bouquets
+CREATE TABLE public.flowers_in_bouquets (
+                                            id SERIAL PRIMARY KEY,
+                                            flower_id INT NOT NULL,
+                                            amount INT NOT NULL,
+                                            bouquet_id INT NOT NULL
 );
-ALTER TABLE public.flowers_in_buoquets OWNER TO postgres;
+ALTER TABLE public.flowers_in_bouquets OWNER TO postgres;
 
 -- Таблица ocp
 CREATE TABLE public.ocp (
-                            ocpid SERIAL PRIMARY KEY,
-                            address character varying(100) NOT NULL
+                            id SERIAL PRIMARY KEY,
+                            address VARCHAR(100) NOT NULL
 );
 ALTER TABLE public.ocp OWNER TO postgres;
 
--- Таблица ocpitem
-CREATE TABLE public.ocpitem (
-                                ocpitemd SERIAL PRIMARY KEY,
-                                itemid integer NOT NULL,
-                                amount integer NOT NULL,
-                                ocpid integer NOT NULL
+-- Таблица ocp_item
+CREATE TABLE public.ocp_item (
+                                 id SERIAL PRIMARY KEY,
+                                 item_id INT NOT NULL,
+                                 amount INT NOT NULL,
+                                 ocp_id INT NOT NULL
 );
-ALTER TABLE public.ocpitem OWNER TO postgres;
+ALTER TABLE public.ocp_item OWNER TO postgres;
 
 -- Таблица orders
 CREATE TABLE public.orders (
-                               orderid SERIAL PRIMARY KEY,
-                               userid integer NOT NULL,
-                               bouquetid integer NOT NULL,
-                               orderdate date NOT NULL,
-                               price money NOT NULL,
-                               statusid integer NOT NULL,
-                               customeraddress character varying(100) NOT NULL,
-                               delivery integer NOT NULL
+                               id SERIAL PRIMARY KEY,
+                               user_id INT NOT NULL,
+                               bouquet_id INT NOT NULL,
+                               order_date DATE NOT NULL,
+                               price MONEY NOT NULL,
+                               status_id INT NOT NULL,
+                               customer_address VARCHAR(100) NOT NULL,
+                               delivery_id INT NOT NULL
 );
 ALTER TABLE public.orders OWNER TO postgres;
 
 -- Таблица role
 CREATE TABLE public.role (
-                             roleid SERIAL PRIMARY KEY,
-                             role character varying(50) NOT NULL
+                             id SERIAL PRIMARY KEY,
+                             name VARCHAR(50) NOT NULL
 );
 ALTER TABLE public.role OWNER TO postgres;
 
 -- Таблица status
 CREATE TABLE public.status (
-                               statusid SERIAL PRIMARY KEY,
-                               status character varying(50) NOT NULL
+                               id SERIAL PRIMARY KEY,
+                               name VARCHAR(50) NOT NULL
 );
 ALTER TABLE public.status OWNER TO postgres;
 
 -- Таблица type
 CREATE TABLE public.type (
-                             typeid SERIAL PRIMARY KEY,
-                             name character varying(100) NOT NULL
+                             id SERIAL PRIMARY KEY,
+                             name VARCHAR(100) NOT NULL
 );
 ALTER TABLE public.type OWNER TO postgres;
 
 -- Таблица users
 CREATE TABLE public.users (
-                              userid SERIAL PRIMARY KEY,
-                              username character varying(50) NOT NULL,
-                              passhash text,
-                              email character varying(100),
-                              phone character varying(20),
-                              role integer DEFAULT 1 NOT NULL,
-                              dateofbirth date,
-                              usersyrname character varying NOT NULL
+                              id SERIAL PRIMARY KEY,
+                              username VARCHAR(50) NOT NULL,
+                              passhash TEXT,
+                              email VARCHAR(100),
+                              phone VARCHAR(20),
+                              role_id INT DEFAULT 1 NOT NULL,
+                              date_of_birth DATE,
+                              surname VARCHAR(50) NOT NULL
 );
 ALTER TABLE public.users OWNER TO postgres;
 
 -- Таблица wishlist
 CREATE TABLE public.wishlist (
-                                 wishlist SERIAL PRIMARY KEY,
-                                 userid integer NOT NULL,
-                                 bouquetid integer NOT NULL
+                                 id SERIAL PRIMARY KEY,
+                                 user_id INT NOT NULL,
+                                 bouquet_id INT NOT NULL
 );
 ALTER TABLE public.wishlist OWNER TO postgres;
-CREATE TABLE IF NOT EXISTS public.events
-(
-    events integer NOT NULL DEFAULT nextval('events_events_seq'::regclass),
-    description text COLLATE pg_catalog."default" NOT NULL,
-    image text COLLATE pg_catalog."default" NOT NULL,
-    bouqueteid integer NOT NULL,
-    CONSTRAINT events_pkey PRIMARY KEY (events),
-    CONSTRAINT bouqueteid FOREIGN KEY (bouqueteid)
-        REFERENCES public.buoquets (bouquetid) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION
-)
-CREATE TABLE IF NOT EXISTS public.articles
-(
-    arcticleid integer NOT NULL DEFAULT nextval('articles_arcticleid_seq'::regclass),
-    headerarct text COLLATE pg_catalog."default" NOT NULL,
-    image1 text COLLATE pg_catalog."default",
-    image2 text COLLATE pg_catalog."default",
-    image3 text COLLATE pg_catalog."default",
-    description1 text COLLATE pg_catalog."default",
-    description2 text COLLATE pg_catalog."default",
-    description3 text COLLATE pg_catalog."default",
-    CONSTRAINT articles_pkey PRIMARY KEY (arcticleid)
-)
 
-ALTER TABLE ONLY public.flowers_in_buoquets
-    ADD CONSTRAINT bouqueteid FOREIGN KEY (bouquetid) REFERENCES public.buoquets(bouquetid) NOT VALID;
+-- Таблица events
+CREATE TABLE IF NOT EXISTS public.events (
+                                             id SERIAL PRIMARY KEY,
+                                             description TEXT NOT NULL,
+                                             image TEXT NOT NULL,
+                                             bouquet_id INT NOT NULL
+);
+
+-- Таблица articles
+CREATE TABLE IF NOT EXISTS public.articles (
+                                               id SERIAL PRIMARY KEY,
+                                               header TEXT NOT NULL,
+                                               image1 TEXT,
+                                               image2 TEXT,
+                                               image3 TEXT,
+                                               description1 TEXT,
+                                               description2 TEXT,
+                                               description3 TEXT
+);
+CREATE TABLE public.user_sessions (
+                                      id SERIAL PRIMARY KEY,
+                                      user_id INT NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+                                      session_token TEXT NOT NULL,
+                                      created_at TIMESTAMP DEFAULT NOW(),
+                                      expires_at TIMESTAMP NOT NULL
+);
+-- Внешние ключи
+ALTER TABLE ONLY public.flowers_in_bouquets
+    ADD CONSTRAINT fk_bouquet FOREIGN KEY (bouquet_id) REFERENCES public.bouquets(id);
+
 ALTER TABLE ONLY public.cart
-    ADD CONSTRAINT bouquetid FOREIGN KEY (bouquetid) REFERENCES public.buoquets(bouquetid);
+    ADD CONSTRAINT fk_bouquet FOREIGN KEY (bouquet_id) REFERENCES public.bouquets(id);
+
 ALTER TABLE ONLY public.wishlist
-    ADD CONSTRAINT bouquetid FOREIGN KEY (bouquetid) REFERENCES public.buoquets(bouquetid);
+    ADD CONSTRAINT fk_bouquet FOREIGN KEY (bouquet_id) REFERENCES public.bouquets(id);
+
 ALTER TABLE ONLY public.orders
-    ADD CONSTRAINT bouquetid FOREIGN KEY (bouquetid) REFERENCES public.buoquets(bouquetid);
-ALTER TABLE ONLY public.buoquets
-    ADD CONSTRAINT category FOREIGN KEY (category) REFERENCES public.category(categoryid);
+    ADD CONSTRAINT fk_bouquet FOREIGN KEY (bouquet_id) REFERENCES public.bouquets(id);
+
+ALTER TABLE ONLY public.bouquets
+    ADD CONSTRAINT fk_category FOREIGN KEY (category_id) REFERENCES public.category(id);
+
 ALTER TABLE ONLY public.orders
-    ADD CONSTRAINT delivery FOREIGN KEY (delivery) REFERENCES public.diliverymaninfo(diliverymanid) NOT VALID;
-ALTER TABLE ONLY public.flowers_in_buoquets
-    ADD CONSTRAINT flowerid FOREIGN KEY (flowerid) REFERENCES public."Item"(itemid);
-ALTER TABLE ONLY public.ocpitem
-    ADD CONSTRAINT flowerid FOREIGN KEY (itemid) REFERENCES public."Item"(itemid);
-ALTER TABLE ONLY public.ocpitem
-    ADD CONSTRAINT ocpid FOREIGN KEY (ocpid) REFERENCES public.ocp(ocpid) NOT VALID;
+    ADD CONSTRAINT fk_delivery FOREIGN KEY (delivery_id) REFERENCES public.deliveryman_info(id);
+
+ALTER TABLE ONLY public.flowers_in_bouquets
+    ADD CONSTRAINT fk_flower FOREIGN KEY (flower_id) REFERENCES public.item(id);
+
+ALTER TABLE ONLY public.ocp_item
+    ADD CONSTRAINT fk_item FOREIGN KEY (item_id) REFERENCES public.item(id);
+
+ALTER TABLE ONLY public.ocp_item
+    ADD CONSTRAINT fk_ocp FOREIGN KEY (ocp_id) REFERENCES public.ocp(id);
+
 ALTER TABLE ONLY public.feedback
-    ADD CONSTRAINT orderid FOREIGN KEY (orderid) REFERENCES public.orders(orderid);
+    ADD CONSTRAINT fk_order FOREIGN KEY (order_id) REFERENCES public.orders(id);
+
 ALTER TABLE ONLY public.users
-    ADD CONSTRAINT role FOREIGN KEY (role) REFERENCES public.role(roleid);
+    ADD CONSTRAINT fk_role FOREIGN KEY (role_id) REFERENCES public.role(id);
+
 ALTER TABLE ONLY public.orders
-    ADD CONSTRAINT statusid FOREIGN KEY (statusid) REFERENCES public.status(statusid);
-ALTER TABLE ONLY public."Item"
-    ADD CONSTRAINT typeid FOREIGN KEY (typeid) REFERENCES public.type(typeid) NOT VALID;
+    ADD CONSTRAINT fk_status FOREIGN KEY (status_id) REFERENCES public.status(id);
+
+ALTER TABLE ONLY public.item
+    ADD CONSTRAINT fk_type FOREIGN KEY (type_id) REFERENCES public.type(id);
+
 ALTER TABLE ONLY public.bonuses
-    ADD CONSTRAINT userid FOREIGN KEY (userid) REFERENCES public.users(userid);
-ALTER TABLE ONLY public.creditinfo
-    ADD CONSTRAINT userid FOREIGN KEY (userid) REFERENCES public.users(userid);
+    ADD CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES public.users(id);
+
+ALTER TABLE ONLY public.credit_info
+    ADD CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES public.users(id);
+
 ALTER TABLE ONLY public.cart
-    ADD CONSTRAINT userid FOREIGN KEY (userid) REFERENCES public.users(userid);
+    ADD CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES public.users(id);
+
 ALTER TABLE ONLY public.wishlist
-    ADD CONSTRAINT userid FOREIGN KEY (userid) REFERENCES public.users(userid);
+    ADD CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES public.users(id);
+
 ALTER TABLE ONLY public.orders
-    ADD CONSTRAINT userid FOREIGN KEY (userid) REFERENCES public.users(userid);
+    ADD CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES public.users(id);
+
 ALTER TABLE ONLY public.feedback
-    ADD CONSTRAINT userid FOREIGN KEY (userid) REFERENCES public.users(userid);
-ALTER TABLE ONLY public.diliverymaninfo
-    ADD CONSTRAINT userid FOREIGN KEY (userid) REFERENCES public.users(userid);
+    ADD CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES public.users(id);
+
+ALTER TABLE ONLY public.deliveryman_info
+    ADD CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES public.users(id);
+
+ALTER TABLE ONLY public.events
+    ADD CONSTRAINT fk_bouquet FOREIGN KEY (bouquet_id) REFERENCES public.bouquets(id);

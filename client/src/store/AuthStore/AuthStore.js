@@ -1,11 +1,10 @@
 import { makeObservable, observable, action } from 'mobx';
-import { loginUser, fetchProfile, logoutUser } from '@/lib/auth'; // Импортируйте функции
 
 export default class AuthStore {
   currentUser = null;
   isLoading = true;
   isModalLogin = false;
-  isModalRegister = false
+  isModalRegister = false;
 
   // Состояния для формы входа
   loginForm = {
@@ -37,7 +36,6 @@ export default class AuthStore {
     },
   };
 
-
   constructor(rootStore) {
     this.rootStore = rootStore;
 
@@ -55,30 +53,40 @@ export default class AuthStore {
       login: action,
       logout: action,
       fetchUserProfile: action,
-      registerUser: action
+      registerUser: action,
     });
 
-    this.fetchUserProfile();
+    this.fetchUserProfile().then(r => {}).catch((e) => console.error(e));
   }
 
+  // Регистрация пользователя
   async registerUser(userData) {
     this.isLoading = true;
     try {
-      const response = await fetch('http://localhost:3000/register', {
+      const response = await fetch('http://localhost:4000/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(userData),
+        credentials: 'include', // Включаем cookies
+        body: JSON.stringify({
+          username: userData.firstName,
+          email: userData.email,
+          password: userData.password,
+          phone: userData.phone,
+          surname: userData.lastName,
+        }),
       });
-  
+
       const data = await response.json();
-  
+
       if (!response.ok) {
         throw new Error(data.error || 'Ошибка регистрации');
       }
-  
+
       alert('Регистрация прошла успешно!');
+      this.setIsModalRegister(false);
+      this.resetFormStates();
     } catch (error) {
       throw error;
     } finally {
@@ -86,28 +94,52 @@ export default class AuthStore {
     }
   }
 
+  // Вход пользователя
   async login(credentials) {
     this.isLoading = true;
     try {
-      const response = await loginUser(credentials);
-      if (response.error) {
-        // Если есть ошибка, передаем её в компонент
-        throw new Error(response.error);
+      const response = await fetch('http://localhost:4000/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include', // Включаем cookies
+        body: JSON.stringify({
+          email: credentials.email,
+          password: credentials.password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Ошибка входа');
       }
+
       await this.fetchUserProfile();
+      this.setIsModalLogin(false);
+      this.resetFormStates();
     } catch (error) {
-      // Передаем ошибку в компонент
       throw error;
     } finally {
       this.isLoading = false;
     }
   }
 
+  // Получение профиля пользователя
   async fetchUserProfile() {
     this.isLoading = true;
     try {
-      const response = await fetchProfile();
-      this.setCurrentUser(response.user);
+      const response = await fetch('http://localhost:4000/profile', {
+        credentials: 'include', // Включаем cookies
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Ошибка получения профиля');
+      }
+      this.setCurrentUser(data.user);
     } catch (error) {
       this.currentUser = null;
     } finally {
@@ -115,10 +147,19 @@ export default class AuthStore {
     }
   }
 
+  // Выход пользователя
   async logout() {
     this.isLoading = true;
     try {
-      await logoutUser();
+      const response = await fetch('http://localhost:4000/logout', {
+        method: 'POST',
+        credentials: 'include', // Включаем cookies
+      });
+
+      if (!response.ok) {
+        throw new Error('Ошибка выхода');
+      }
+
       this.currentUser = null;
     } finally {
       this.isLoading = false;
@@ -128,10 +169,11 @@ export default class AuthStore {
   setCurrentUser(user) {
     this.currentUser = user;
   }
-  
+
   setIsModalLogin(flag) {
     this.isModalLogin = flag;
   }
+
   setIsModalRegister(flag) {
     this.isModalRegister = flag;
   }

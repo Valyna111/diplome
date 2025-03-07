@@ -1,610 +1,592 @@
 import { gql } from '@apollo/client';
 
-// Запросы для таблицы Item
-export const GET_ITEM = gql`
-    query GetItem($itemid: Int!) {
-        itemById(itemid: $itemid) {
-            itemid
-            itemname
-            typeid
-            cost
+// Запросы для таблицы item
+export const GET_ALL_ITEMS = gql`
+    query GetAllItems {
+        items {
+            id
+            name
             type {
-                typeid
+                id
                 name
             }
+            cost
         }
     }
 `;
 
-export const LIST_ITEMS = gql`
-    query ListItems {
-        allItems {
-            nodes {
-                itemid
-                itemname
-                typeid
-                cost
-                type {
-                    typeid
-                    name
-                }
+export const GET_ITEM_BY_ID = gql`
+    query GetItemById($id: Int!) {
+        itemById(id: $id) {
+            id
+            name
+            type {
+                id
+                name
             }
+            cost
         }
     }
 `;
 
-// Запросы для таблицы Bonuses
-export const GET_BONUS = gql`
-    query GetBonus($bonusid: Int!) {
-        bonusById(bonusid: $bonusid) {
-            bonusid
+// Запросы для таблицы bonuses
+export const GET_ALL_BONUSES = gql`
+    query GetAllBonuses {
+        bonuses {
+            id
             bonus
-            userid
             user {
-                userid
+                id
                 username
             }
         }
     }
 `;
 
-export const LIST_BONUSES = gql`
-    query ListBonuses {
-        allBonuses {
-            nodes {
-                bonusid
-                bonus
-                userid
-                user {
-                    userid
-                    username
-                }
+export const GET_BONUS_BY_ID = gql`
+    query GetBonusById($id: Int!) {
+        bonusById(id: $id) {
+            id
+            bonus
+            user {
+                id
+                username
             }
         }
     }
 `;
 
-// Запросы для таблицы Bouquets
-export const GET_BOUQUET = gql`
-    query GetBouquet($bouquetid: Int!) {
-        bouquetById(bouquetid: $bouquetid) {
-            bouquetid
-            bouquetname
-            category
+// Запросы для таблицы bouquets
+export const GET_ALL_BOUQUETS = gql`
+    query GetAllBouquets {
+        bouquets {
+            id
+            name
+            category {
+                id
+                name
+            }
             price
             image
             description
             amount
             sale
             secondImage
-            categoryByCategory {
-                categoryid
-                category
-            }
-            flowersInBouquetsByBouquetid {
-                nodes {
-                    fbid
-                    flowerid
-                    amount
-                    flower {
-                        itemid
-                        itemname
-                    }
-                }
-            }
         }
     }
 `;
 
-export const LIST_BOUQUETS = gql`
-    query ListBouquets {
-        allBouquets {
-            nodes {
-                bouquetid
-                bouquetname
-                category
-                price
-                image
-                description
-                amount
-                sale
-                secondImage
-                categoryByCategory {
-                    categoryid
-                    category
-                }
-                flowersInBouquetsByBouquetid {
-                    nodes {
-                        fbid
-                        flowerid
-                        amount
-                        flower {
-                            itemid
-                            itemname
-                        }
-                    }
-                }
-            }
-        }
-    }
-`;
-
-// Запросы для таблицы Cart
-export const GET_CART = gql`
-    query GetCart($cartid: Int!) {
-        cartById(cartid: $cartid) {
-            cartid
-            userid
-            bouquetid
-            user {
-                userid
-                username
-            }
-            bouquet {
-                bouquetid
-                bouquetname
-            }
-        }
-    }
-`;
-
-export const LIST_CARTS = gql`
-    query ListCarts {
-        allCarts {
-            nodes {
-                cartid
-                userid
-                bouquetid
-                user {
-                    userid
-                    username
-                }
-                bouquet {
-                    bouquetid
-                    bouquetname
-                }
-            }
-        }
-    }
-`;
-
-// Запросы для таблицы Category
-export const GET_CATEGORY = gql`
-    query GetCategory($categoryid: Int!) {
-        categoryById(categoryid: $categoryid) {
-            categoryid
-            category
-        }
-    }
-`;
-
-export const LIST_CATEGORIES = gql`
-    query ListCategories {
-        allCategories {
-            nodes {
-                categoryid
-                category
-            }
-        }
-    }
-`;
-
-// Запросы для таблицы CreditInfo
-export const GET_CREDIT_INFO = gql`
-    query GetCreditInfo($creditid: Int!) {
-        creditInfoById(creditid: $creditid) {
-            creditid
-            cardnumber
-            cvv
-            userid
-            ownername
-            user {
-                userid
-                username
-            }
-        }
-    }
-`;
-
-export const LIST_CREDIT_INFOS = gql`
-    query ListCreditInfos {
-        allCreditInfos {
-            nodes {
-                creditid
-                cardnumber
-                cvv
-                userid
-                ownername
-                user {
-                    userid
-                    username
-                }
-            }
-        }
-    }
-`;
-
-// Запросы для таблицы DeliveryManInfo
-export const GET_DELIVERY_MAN_INFO = gql`
-    query GetDeliveryManInfo($diliverymanid: Int!) {
-        deliveryManInfoById(diliverymanid: $diliverymanid) {
-            diliverymanid
-            userid
-            ocpid
-            user {
-                userid
-                username
-            }
-            ocp {
-                ocpid
-                address
-            }
-        }
-    }
-`;
-
-export const LIST_DELIVERY_MAN_INFOS = gql`
-    query ListDeliveryManInfos {
-        allDeliveryManInfos {
-            nodes {
-                diliverymanid
-                userid
-                ocpid
-                user {
-                    userid
-                    username
-                }
-                ocp {
-                    ocpid
-                    address
-                }
-            }
-        }
-    }
-`;
-
-// Запросы для таблицы Feedback
-export const GET_FEEDBACK = gql`
-    query GetFeedback($feedbackid: Int!) {
-        feedbackById(feedbackid: $feedbackid) {
-            feedbackid
-            orderid
-            userid
-            text
-            score
-            user {
-                userid
-                username
-            }
-            order {
-                orderid
-                orderdate
-            }
-        }
-    }
-`;
-
-export const LIST_FEEDBACKS = gql`
-    query ListFeedbacks {
-        allFeedbacks {
-            nodes {
-                feedbackid
-                orderid
-                userid
-                text
-                score
-                user {
-                    userid
-                    username
-                }
-                order {
-                    orderid
-                    orderdate
-                }
-            }
-        }
-    }
-`;
-
-// Запросы для таблицы FlowersInBouquets
-export const GET_FLOWERS_IN_BOUQUETS = gql`
-    query GetFlowersInBouquets($fbid: Int!) {
-        flowersInBouquetsById(fbid: $fbid) {
-            fbid
-            flowerid
-            amount
-            bouquetid
-            flower {
-                itemid
-                itemname
-            }
-            bouquet {
-                bouquetid
-                bouquetname
-            }
-        }
-    }
-`;
-
-export const LIST_FLOWERS_IN_BOUQUETS = gql`
-    query ListFlowersInBouquets {
-        allFlowersInBouquets {
-            nodes {
-                fbid
-                flowerid
-                amount
-                bouquetid
-                flower {
-                    itemid
-                    itemname
-                }
-                bouquet {
-                    bouquetid
-                    bouquetname
-                }
-            }
-        }
-    }
-`;
-
-// Запросы для таблицы OCP
-export const GET_OCP = gql`
-    query GetOCP($ocpid: Int!) {
-        ocpById(ocpid: $ocpid) {
-            ocpid
-            address
-        }
-    }
-`;
-
-export const LIST_OCPS = gql`
-    query ListOCPs {
-        allOcps {
-            nodes {
-                ocpid
-                address
-            }
-        }
-    }
-`;
-
-// Запросы для таблицы OCPItem
-export const GET_OCP_ITEM = gql`
-    query GetOCPItem($ocpitemd: Int!) {
-        ocpItemById(ocpitemd: $ocpitemd) {
-            ocpitemd
-            itemid
-            amount
-            ocpid
-            item {
-                itemid
-                itemname
-            }
-            ocp {
-                ocpid
-                address
-            }
-        }
-    }
-`;
-
-export const LIST_OCP_ITEMS = gql`
-    query ListOCPItems {
-        allOcpItems {
-            nodes {
-                ocpitemd
-                itemid
-                amount
-                ocpid
-                item {
-                    itemid
-                    itemname
-                }
-                ocp {
-                    ocpid
-                    address
-                }
-            }
-        }
-    }
-`;
-
-// Запросы для таблицы Orders
-export const GET_ORDER = gql`
-    query GetOrder($orderid: Int!) {
-        orderById(orderid: $orderid) {
-            orderid
-            userid
-            bouquetid
-            orderdate
-            price
-            statusid
-            customeraddress
-            delivery
-            user {
-                userid
-                username
-            }
-            bouquet {
-                bouquetid
-                bouquetname
-            }
-            status {
-                statusid
-                status
-            }
-        }
-    }
-`;
-
-export const LIST_ORDERS = gql`
-    query ListOrders {
-        allOrders {
-            nodes {
-                orderid
-                userid
-                bouquetid
-                orderdate
-                price
-                statusid
-                customeraddress
-                delivery
-                user {
-                    userid
-                    username
-                }
-                bouquet {
-                    bouquetid
-                    bouquetname
-                }
-                status {
-                    statusid
-                    status
-                }
-            }
-        }
-    }
-`;
-
-// Запросы для таблицы Role
-export const GET_ROLE = gql`
-    query GetRole($roleid: Int!) {
-        roleById(roleid: $roleid) {
-            roleid
-            role
-        }
-    }
-`;
-
-export const LIST_ROLES = gql`
-    query ListRoles {
-        allRoles {
-            nodes {
-                roleid
-                role
-            }
-        }
-    }
-`;
-
-// Запросы для таблицы Status
-export const GET_STATUS = gql`
-    query GetStatus($statusid: Int!) {
-        statusById(statusid: $statusid) {
-            statusid
-            status
-        }
-    }
-`;
-
-export const LIST_STATUSES = gql`
-    query ListStatuses {
-        allStatuses {
-            nodes {
-                statusid
-                status
-            }
-        }
-    }
-`;
-
-// Запросы для таблицы Type
-export const GET_TYPE = gql`
-    query GetType($typeid: Int!) {
-        typeByTypeid(typeid: $typeid) {
-            typeid
+export const GET_BOUQUET_BY_ID = gql`
+    query GetBouquetById($id: Int!) {
+        bouquetById(id: $id) {
+            id
             name
+            category {
+                id
+                name
+            }
+            price
+            image
+            description
+            amount
+            sale
+            secondImage
         }
     }
 `;
 
-export const LIST_TYPES = gql`
-    query ListTypes {
-        allTypes {
-            nodes {
-                typeid
+// Запросы для таблицы cart
+export const GET_ALL_CARTS = gql`
+    query GetAllCarts {
+        carts {
+            id
+            user {
+                id
+                username
+            }
+            bouquet {
+                id
                 name
             }
         }
     }
 `;
 
-// Запросы для таблицы Users
-export const GET_USER = gql`
-    query GetUser($userid: Int!) {
-        userById(userid: $userid) {
-            userid
+export const GET_CART_BY_ID = gql`
+    query GetCartById($id: Int!) {
+        cartById(id: $id) {
+            id
+            user {
+                id
+                username
+            }
+            bouquet {
+                id
+                name
+            }
+        }
+    }
+`;
+
+// Запросы для таблицы category
+export const GET_ALL_CATEGORIES = gql`
+    query GetAllCategories {
+        categories {
+            id
+            name
+        }
+    }
+`;
+
+export const GET_CATEGORY_BY_ID = gql`
+    query GetCategoryById($id: Int!) {
+        categoryById(id: $id) {
+            id
+            name
+        }
+    }
+`;
+
+// Запросы для таблицы credit_info
+export const GET_ALL_CREDIT_INFOS = gql`
+    query GetAllCreditInfos {
+        creditInfos {
+            id
+            cardNumber
+            cvv
+            user {
+                id
+                username
+            }
+            ownerName
+        }
+    }
+`;
+
+export const GET_CREDIT_INFO_BY_ID = gql`
+    query GetCreditInfoById($id: Int!) {
+        creditInfoById(id: $id) {
+            id
+            cardNumber
+            cvv
+            user {
+                id
+                username
+            }
+            ownerName
+        }
+    }
+`;
+
+// Запросы для таблицы deliveryman_info
+export const GET_ALL_DELIVERYMAN_INFOS = gql`
+    query GetAllDeliverymanInfos {
+        deliverymanInfos {
+            id
+            user {
+                id
+                username
+            }
+            ocp {
+                id
+                address
+            }
+        }
+    }
+`;
+
+export const GET_DELIVERYMAN_INFO_BY_ID = gql`
+    query GetDeliverymanInfoById($id: Int!) {
+        deliverymanInfoById(id: $id) {
+            id
+            user {
+                id
+                username
+            }
+            ocp {
+                id
+                address
+            }
+        }
+    }
+`;
+
+// Запросы для таблицы feedback
+export const GET_ALL_FEEDBACKS = gql`
+    query GetAllFeedbacks {
+        feedbacks {
+            id
+            order {
+                id
+                user {
+                    id
+                    username
+                }
+            }
+            user {
+                id
+                username
+            }
+            text
+            score
+        }
+    }
+`;
+
+export const GET_FEEDBACK_BY_ID = gql`
+    query GetFeedbackById($id: Int!) {
+        feedbackById(id: $id) {
+            id
+            order {
+                id
+                user {
+                    id
+                    username
+                }
+            }
+            user {
+                id
+                username
+            }
+            text
+            score
+        }
+    }
+`;
+
+// Запросы для таблицы flowers_in_bouquets
+export const GET_ALL_FLOWERS_IN_BOUQUETS = gql`
+    query GetAllFlowersInBouquets {
+        flowersInBouquets {
+            id
+            flower {
+                id
+                name
+            }
+            amount
+            bouquet {
+                id
+                name
+            }
+        }
+    }
+`;
+
+export const GET_FLOWERS_IN_BOUQUET_BY_ID = gql`
+    query GetFlowersInBouquetById($id: Int!) {
+        flowersInBouquetById(id: $id) {
+            id
+            flower {
+                id
+                name
+            }
+            amount
+            bouquet {
+                id
+                name
+            }
+        }
+    }
+`;
+
+// Запросы для таблицы ocp
+export const GET_ALL_OCPS = gql`
+    query GetAllOcps {
+        ocps {
+            id
+            address
+        }
+    }
+`;
+
+export const GET_OCP_BY_ID = gql`
+    query GetOcpById($id: Int!) {
+        ocpById(id: $id) {
+            id
+            address
+        }
+    }
+`;
+
+// Запросы для таблицы ocp_item
+export const GET_ALL_OCP_ITEMS = gql`
+    query GetAllOcpItems {
+        ocpItems {
+            id
+            item {
+                id
+                name
+            }
+            amount
+            ocp {
+                id
+                address
+            }
+        }
+    }
+`;
+
+export const GET_OCP_ITEM_BY_ID = gql`
+    query GetOcpItemById($id: Int!) {
+        ocpItemById(id: $id) {
+            id
+            item {
+                id
+                name
+            }
+            amount
+            ocp {
+                id
+                address
+            }
+        }
+    }
+`;
+
+// Запросы для таблицы orders
+export const GET_ALL_ORDERS = gql`
+    query GetAllOrders {
+        orders {
+            id
+            user {
+                id
+                username
+            }
+            bouquet {
+                id
+                name
+            }
+            orderDate
+            price
+            status {
+                id
+                name
+            }
+            customerAddress
+            delivery {
+                id
+                user {
+                    id
+                    username
+                }
+            }
+        }
+    }
+`;
+
+export const GET_ORDER_BY_ID = gql`
+    query GetOrderById($id: Int!) {
+        orderById(id: $id) {
+            id
+            user {
+                id
+                username
+            }
+            bouquet {
+                id
+                name
+            }
+            orderDate
+            price
+            status {
+                id
+                name
+            }
+            customerAddress
+            delivery {
+                id
+                user {
+                    id
+                    username
+                }
+            }
+        }
+    }
+`;
+
+// Запросы для таблицы role
+export const GET_ALL_ROLES = gql`
+    query GetAllRoles {
+        roles {
+            id
+            name
+        }
+    }
+`;
+
+export const GET_ROLE_BY_ID = gql`
+    query GetRoleById($id: Int!) {
+        roleById(id: $id) {
+            id
+            name
+        }
+    }
+`;
+
+// Запросы для таблицы status
+export const GET_ALL_STATUSES = gql`
+    query GetAllStatuses {
+        statuses {
+            id
+            name
+        }
+    }
+`;
+
+export const GET_STATUS_BY_ID = gql`
+    query GetStatusById($id: Int!) {
+        statusById(id: $id) {
+            id
+            name
+        }
+    }
+`;
+
+// Запросы для таблицы type
+export const GET_ALL_TYPES = gql`
+    query GetAllTypes {
+        types {
+            id
+            name
+        }
+    }
+`;
+
+export const GET_TYPE_BY_ID = gql`
+    query GetTypeById($id: Int!) {
+        typeById(id: $id) {
+            id
+            name
+        }
+    }
+`;
+
+// Запросы для таблицы users
+export const GET_ALL_USERS = gql`
+    query GetAllUsers {
+        users {
+            id
             username
             passhash
             email
             phone
-            role
-            dateofbirth
-            usersyrname
-            roleByRole {
-                roleid
-                role
+            role {
+                id
+                name
             }
+            dateOfBirth
+            surname
         }
     }
 `;
 
-export const LIST_USERS = gql`
-    query ListUsers {
-        allUsers {
-            nodes {
-                userid
-                username
-                passhash
-                email
-                phone
-                role
-                dateofbirth
-                usersyrname
-                roleByRole {
-                    roleid
-                    role
-                }
+export const GET_USER_BY_ID = gql`
+    query GetUserById($id: Int!) {
+        userById(id: $id) {
+            id
+            username
+            passhash
+            email
+            phone
+            role {
+                id
+                name
             }
+            dateOfBirth
+            surname
         }
     }
 `;
 
-// Запросы для таблицы Wishlist
-export const GET_WISHLIST = gql`
-    query GetWishlist($wishlistid: Int!) {
-        wishlistById(wishlistid: $wishlistid) {
-            wishlistid
-            userid
-            bouquetid
+// Запросы для таблицы wishlist
+export const GET_ALL_WISHLISTS = gql`
+    query GetAllWishlists {
+        wishlists {
+            id
             user {
-                userid
+                id
                 username
             }
             bouquet {
-                bouquetid
-                bouquetname
+                id
+                name
             }
         }
     }
 `;
 
-export const LIST_WISHLISTS = gql`
-    query ListWishlists {
-        allWishlists {
-            nodes {
-                wishlistid
-                userid
-                bouquetid
-                user {
-                    userid
-                    username
-                }
-                bouquet {
-                    bouquetid
-                    bouquetname
-                }
+export const GET_WISHLIST_BY_ID = gql`
+    query GetWishlistById($id: Int!) {
+        wishlistById(id: $id) {
+            id
+            user {
+                id
+                username
             }
+            bouquet {
+                id
+                name
+            }
+        }
+    }
+`;
+
+// Запросы для таблицы events
+export const GET_ALL_EVENTS = gql`
+    query GetAllEvents {
+        events {
+            id
+            description
+            image
+            bouquet {
+                id
+                name
+            }
+        }
+    }
+`;
+
+export const GET_EVENT_BY_ID = gql`
+    query GetEventById($id: Int!) {
+        eventById(id: $id) {
+            id
+            description
+            image
+            bouquet {
+                id
+                name
+            }
+        }
+    }
+`;
+
+// Запросы для таблицы articles
+export const GET_ALL_ARTICLES = gql`
+    query GetAllArticles {
+        articles {
+            id
+            header
+            image1
+            image2
+            image3
+            description1
+            description2
+            description3
+        }
+    }
+`;
+
+export const GET_ARTICLE_BY_ID = gql`
+    query GetArticleById($id: Int!) {
+        articleById(id: $id) {
+            id
+            header
+            image1
+            image2
+            image3
+            description1
+            description2
+            description3
         }
     }
 `;

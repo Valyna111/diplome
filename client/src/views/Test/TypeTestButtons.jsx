@@ -2,17 +2,17 @@ import React, { useContext } from 'react';
 import { observer } from 'mobx-react-lite';
 import StoreContext from '@/store/StoreContext';
 import { useMutation, useQuery } from '@apollo/client';
-import { CREATE_TYPE, UPDATE_TYPE } from "@/graphql/mutations";
-import { GET_TYPE } from "@/graphql/queries";
 import client from "@/apolloClient";
+import {CREATE_TYPE, UPDATE_TYPE} from "@/graphql/mutations";
+import {GET_TYPE_BY_ID} from "@/graphql/queries";
 
-const fetchType = async (typeid) => {
+const fetchType = async (id) => {
     try {
         const { data } = await client.query({
-            query: GET_TYPE,
-            variables: { typeid },
+            query: GET_TYPE_BY_ID,
+            variables: { id },
         });
-        console.log('Полученный тип:', data.typeByTypeid);
+        console.log('Полученный тип:', data);
         return data;
     } catch (error) {
         console.error('Ошибка получения типа:', error);
@@ -34,7 +34,7 @@ const TypeTestButtons = observer(() => {
         try {
             const { data } = await createType({
                 variables: {
-                    typeid: 1,
+                    id: 1,
                     name: 'Test Type',
                 },
             });
@@ -58,7 +58,7 @@ const TypeTestButtons = observer(() => {
         try {
             const { data } = await updateType({
                 variables: {
-                    typeid: 1,
+                    id: 1,
                     name: 'Updated Type',
                 },
             });
