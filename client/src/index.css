@@ -29,3 +29,17 @@ code {
 .link:hover {
   font-weight: 500;
 }
+.ant-tabs-nav {
+  width: 100% !important;
+}
+
+.ant-tabs-tab {
+  display: block !important; /* centers text inside tabs */
+  flex: 1;
+  text-align: center !important;
+}
+
+.ant-tabs-nav > div:nth-of-type(1) {
+  display: unset !important;
+  width: 100% !important;
+}

@@ -154,6 +154,7 @@ const ModalRegister = observer(() => {
       width="400px"
       action_text_submit="Зарегистрироваться"
       footer={s.footer}
+      isOverlay={false}
     >
       <Input
         id="firstName"

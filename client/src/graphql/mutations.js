@@ -2,12 +2,12 @@ import { gql } from '@apollo/client';
 
 // Мутации для таблицы item
 export const CREATE_ITEM = gql`
-    mutation CreateItem($name: String!, $typeId: Int!, $cost: Money!) {
+    mutation CreateItem($name: String!, $typeId: Int!, $cost: Float!) {
         createItem(input: { item: { name: $name, typeId: $typeId, cost: $cost } }) {
             item {
                 id
                 name
-                type {
+                typeByTypeId {
                     id
                     name
                 }
@@ -18,12 +18,12 @@ export const CREATE_ITEM = gql`
 `;
 
 export const UPDATE_ITEM = gql`
-    mutation UpdateItem($id: Int!, $name: String!, $typeId: Int!, $cost: Money!) {
+    mutation UpdateItem($id: Int!, $name: String!, $typeId: Int!, $cost: Float!) {
         updateItemById(input: { id: $id, itemPatch: { name: $name, typeId: $typeId, cost: $cost } }) {
             item {
                 id
                 name
-                type {
+                typeByTypeId {
                     id
                     name
                 }

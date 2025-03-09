@@ -1,17 +1,25 @@
 .container {
   display: flex;
-  gap: 200px;
+  gap: 20px;
   padding: 20px;
   height: 100vh; /* Занимаем всю высоту экрана */
+  transition: all 0.3s linear;
 }
 
 /* Левая часть: Формы */
 .leftSide {
-  flex: 1;
   display: flex;
   flex-direction: column;
   gap: 20px;
-  max-width: 600px; /* Ограничиваем ширину форм */
+  width: 30%;
+  transform: translateX(-100%);
+  opacity: 0;
+  transition: transform 0.5s ease-out, opacity 0.5s ease-out;
+}
+
+.leftSide.slideIn {
+  transform: translateX(0);
+  opacity: 1;
 }
 
 .buttonsContainer {
@@ -25,7 +33,6 @@
 }
 
 .formContainer {
-  width:600px;
   padding: 20px;
   background-color: #f9f9f9;
   border-radius: 8px;
@@ -42,14 +49,6 @@
   display: flex;
   flex-direction: column;
   gap: 15px;
-}
-
-.input {
-  width: 575px;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 16px;
 }
 
 .submitButton {
@@ -90,9 +89,8 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  max-width:1000px; /* Ограничиваем ширину списка */
-  background-color: #f9f9f9;
+  gap: 0px;
+  /*background-color: #f9f9f9;*/
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   padding: 20px;
@@ -105,8 +103,8 @@
 }
 
 .searchInput {
-  width: 100%;
-  margin-bottom: 15px;
+  /*width: 100%;*/
+  /*margin-bottom: 15px;*/
 }
 
 .componentsList {
@@ -115,6 +113,7 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
+  max-height: 400px;
 }
 
 .componentItem {
@@ -220,4 +219,32 @@
   .rightSide {
     margin-top: 20px;
   }
+}
+@keyframes slideInFromLeft {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.slideIn {
+  animation: slideInFromLeft 0.5s ease-out;
+}
+@keyframes slideOutToLeft {
+  0% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+}
+
+.slideOut {
+  animation: slideOutToLeft 0.5s ease-out;
 }

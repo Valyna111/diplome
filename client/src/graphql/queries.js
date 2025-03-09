@@ -2,15 +2,17 @@ import { gql } from '@apollo/client';
 
 // Запросы для таблицы item
 export const GET_ALL_ITEMS = gql`
-    query GetAllItems {
-        items {
-            id
-            name
-            type {
+    query allItems {
+        allItems {
+            nodes {
                 id
                 name
+                typeByTypeId {
+                    id
+                    name
+                }
+                cost
             }
-            cost
         }
     }
 `;
@@ -130,10 +132,12 @@ export const GET_CART_BY_ID = gql`
 
 // Запросы для таблицы category
 export const GET_ALL_CATEGORIES = gql`
-    query GetAllCategories {
-        categories {
-            id
-            name
+    query allCategories {
+        allCategories {
+            nodes {
+                id
+                name
+            }
         }
     }
 `;
@@ -444,10 +448,12 @@ export const GET_STATUS_BY_ID = gql`
 
 // Запросы для таблицы type
 export const GET_ALL_TYPES = gql`
-    query GetAllTypes {
-        types {
-            id
-            name
+    query allTypes {
+        allTypes {
+            nodes {
+                id
+                name
+            }
         }
     }
 `;

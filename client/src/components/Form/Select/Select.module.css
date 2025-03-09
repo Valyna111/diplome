@@ -1,0 +1,167 @@
+.container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    align-self: stretch;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 8px;
+    height: 28px;
+    transition: border-color 0.3s ease;
+    margin-bottom: 8px;
+}
+
+.container:focus-within {
+    border-color: #f8aec8
+}
+
+.input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 16px;
+    background: transparent;
+    padding-top: 12px;
+}
+
+.placeholder {
+    position: absolute;
+    left: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 16px;
+    color: #999;
+    pointer-events: none;
+    transition: all 0.2s ease;
+}
+
+.placeholderFocused {
+    top: 8px;
+    font-size: 12px; /* Уменьшаем размер текста */
+    color: #5e5c5c; /* Меняем цвет при фокусе */
+}
+
+.icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 8px;
+    color: #666;
+}
+
+.icon.left {
+    order: -1;
+}
+
+.icon.right {
+    order: 1;
+}
+
+.error {
+    border-color: #ff4d4f;
+}
+
+.errorMessage {
+    position: absolute;
+    bottom: -20px;
+    left: 0;
+    color: #ff4d4f;
+    font-size: 12px;
+}
+
+.success {
+    border-color: #52c41a;
+}
+
+.warning {
+    border-color: #faad14;
+}
+
+.error .icon {
+    color: #ff4d4f;
+}
+
+.success .icon {
+    color: #52c41a;
+}
+
+.warning .icon {
+    color: #faad14;
+}
+
+.root {
+    position: relative;
+    display: flex;
+    align-items: stretch;
+    flex-direction: column;
+    width: 100%;
+}
+
+.options {
+    position: absolute;
+    top: 50px;
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    max-height: 0;
+    overflow-y: hidden;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 9;
+    transition: all 0.2s ease;
+}
+.options.active {
+    max-height: 250px;
+    padding: 8px 0px;
+    overflow-y: auto;
+}
+.option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    padding: 8px 12px;
+    transition: all 0.2s ease;
+    border-radius: 8px;
+    margin: 0 8px;
+}
+
+.option:hover {
+    background-color: #f5f5f5;
+}
+
+.checked {
+    background-color: #cbf6bf; /* Цвет для выбранной опции */
+}
+
+.text {
+    flex: 1;
+    font-size: 14px;
+    color: #333;
+}
+
+.checkIcon {
+    color: #780049; /* Цвет галочки */
+    margin-left: 8px;
+}
+
+.arrowDropDown {
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    margin-left: 8px;
+    transition: transform 0.2s ease;
+}
+
+.arrowDropDown.rotated {
+    transform: rotate(180deg);
+}
+
+.arrowDropDown:focus {
+    outline: none;
+}

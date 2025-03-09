@@ -3,8 +3,6 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 import s from './App.module.css'
 import RootStore from "@/store/RootStore";
 import StoreContext from "@/store/StoreContext";
-import { ApolloProvider } from '@apollo/client';
-import client from './apolloClient';
 
 import Main from "@/routs/Main";
 import Article from "@/routs/Article";
@@ -38,7 +36,6 @@ const App = () => {
   if (!rootStore) rootStore = new RootStore();
   return (
 
-      <ApolloProvider client={client}>
         <StoreContext.Provider value={rootStore}>
             <div className={s.conteiner}>
               <Router>
@@ -74,8 +71,6 @@ const App = () => {
               </Router>
             </div>
         </StoreContext.Provider>
-      </ApolloProvider>
-
   );
 };
 

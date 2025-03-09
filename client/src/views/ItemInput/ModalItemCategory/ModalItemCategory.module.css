@@ -1,0 +1,10 @@
+.delete__text {
+    font-size: 1.2rem;
+    font-weight: 400;
+}
+.errorMessage {
+    color: #ff4d4f;
+    font-size: 14px;
+    margin-top: 8px;
+    text-align: center;
+}

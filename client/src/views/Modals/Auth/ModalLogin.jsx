@@ -99,6 +99,7 @@ const ModalLogin = observer(() => {
       width="400px"
       action_text_submit="Вход"
       footer={s.footer}
+      isOverlay={false}
     >
       <Input
         id="email"
