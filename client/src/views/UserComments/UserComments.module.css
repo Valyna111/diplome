@@ -1,0 +1,42 @@
+.container {
+    padding: 20px;
+  }
+  
+  .title {
+    font-size: 24px;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  .table {
+    width: 100%;
+    margin-top: 20px;
+  }
+  
+  .commentSection {
+    margin-top: 30px;
+  }
+  
+  .commentSection h3 {
+    font-size: 20px;
+    margin-bottom: 15px;
+  }
+  
+  button {
+    margin-right: 10px;
+  }
+  
+  @media (max-width: 768px) {
+    .table .ant-table-tbody > tr > td {
+      font-size: 14px;
+    }
+  
+    .title {
+      font-size: 20px;
+    }
+  
+    .commentSection h3 {
+      font-size: 18px;
+    }
+  }
+  

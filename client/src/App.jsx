@@ -22,6 +22,7 @@ import PromotionPage from "@/routs/PromotionDetail";
 import FloristOrders from "@/routs/FloristOrdersPage";
 import EditStock from "@/routs/EditStockPage";
 import EditCatalog from "@/routs/EditCatalogPage";
+import OCP from "@/routs/OCPInput";
 
 import CatalogCategories from "@/views/Catalog/CatalogCategories";
 import Navbar from "@/components/NavBar/NavBar";
@@ -29,6 +30,7 @@ import Footer from "@/components/Footer/Footer";
 import AuthTestButtons from "@/views/Test/AuthTestButtons";
 import AuthModal from "./views/Modals/Auth/AuthModal";
 import Item from "./routs/ItemInput";
+import UserBlock from "./routs/UserComments";
 
 let rootStore;
 
@@ -64,6 +66,8 @@ const App = () => {
                       <Route path="/florist-edit-stock" element={<EditStock/>} />
                       <Route path="/edit-catalog" element={<EditCatalog/>} />
                       <Route path="/item-input" element={<Item/>} />
+                      <Route path="/ocp-input" element={<OCP/>} />
+                      <Route path="/user-block" element={<UserBlock/>} />
                       <Route path="*" element={<Navigate to="/main" replace={true} />} />
                     </Routes>
                   </main>

@@ -20,7 +20,7 @@ const pool = new Pool({
   user :'postgres',
   host : 'localhost',
   database: 'flowerShop',
-  password: process.env.DB_PASSWORD,
+  password: '112233',
   port:'5432'
 })
 pool.connect(undefined)
