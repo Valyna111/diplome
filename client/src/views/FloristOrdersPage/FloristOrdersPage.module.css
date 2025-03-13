@@ -103,7 +103,7 @@
   
   .button {
     padding: 10px 20px;
-    background-color: #007bff;
+    background-color: #e91e63;
     color: #ffffff;
     border: none;
     border-radius: 8px;
@@ -118,7 +118,7 @@
   }
   
   .button:hover:not(:disabled) {
-    background-color: #0056b3;
+    background-color: #961540;
   }
   
   /* Адаптивность */

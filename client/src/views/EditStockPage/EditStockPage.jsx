@@ -1,12 +1,19 @@
 import React, { useState } from "react";
 import styles from "./EditStockPage.module.css";
 
-// Пример данных товаров
+// Пример данных товаров с учетом адресов
 const initialProducts = [
-  { id: 1, name: "Букет роз", quantity: 10 },
-  { id: 2, name: "Букет тюльпанов", quantity: 5 },
-  { id: 3, name: "Букет лилий", quantity: 8 },
-  { id: 4, name: "Букет ромашек", quantity: 3 },
+  { id: 1, name: "Букет роз", quantity: 10, address: "ул. Пушкина, д. 10" },
+  { id: 2, name: "Букет тюльпанов", quantity: 5, address: "ул. Лермонтова, д. 5" },
+  { id: 3, name: "Букет лилий", quantity: 8, address: "ул. Пушкина, д. 10" },
+  { id: 4, name: "Букет ромашек", quantity: 3, address: "ул. Гоголя, д. 15" },
+];
+
+// Список адресов пунктов сбора
+const addresses = [
+  "ул. Пушкина, д. 10",
+  "ул. Лермонтова, д. 5",
+  "ул. Гоголя, д. 15",
 ];
 
 const EditStockPage = () => {
@@ -14,6 +21,7 @@ const EditStockPage = () => {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [spoiledQuantity, setSpoiledQuantity] = useState(0);
   const [showModal, setShowModal] = useState(false);
+  const [selectedAddress, setSelectedAddress] = useState("");
 
   // Открыть модальное окно для выбранного товара
   const handleProductClick = (product) => {
@@ -43,13 +51,36 @@ const EditStockPage = () => {
     setShowModal(false);
   };
 
+  // Фильтровать товары по выбранному адресу
+  const filteredProducts = selectedAddress
+    ? products.filter((product) => product.address === selectedAddress)
+    : products;
+
   return (
     <div className={styles.container}>
       <h2>Редактирование списка наличия товаров</h2>
 
+      {/* Выбор адреса */}
+      <div className={styles.addressSelector}>
+        <label htmlFor="address">Выберите пункт сбора: </label>
+        <select
+          id="address"
+          value={selectedAddress}
+          onChange={(e) => setSelectedAddress(e.target.value)}
+          className={styles.addressSelect}
+        >
+          <option value="">Все адреса</option>
+          {addresses.map((address, index) => (
+            <option key={index} value={address}>
+              {address}
+            </option>
+          ))}
+        </select>
+      </div>
+
       {/* Список товаров */}
       <div className={styles.productsList}>
-        {products.map((product) => (
+        {filteredProducts.map((product) => (
           <div
             key={product.id}
             className={styles.productCard}
@@ -58,6 +89,7 @@ const EditStockPage = () => {
             <div className={styles.productInfo}>
               <h3>{product.name}</h3>
               <p>Количество: {product.quantity}</p>
+              <p>Адрес: {product.address}</p>
             </div>
           </div>
         ))}
