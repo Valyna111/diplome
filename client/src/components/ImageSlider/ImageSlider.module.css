@@ -1,10 +1,10 @@
 .sliderContainer {
   position: relative;
   width: 100%;
-  max-width: 1200px; /* Увеличиваем максимальную ширину */
+  max-width: 1200px;
   margin: 0 auto;
   overflow: hidden;
-  height: 500px; /* Увеличиваем высоту контейнера */
+  height: 400px; /* Уменьшаем высоту для лучшей адаптивности */
 }
 
 .sliderWrapper {
@@ -17,7 +17,7 @@
 }
 
 .sliderImage {
-  width: 70%; /* Увеличиваем ширину слайда */
+  width: 80%; /* Увеличиваем ширину слайда для лучшей видимости */
   height: auto;
   border-radius: 10px;
   transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
@@ -35,14 +35,14 @@
 }
 
 .prevSlide {
-  left: 10%;
+  left: 5%; /* Уменьшаем отступ для маленьких экранов */
   transform: translateX(-50%) translateY(-50%);
   z-index: 1;
   opacity: 0.7;
 }
 
 .nextSlide {
-  left: 90%;
+  left: 95%; /* Уменьшаем отступ для маленьких экранов */
   transform: translateX(-50%) translateY(-50%);
   z-index: 1;
   opacity: 0.7;
@@ -57,68 +57,75 @@
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  background-color: rgba(233, 30, 99, 0.7); /* Цвет #e91e63 с прозрачностью */
+  background-color: rgba(233, 30, 99, 0.7);
   color: white;
   border: none;
-  padding: 15px;
+  padding: 10px; /* Уменьшаем размер кнопок */
   cursor: pointer;
   border-radius: 50%;
   z-index: 3;
-  font-size: 1.5rem;
-  opacity: 0; /* По умолчанию кнопки невидимы */
+  font-size: 1.2rem; /* Уменьшаем размер иконок */
+  opacity: 0;
   transition: opacity 0.3s ease, background-color 0.3s ease;
 }
 
 .prevButton {
-  left: 20px; /* Увеличиваем отступ слева */
+  left: 10px; /* Уменьшаем отступ слева */
 }
 
 .nextButton {
-  right: 20px; /* Увеличиваем отступ справа */
+  right: 10px; /* Уменьшаем отступ справа */
 }
+
 .sliderContainer:hover .prevButton,
 .sliderContainer:hover .nextButton {
-  opacity: 1; /* Кнопки становятся видимыми */
+  opacity: 1;
 }
-/* Изменяем цвет кнопок при наведении на них */
+
 .prevButton:hover,
 .nextButton:hover {
-  background-color: rgba(233, 30, 99, 1); /* Цвет #e91e63 без прозрачности */
+  background-color: rgba(233, 30, 99, 1);
 }
 
 /* Адаптивность */
 @media (max-width: 768px) {
   .sliderContainer {
-    height: 400px; /* Уменьшаем высоту для планшетов */
+    height: 300px; /* Уменьшаем высоту для планшетов */
   }
 
   .sliderImage {
-    width: 80%; /* Увеличиваем ширину слайда на мобильных устройствах */
+    width: 90%; /* Увеличиваем ширину слайда */
   }
 
   .prevSlide {
-    left: 5%;
+    left: 2%; /* Уменьшаем отступ для планшетов */
   }
 
   .nextSlide {
-    left: 95%;
+    left: 98%; /* Уменьшаем отступ для планшетов */
   }
 }
 
 @media (max-width: 480px) {
   .sliderContainer {
-    height: 300px; /* Уменьшаем высоту для мобильных устройств */
+    height: 250px; /* Уменьшаем высоту для мобильных устройств */
   }
 
   .sliderImage {
-    width: 90%; /* Еще больше увеличиваем ширину слайда на маленьких экранах */
+    width: 95%; /* Еще больше увеличиваем ширину слайда */
   }
 
   .prevSlide {
-    left: 2%;
+    left: 0%; /* Убираем отступ для мобильных устройств */
   }
 
   .nextSlide {
-    left: 98%;
+    left: 100%; /* Убираем отступ для мобильных устройств */
+  }
+
+  .prevButton,
+  .nextButton {
+    padding: 8px; /* Уменьшаем размер кнопок */
+    font-size: 1rem; /* Уменьшаем размер иконок */
   }
 }

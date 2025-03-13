@@ -1,29 +1,38 @@
-.footer {
-    justify-content: center;
-}
-.errorMessage {
-    color: #ff4d4f;
-    font-size: 14px;
-    margin-top: 8px;
-    text-align: center;
-}
 .overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-  }
-  
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 10px;
+}
+
+.modalContainer {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  width: 400px;
+  max-width: 90%; /* Ограничение ширины для мобильных */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Адаптивность для планшетов */
+@media (max-width: 768px) {
   .modalContainer {
-    background: white;
-    border-radius: 8px;
-    padding: 20px;
-    width: 400px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      padding: 15px;
   }
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 480px) {
+  .modalContainer {
+      width: 95%;
+      padding: 10px;
+  }
+}

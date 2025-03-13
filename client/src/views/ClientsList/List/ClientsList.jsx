@@ -1,104 +1,86 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import styles from "./ClientsList.module.css"; // Подключаем стили
+import React, { useState } from "react";
+import styles from "./ClientsList.module.css";
 
 const ClientsList = () => {
-  const [clients, setClients] = useState([]); // Данные клиентов
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5; // Количество клиентов на странице
-  const navigate = useNavigate();
+  const [users, setUsers] = useState([
+    { id: 1, name: "Иван Иванов", bonus: 100, comments: [{ id: 101, text: "Отличный сервис!", reply: "Спасибо!" }] },
+    { id: 2, name: "Мария Петрова", bonus: 200, comments: [{ id: 102, text: "Не понравилось", reply: "Мы исправимся!" }] },
+    { id: 3, name: "Алексей Сидоров", bonus: 50, comments: [{ id: 103, text: "Супер магазин!", reply: "Спасибо за отзыв!" }] }
+  ]);
 
-  // Фейковые данные (пока нет API)
-  useEffect(() => {
-    const fetchData = () => {
-      try {
-        setTimeout(() => {
-          const fakeClients = [
-            { userid: 1, username: "Иван", usersyrname: "Петров" },
-            { userid: 2, username: "Анна", usersyrname: "Сидорова" },
-            { userid: 3, username: "Павел", usersyrname: "Иванов" },
-            { userid: 4, username: "Мария", usersyrname: "Козлова" },
-            { userid: 5, username: "Дмитрий", usersyrname: "Федоров" },
-            { userid: 6, username: "Екатерина", usersyrname: "Зайцева" },
-            { userid: 7, username: "Олег", usersyrname: "Смирнов" },
-            { userid: 8, username: "Наталья", usersyrname: "Кузнецова" },
-            { userid: 9, username: "Алексей", usersyrname: "Попов" },
-            { userid: 10, username: "Юлия", usersyrname: "Михайлова" },
-          ];
-          setClients(fakeClients);
-          setLoading(false);
-        }, 1000); // Симуляция задержки
-      } catch (err) {
-        setError("Ошибка при загрузке данных");
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  // Рассчитываем клиентов для текущей страницы
-  const indexOfLastClient = currentPage * itemsPerPage;
-  const indexOfFirstClient = indexOfLastClient - itemsPerPage;
-  const currentClients = clients.slice(indexOfFirstClient, indexOfLastClient);
-
-  // Функции для переключения страниц
-  const nextPage = () => {
-    if (currentPage < Math.ceil(clients.length / itemsPerPage)) {
-      setCurrentPage(currentPage + 1);
-    }
+  const handleBonusChange = (id, newBonus) => {
+    setUsers(users.map(user => user.id === id ? { ...user, bonus: newBonus } : user));
   };
 
-  const prevPage = () => {
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-    }
+  const handleBonusSubmit = (id, bonus) => {
+    console.log(`Бонус для пользователя ${id} обновлен до ${bonus}`);
   };
 
-  if (loading) return <p className={styles.loading}>Загрузка...</p>;
-  if (error) return <p className={styles.error}>{error}</p>;
+  const handleReplySubmit = (id, reply) => {
+    setUsers(users.map(user => ({
+      ...user,
+      comments: user.comments.map(comment =>
+        comment.id === id ? { ...comment, reply } : comment
+      )
+    })));
+    console.log(`Ответ на комментарий ${id}: ${reply}`);
+  };
 
   return (
-    <div className={styles.clientsContainer}>
-      <h1>Список клиентов</h1>
-
-      {/* Список клиентов */}
-      <ul className={styles.clientsList}>
-        {currentClients.map((client) => (
-          <li
-            key={client.userid}
-            className={styles.clientItem}
-            onClick={() => navigate(`/client/${client.userid}`)}
-          >
-            <span>
-              {client.username} {client.usersyrname}
-            </span>
-          </li>
-        ))}
-      </ul>
-
-      {/* Пагинация */}
-      <div className={styles.pagination}>
-        <button
-          onClick={prevPage}
-          disabled={currentPage === 1}
-          className={styles.paginationButton}
-        >
-          Назад
-        </button>
-        <span className={styles.pageNumber}>
-          Страница {currentPage} из {Math.ceil(clients.length / itemsPerPage)}
-        </span>
-        <button
-          onClick={nextPage}
-          disabled={currentPage >= Math.ceil(clients.length / itemsPerPage)}
-          className={styles.paginationButton}
-        >
-          Вперед
-        </button>
-      </div>
+    <div className={styles.container}>
+      <h2>Управление пользователями</h2>
+      <table className={styles.table}>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Имя</th>
+            <th>Бонусы</th>
+            <th>Комментарии</th>
+          </tr>
+        </thead>
+        <tbody>
+          {users.map(user => (
+            <tr key={user.id}>
+              <td>{user.id}</td>
+              <td>{user.name}</td>
+              <td>
+                <input
+                  type="number"
+                  value={user.bonus}
+                  className={styles.input}
+                  onChange={e => handleBonusChange(user.id, e.target.value)}
+                />
+                <button
+                  className={styles.button}
+                  onClick={() => handleBonusSubmit(user.id, user.bonus)}
+                >
+                  Обновить
+                </button>
+              </td>
+              <td>
+                {user.comments.map(comment => (
+                  <div key={comment.id} className={styles.commentBlock}>
+                    <p className={styles.commentText}>{comment.text}</p>
+                    <input
+                      type="text"
+                      className={styles.input}
+                      placeholder="Ответить..."
+                      onChange={e => comment.replyText = e.target.value}
+                    />
+                    <button
+                      className={styles.button}
+                      onClick={() => handleReplySubmit(comment.id, comment.replyText)}
+                    >
+                      Ответить
+                    </button>
+                    {comment.reply && <p>Ответ: {comment.reply}</p>}
+                  </div>
+                ))}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 };

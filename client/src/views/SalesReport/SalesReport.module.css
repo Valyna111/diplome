@@ -1,40 +1,104 @@
+/* SalesReport.module.css */
+
 .reportContainer {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-    text-align: center;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+h1 {
+  text-align: center;
+  font-size: 28px;
+  margin-bottom: 30px;
+}
+
+.chart {
+  margin-top: 40px;
+}
+
+h2 {
+  font-size: 20px;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.loading, .error {
+  text-align: center;
+  font-size: 18px;
+  color: #f44336;
+}
+
+@media (max-width: 768px) {
+  .reportContainer {
+    padding: 15px;
   }
-  
+
   h1 {
     font-size: 24px;
-    margin-bottom: 20px;
-    color: #333;
   }
-  
-  .chart {
-    margin-bottom: 40px;
-    padding: 20px;
-    background-color: #f9f9f9;
-    border-radius: 10px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-  
+
   h2 {
-    font-size: 20px;
-    margin-bottom: 10px;
-    color: #555;
-  }
-  
-  .loading {
     font-size: 18px;
-    color: #888;
-    text-align: center;
-    margin-top: 50px;
   }
-  
-  .error {
-    font-size: 18px;
-    color: #ff6347;
-    text-align: center;
-    margin-top: 50px;
+
+  .chart {
+    margin-top: 30px;
   }
+}
+
+@media (max-width: 480px) {
+  .reportContainer {
+    padding: 10px;
+  }
+
+  h1 {
+    font-size: 22px;
+  }
+
+  h2 {
+    font-size: 16px;
+  }
+
+  .chart {
+    margin-top: 20px;
+  }
+
+  .loading, .error {
+    font-size: 16px;
+  }
+}
+
+/* Make sure the charts are responsive */
+.recharts-responsive-container {
+  width: 100%;
+  height: auto !important;
+}
+
+.recharts-wrapper {
+  display: flex;
+  justify-content: center;
+}
+
+.recharts-bar-chart {
+  width: 100%;
+}
+
+.recharts-pie-chart {
+  width: 100%;
+}
+
+/* Bar and Pie chart colors */
+.recharts-bar-rectangles .recharts-bar-rectangle {
+  transition: fill 0.3s ease;
+}
+
+.recharts-pie-slice {
+  transition: fill 0.3s ease;
+}
+
+.recharts-tooltip-item {
+  font-size: 14px;
+}
+
+.recharts-tooltip-wrapper {
+  font-size: 14px;
+}
