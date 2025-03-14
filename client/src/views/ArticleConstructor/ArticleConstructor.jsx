@@ -64,7 +64,7 @@ const ArticleConstructor = () => {
     <div className={styles.container}>
       {/* 🔹 Левая колонка (список статей) */}
       <div className={styles.leftColumn}>
-        <Button className={styles.addButton} onClick={handleAddArticle} placeholder="➕ Добавить статью" />
+        <Button className={styles.addButton} onClick={handleAddArticle} placeholder=" Добавить статью" />
 
         <div className={styles.articlesList}>
           {articles.map(article => (

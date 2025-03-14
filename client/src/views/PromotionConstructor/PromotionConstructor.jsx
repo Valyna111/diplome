@@ -65,7 +65,7 @@ const PromotionConstructor = () => {
     <div className={styles.container}>
       {/* 🔹 Левая колонка (список акций) */}
       <div className={styles.leftColumn}>
-        <Button className={styles.addButton} onClick={handleAddPromotion} placeholder="➕ Добавить акцию" />
+        <Button className={styles.addButton} onClick={handleAddPromotion} placeholder=" Добавить акцию" />
 
         <div className={styles.promotionsList}>
           {promotions.map((promotion) => (

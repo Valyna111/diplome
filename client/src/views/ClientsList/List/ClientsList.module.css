@@ -1,115 +1,198 @@
-/* ClientsList.module.css */
 .container {
-  padding: 20px;
-  font-family: Arial, sans-serif;
+  max-width: 1200px;
+  margin: 20px auto;
+  padding: 0 10px; /* Добавим отступы по бокам */
 }
 
 h2 {
   text-align: center;
-  font-size: 24px;
   margin-bottom: 20px;
+  font-size: 24px;
 }
 
-.table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 20px;
-  overflow-x: auto;
+.usersGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
 }
 
-th, td {
-  padding: 10px;
-  text-align: left;
-  border: 1px solid #ddd;
+.userCard {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 15px;
+  background-color: #f9f9f9;
+  max-width: 100%; /* Убираем фиксированную ширину */
+
 }
 
-th {
-  background-color: #f4f4f4;
+.userInfo {
+  margin-bottom: 15px;
 }
 
-input[type="number"],
-input[type="text"] {
-  padding: 8px;
-  margin: 5px 0;
-  width: 100%;
-  box-sizing: border-box;
-
-  border-radius: 4px;
+.userInfo h3 {
+  font-size: 20px;
+  margin-bottom: 5px;
 }
 
-button {
-  padding: 8px 16px;
-  background-color: #4CAF50;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
+.userInfo p {
+  font-size: 16px;
+  color: #555;
 }
 
-button:hover {
-  background-color: #45a049;
-}
-
-.commentBlock {
-  margin-top: 15px;
-  border-top: 1px solid #ddd;
+.commentsSection {
+  border-top: 1px solid #eee;
   padding-top: 10px;
+}
+
+.commentsSection h4 {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.comment {
+  margin-bottom: 10px;
+  padding: 10px;
+  border: 1px solid #eee;
+  border-radius: 4px;
+  background-color: #fff;
 }
 
 .commentText {
   font-size: 14px;
-  color: #333;
+  margin-bottom: 5px;
 }
 
+.commentDate {
+  font-size: 12px;
+  color: #888;
+}
+
+.replyText {
+  font-size: 14px;
+  color: #555;
+  margin-top: 5px;
+}
+
+.replySection {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.replyInput {
+  flex: 1;
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.replyButton {
+  padding: 8px 12px;
+  font-size: 14px;
+  border: none;
+  border-radius: 4px;
+  background-color: #e91e63;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.replyButton:hover {
+  background-color: #aa1748;
+}
+
+/* Адаптивность для планшетов */
+@media (max-width: 1024px) {
+  .usersGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Адаптивность для мобильных устройств */
 @media (max-width: 768px) {
-  .table {
-    font-size: 14px;
+  .usersGrid {
+    grid-template-columns: 1fr;
   }
 
-  th, td {
-    padding: 8px;
-  }
-
-  button {
-    padding: 6px 12px;
-  }
-
-  input[type="number"],
-  input[type="text"] {
-    padding: 6px;
-  }
-}
-
-@media (max-width: 320px) {
-  .container {
+  .userCard {
     padding: 10px;
   }
 
+  .userInfo h3 {
+    font-size: 18px;
+  }
+
+  .userInfo p {
+    font-size: 14px;
+  }
+
+  .commentsSection h4 {
+    font-size: 16px;
+  }
+
+  .commentText {
+    font-size: 13px;
+  }
+
+  .commentDate {
+    font-size: 11px;
+  }
+
+  .replyInput {
+    font-size: 13px;
+  }
+
+  .replyButton {
+    font-size: 13px;
+  }
+}
+
+/* Адаптивность для экранов 320px */
+@media (max-width: 480px) {
+  .container {
+    padding: 0 5px; /* Уменьшаем отступы по бокам */
+  }
+
   h2 {
-    font-size: 20px;
+    font-size: 20px; /* Уменьшаем размер заголовка */
   }
 
-  .table {
-    font-size: 12px;
+  .userCard {
+    padding: 8px; /* Уменьшаем отступы внутри карточки */
   }
 
-  th, td {
-    padding: 5px;
+  .userInfo h3 {
+    font-size: 16px; /* Уменьшаем размер заголовка карточки */
   }
 
-  input[type="number"],
-  input[type="text"] {
-    padding: 5px;
+  .userInfo p {
+    font-size: 12px; /* Уменьшаем размер текста */
   }
 
-  button {
-    font-size: 12px;
-    padding: 6px 10px;
+  .commentsSection h4 {
+    font-size: 14px; /* Уменьшаем размер заголовка секции комментариев */
   }
 
-  .commentBlock {
-    margin-top: 10px;
-    padding-top: 8px;
+  .commentText {
+    font-size: 12px; /* Уменьшаем размер текста комментария */
+  }
+
+  .commentDate {
+    font-size: 10px; /* Уменьшаем размер даты */
+  }
+
+  .replyInput {
+    font-size: 12px; /* Уменьшаем размер текста в инпуте */
+    padding: 6px; /* Уменьшаем отступы внутри инпута */
+  }
+
+  .replyButton {
+    font-size: 12px; /* Уменьшаем размер текста кнопки */
+    padding: 6px 10px; /* Уменьшаем отступы внутри кнопки */
+  }
+
+  .replySection {
+    gap: 5px; /* Уменьшаем отступ между инпутом и кнопкой */
   }
 }
