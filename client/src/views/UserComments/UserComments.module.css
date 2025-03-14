@@ -1,100 +1,76 @@
-/* Общий контейнер */
+/* Основной контейнер */
 .container {
   padding: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-  max-width: 1200px; /* Максимальная ширина */
-  margin: 0 auto; /* Центрирование */
 }
 
-/* Заголовок */
-.title {
-  font-size: 24px;
+/* Формы добавления нового пользователя */
+.addUserForm {
   margin-bottom: 20px;
-  text-align: center;
 }
 
-/* Таблица */
-.table {
-  width: 100%;
-  margin-top: 20px;
-  overflow-x: auto; /* Горизонтальный скролл для узких экранов */
-}
-
-/* Блок комментариев */
-.commentSection {
-  margin-top: 30px;
-  width: 100%;
-}
-
-.commentSection h3 {
-  font-size: 20px;
-  margin-bottom: 15px;
-}
-
-/* Кнопки */
-button {
-  margin-right: 10px;
-  padding: 10px 15px;
-  font-size: 16px;
-}
-
-/* Адаптивность */
-@media (max-width: 768px) {
-  .title {
-      font-size: 20px;
-  }
-
-  .table .ant-table-tbody > tr > td {
-      font-size: 14px;
-  }
-
-  .commentSection h3 {
-      font-size: 18px;
-  }
-}
-
-@media (max-width: 480px) {
-  .container {
-      padding: 10px;
-      width: 100%;
-  }
-
-  .title {
-      font-size: 18px;
-  }
-
+/* Медиазапрос для экранов от 320 до 750 пикселей */
+@media (max-width: 750px) {
+  /* Стиль для таблицы */
   .table {
-      font-size: 12px;
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
   }
 
-  .commentSection h3 {
-      font-size: 16px;
+  /* Перевернутая таблица */
+  .ant-table-tbody {
+    display: block;
   }
 
-  button {
-      width: 100%;
-      margin-bottom: 10px;
+  .ant-table-tbody tr {
+    display: block;
+    border-bottom: 1px solid #e8e8e8;
+    margin-bottom: 10px;
+  }
+
+  .ant-table-tbody td {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    border: none;
+    font-size: 14px;
+    flex-direction: column;
+  }
+
+  .ant-table-tbody td .ant-table-column-title {
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+
+  /* Скрытие заголовков столбцов в мобильной версии */
+  .ant-table-thead {
+    display: none;
+  }
+
+  /* Стиль для блока комментариев */
+  .commentSection {
+    margin-top: 20px;
   }
 }
 
-@media (max-width: 320px) {
-  .container {
-      padding: 5px;
+/* Дополнительные стили для планшетов */
+@media (max-width: 600px) {
+  .addUserForm {
+    display: flex;
+    flex-direction: column;
   }
 
-  .title {
-      font-size: 16px;
+  .inputGroup {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
   }
 
-  .commentSection h3 {
-      font-size: 14px;
+  .addUserInput {
+    width: 100%;
   }
 
-  button {
-      font-size: 14px;
-      padding: 8px;
+  .addUserButton {
+    width: 100%;
   }
 }

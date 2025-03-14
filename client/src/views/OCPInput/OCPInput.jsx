@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import Button from '@/components/Form/Button/Button';
 import Input from '@/components/Form/Input/Input';
+import Select from '@/components/Form/Select/Select';
 import { Table } from 'antd';
 import s from './OCPInput.module.css';
 
@@ -9,9 +10,9 @@ const OCPInput = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [ocpList, setOcpList] = useState([]);
   const [form, setForm] = useState({ address: '', id: null });
-  const [selectedItems, setSelectedItems] = useState([]);
-  const [itemQuantity, setItemQuantity] = useState({});
-  const [activeOcpId, setActiveOcpId] = useState(null);
+  const [selectedOcpId, setSelectedOcpId] = useState(null);
+  const [selectedCourier, setSelectedCourier] = useState(null);
+  const [selectedAddress, setSelectedAddress] = useState(null);
 
   const handleCreateOCP = () => setShowAddOCPForm(true);
 
@@ -19,37 +20,17 @@ const OCPInput = () => {
     if (form.id) {
       setOcpList(ocpList.map(ocp => (ocp.id === form.id ? { ...ocp, address: form.address } : ocp)));
     } else {
-      setOcpList([...ocpList, { id: Date.now(), address: form.address, items: [] }]);
+      setOcpList([...ocpList, { id: Date.now(), address: form.address }]);
     }
     setShowAddOCPForm(false);
     setForm({ address: '', id: null });
   };
 
-  const handleAddItemToOCP = () => {
-    setOcpList(ocpList.map(ocp => {
-      if (ocp.id === activeOcpId) {
-        const updatedItems = [
-          ...ocp.items,
-          ...selectedItems.map(item => ({ name: item.name, quantity: itemQuantity[item.name] }))
-        ];
-        return { ...ocp, items: updatedItems };
-      }
-      return ocp;
-    }));
-    setSelectedItems([]);
-    setItemQuantity({});
-  };
-
-  const handleSelectItem = (item) => {
-    if (selectedItems.some(selectedItem => selectedItem.name === item.name)) {
-      setSelectedItems(selectedItems.filter(selectedItem => selectedItem.name !== item.name));
-    } else {
-      setSelectedItems([...selectedItems, item]);
+  const handleMatchCourier = () => {
+    if (selectedCourier && selectedAddress) {
+      console.log(`Сопоставлено: Курьер ${selectedCourier} -> Адрес ${selectedAddress}`);
+      // Здесь можно добавить логику сохранения
     }
-  };
-
-  const handleChangeQuantity = (item, quantity) => {
-    setItemQuantity({ ...itemQuantity, [item]: quantity });
   };
 
   const filteredOcpList = useMemo(() => {
@@ -59,26 +40,20 @@ const OCPInput = () => {
   const dataSourceOCP = useMemo(() => filteredOcpList.map((ocp) => ({
     key: ocp.id,
     id: ocp.id,
-    address: ocp.address,
-    items: ocp.items.map(item => `${item.name} (x${item.quantity})`).join(', ')
+    address: ocp.address
   })), [filteredOcpList]);
 
   const ocpColumns = [
     { title: 'ID', dataIndex: 'id', key: 'id' },
     { title: 'Адрес', dataIndex: 'address', key: 'address' },
-    { title: 'Предметы', dataIndex: 'items', key: 'items' },
     {
       title: 'Действия',
       key: 'actions',
       render: (_, record) => (
-        <>
-          <Button type="second" onClick={() => setActiveOcpId(record.id)} placeholder="Выбрать" />
-        </>
+        <Button type="second" onClick={() => setSelectedOcpId(record.id)} placeholder="Выбрать" />
       ),
     },
   ];
-
-  const selectedOcp = ocpList.find(ocp => ocp.id === activeOcpId) || { items: [] };
 
   return (
     <div className={s.container}>
@@ -115,41 +90,26 @@ const OCPInput = () => {
             columns={ocpColumns}
             pagination={false}
             className={s.table}
-            onRow={(record) => ({
-              onClick: () => setActiveOcpId(record.id),
-            })}
           />
         </div>
 
         <div className={s.rightSide}>
-          {activeOcpId ? (
-            <>
-              <h2 className={s.sectionTitle}>Добавить предметы</h2>
-              <div className={s.itemSelection}>
-                {['Item1', 'Item2', 'Item3'].map((item, index) => (
-                  <div key={index} className={s.itemCheckbox}>
-                    <input
-                      type="checkbox"
-                      id={item}
-                      checked={selectedItems.some(selectedItem => selectedItem.name === item)}
-                      onChange={() => handleSelectItem({ name: item })}
-                    />
-                    <label htmlFor={item}>{item}</label>
-                    <Input
-                      placeholder="Количество"
-                      value={itemQuantity[item] || ''}
-                      onChange={(e) => handleChangeQuantity(item, e.target.value)}
-                      className={s.inputQuantity}
-                    />
-                  </div>
-                ))}
-              </div>
-
-              <Button type="primary" onClick={handleAddItemToOCP} className={s.submitButton}>Добавить предметы</Button>
-            </>
-          ) : (
-            <p className={s.placeholderText}>Выберите OCP для добавления предметов</p>
-          )}
+          <h2 className={s.sectionTitle}>Назначить доставщика</h2>
+          <div className={s.matchForm}>
+            <Select
+              options={['Курьер 1', 'Курьер 2', 'Курьер 3']}
+              placeholder="Выберите доставщика"
+              onChange={setSelectedCourier}
+              className={s.select}
+            />
+            <Select
+              options={ocpList.map(ocp => ocp.address)}
+              placeholder="Выберите адрес"
+              onChange={setSelectedAddress}
+              className={s.select}
+            />
+            <Button type="primary" onClick={handleMatchCourier} className={s.matchButton}>Сопоставить</Button>
+          </div>
         </div>
       </div>
     </div>

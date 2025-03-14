@@ -1,99 +1,157 @@
-/* Общий контейнер */
+/* OCPInput.module.css */
+
+/* Общие стили */
 .container {
   display: flex;
   flex-direction: column;
-  align-items: center; /* Центрирование по горизонтали */
-  justify-content: center;
-  gap: 20px;
   padding: 20px;
-  background-color: #f9f9f9;
-  min-height: 100vh;
 }
 
-/* Фиксируем ширину для удобного центрирования */
+.formContainer {
+  margin-bottom: 20px;
+}
+
+.formTitle {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+}
+
+.input {
+  margin-bottom: 10px;
+}
+
+.submitButton, .cancelButton {
+  margin-top: 10px;
+}
+
 .mainContent {
   display: flex;
-  flex: 1;
+  justify-content: space-between;
   gap: 20px;
-  width: 100%;
-  max-width: 1200px; /* Контент не растягивается сверх этого размера */
 }
 
-/* Навбар и футер должны быть на всю ширину */
-.navbar, .footer {
-  width: 100%;
-  background: #007bff;
-  color: white;
-  text-align: center;
-  padding: 15px 0;
+.leftSide, .rightSide {
+  width: 48%;
 }
 
-/* Форма создания/редактирования */
-.formContainer {
-  background: #fff;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  width: 100%;
-  max-width: 400px;
-  margin: 0 auto;
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-/* Левая колонка */
-.leftSide {
-  flex: 1;
-  min-width: 300px;
-  background: #fff;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+.searchInput {
+  width: 80%;
 }
 
-/* Правая колонка */
-.rightSide {
-  flex: 1;
-  min-width: 300px;
-  background: #fff;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+.createButton {
+  width: 18%;
 }
 
-/* Центрирование содержимого в правой колонке */
-.rightSide .sectionTitle, .rightSide .itemSelection {
-  text-align: center;
+.table {
+  margin-top: 20px;
 }
 
-/* Адаптивность */
-@media (max-width: 1024px) {
+/* Стили для адаптивности */
+@media (max-width: 1200px) {
   .mainContent {
-      flex-direction: column;
-      align-items: center;
+    flex-direction: column;
   }
 
   .leftSide, .rightSide {
-      width: 100%;
-      max-width: 600px;
+    width: 100%;
+  }
+
+  .searchInput {
+    width: 70%;
+  }
+
+  .createButton {
+    width: 25%;
   }
 }
 
 @media (max-width: 768px) {
+  .formTitle {
+    font-size: 1.2rem;
+  }
+
+  .input {
+    padding: 8px;
+  }
+
+  .submitButton, .cancelButton {
+    padding: 10px;
+  }
+
+  .mainContent {
+    flex-direction: column;
+  }
+
+  .leftSide, .rightSide {
+    width: 100%;
+  }
+
   .header {
-      flex-direction: column;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .searchInput {
+    width: 100%;
   }
 
   .createButton {
-      width: 100%;
+    width: 100%;
+  }
+
+  .table {
+    margin-top: 10px;
   }
 }
 
 @media (max-width: 480px) {
-  .formContainer {
-      width: 100%;
-      padding: 15px;
+  .formTitle {
+    font-size: 1rem;
   }
 
-  .leftSide, .rightSide {
-      padding: 15px;
+  .input {
+    padding: 6px;
+  }
+
+  .submitButton, .cancelButton {
+    padding: 8px;
+  }
+
+  .createButton {
+    width: 100%;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .searchInput {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  .table {
+    margin-top: 10px;
+  }
+
+  .matchButton {
+    width: 100%;
+    margin-top: 10px;
+  }
+
+  .select {
+    width: 100%;
   }
 }
