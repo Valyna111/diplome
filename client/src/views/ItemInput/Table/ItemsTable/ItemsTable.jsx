@@ -4,10 +4,7 @@ import { Table, Space } from 'antd';
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import StoreContext from "@/store/StoreContext";
 
-const ItemsTable = observer(({
-                                 setEditItemId,
-                                 dataSource
-                             }) => {
+const ItemsTable = observer(({ setEditItemId, dataSource }) => {
     const rootStore = useContext(StoreContext);
     const auxiliaryStore = rootStore.auxiliaryStore;
 
@@ -17,6 +14,7 @@ const ItemsTable = observer(({
             title: 'ID',
             dataIndex: 'id',
             key: 'id',
+            width: 80, // Уменьшаем ширину столбца ID
         },
         {
             title: 'Название',
@@ -34,14 +32,11 @@ const ItemsTable = observer(({
             render: (_, record) => (
                 <Space size="middle">
                     <EditOutlined
-                        onClick={() => {
-                            setEditItemId({ id: record.id, name: record.name });
-                        }}
+                        onClick={() => setEditItemId({ id: record.id, name: record.name })}
                         style={{ cursor: 'pointer', color: '#1890ff' }}
                     />
                     <DeleteOutlined
                         onClick={() => {
-                            // Открываем модальное окно для удаления элемента
                             auxiliaryStore.ModalItemCategory.onOpen({
                                 type: 'компонент',
                                 id: record.id,
@@ -57,12 +52,15 @@ const ItemsTable = observer(({
     ];
 
     return (
-        <Table
-            dataSource={dataSource}
-            columns={columns}
-            rowKey="id"
-            pagination={false}
-        />
+        <div>
+            <Table
+                dataSource={dataSource}
+                columns={columns}
+                rowKey="id"
+                pagination={{ pageSize: 5 }}
+                scroll={{ y: 400 }}
+            />
+        </div>
     );
 });
 
