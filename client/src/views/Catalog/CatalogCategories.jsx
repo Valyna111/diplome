@@ -8,7 +8,7 @@ const categories = [
   { id: 3, name: "Романтические букеты", emoji: "💖", link: "/category/romantic" },
   { id: 4, name: "Букеты в коробке", emoji: "🎁", link: "/category/box" },
   { id: 5, name: "Композиции в корзине", emoji: "🧺", link: "/category/basket" },
-  { id: 6, name: "Мини-букеты и комплименты", emoji: "🌼", link: "/category/mini" },
+  { id: 6, name: "Мини-букеты   ", emoji: "🌼", link: "/category/mini" },
   { id: 7, name: "Домашние растения", emoji: "🌿", link: "/category/homeplants" },
   { id: 8, name: "Эко-букеты", emoji: "🌱", link: "/category/eco" },
   { id: 9, name: "Ночные букеты", emoji: "🌙", link: "/category/night" },
