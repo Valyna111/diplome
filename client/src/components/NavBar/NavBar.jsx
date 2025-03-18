@@ -125,9 +125,12 @@ const Navbar = observer(() => {
             <Link to="/delivery" className={styles.link} onClick={() => setMenuOpen(false)}>
               Доставки
             </Link>
+            <Link to="/driver/deliveries" className={styles.link} onClick={() => setMenuOpen(false)}>
+              Мои доставки
+            </Link>
           </p>
         )}
-
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
         {!unauthorized && userRole === "florist" && (
           <p className={`${styles.menu} ${menuOpen ? styles.open : ""}`}>
             <Link to="/florist-orders" className={styles.link} onClick={() => setMenuOpen(false)}>

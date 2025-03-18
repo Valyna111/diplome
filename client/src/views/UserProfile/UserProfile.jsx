@@ -1,20 +1,39 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "./UserProfile.module.css";
 
 const UserProfile = () => {
   const [isEditing, setIsEditing] = useState(false);
-
-  // Данные пользователя (заглушка)
   const [userData, setUserData] = useState({
-    name: "Иван Иванов",
-    email: "ivan@example.com",
-    phone: "+7 999 123-45-67",
-    login: "ivan123",
-    birthdate: "1995-06-15",
+    username: "",
+    email: "",
+    phone: "",
+    surname: "",
+    birthdate: "", // Поле для даты рождения
   });
-
-  // Копия данных при редактировании
   const [editableData, setEditableData] = useState({ ...userData });
+
+  // Загрузка данных пользователя при монтировании компонента
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        const response = await fetch("http://localhost:4000/profile", {
+          credentials: "include", // Для отправки куки
+        });
+
+        if (!response.ok) {
+          throw new Error("Ошибка при загрузке данных пользователя");
+        }
+
+        const data = await response.json();
+        setUserData(data.user);
+        setEditableData(data.user);
+      } catch (error) {
+        console.error("Ошибка:", error);
+      }
+    };
+
+    fetchUserProfile();
+  }, []);
 
   // Обработчик изменения полей
   const handleChange = (e) => {
@@ -22,9 +41,27 @@ const UserProfile = () => {
   };
 
   // Сохранение данных
-  const handleSave = () => {
-    setUserData(editableData);
-    setIsEditing(false);
+  const handleSave = async () => {
+    try {
+      const response = await fetch("http://localhost:4000/profile", {
+        method: "PUT", // Используем PUT для обновления данных
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(editableData),
+      });
+
+      if (!response.ok) {
+        throw new Error("Ошибка при сохранении данных");
+      }
+
+      const data = await response.json();
+      setUserData(data.user); // Обновляем данные пользователя
+      setIsEditing(false);
+    } catch (error) {
+      console.error("Ошибка:", error);
+    }
   };
 
   return (
@@ -38,13 +75,28 @@ const UserProfile = () => {
           {isEditing ? (
             <input
               type="text"
-              name="name"
-              value={editableData.name}
+              name="username"
+              value={editableData.username}
               onChange={handleChange}
               className={styles.input}
             />
           ) : (
-            <p className={styles.text}>{userData.name}</p>
+            <p className={styles.text}>{userData.username}</p>
+          )}
+        </div>
+
+        <div className={styles.infoBlock}>
+          <label className={styles.label}>Фамилия:</label>
+          {isEditing ? (
+            <input
+              type="text"
+              name="surname"
+              value={editableData.surname}
+              onChange={handleChange}
+              className={styles.input}
+            />
+          ) : (
+            <p className={styles.text}>{userData.surname}</p>
           )}
         </div>
 
@@ -79,13 +131,20 @@ const UserProfile = () => {
         </div>
 
         <div className={styles.infoBlock}>
-          <label className={styles.label}>Логин:</label>
-          <p className={styles.text}>{userData.login} (нельзя изменить)</p>
-        </div>
-
-        <div className={styles.infoBlock}>
           <label className={styles.label}>Дата рождения:</label>
-          <p className={styles.text}>{userData.birthdate} (нельзя изменить)</p>
+          {isEditing && !userData.birthdate ? (
+            <input
+              type="date"
+              name="birthdate"
+              value={editableData.birthdate}
+              onChange={handleChange}
+              className={styles.input}
+            />
+          ) : (
+            <p className={styles.text}>
+              {userData.birthdate || "Дата рождения не указана"}
+            </p>
+          )}
         </div>
 
         <button

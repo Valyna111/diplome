@@ -1,87 +1,104 @@
 .container {
-  display: flex; /* Используем Flexbox для разделения на две колонки */
-  gap: 40px; /* Расстояние между колонками */
-  max-width: 1200px;
-  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   padding: 20px;
+  background-color: #f9f9f9;
+  min-height: 100vh;
 }
 
 .profileSection {
-  flex: 1; /* Левая часть занимает доступное пространство */
-  max-width: 600px; /* Ограничиваем ширину */
-}
-
-.sideSection {
-  flex: 1; /* Правая часть занимает доступное пространство */
-  background-color: #f9f9f9;
+  background: #ffffff;
   padding: 20px;
   border-radius: 10px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 600px;
+  margin-bottom: 20px;
 }
 
 .title {
   font-size: 24px;
-  margin-bottom: 20px;
   color: #333;
+  margin-bottom: 20px;
+  text-align: center;
 }
 
 .infoBlock {
-  margin-bottom: 20px;
+  margin-bottom: 15px;
 }
 
 .label {
-  display: block;
-  font-size: 16px;
   font-weight: bold;
-  margin-bottom: 5px;
   color: #555;
+  display: block;
+  margin-bottom: 5px;
 }
 
 .text {
-  font-size: 16px;
-  color: #333;
   margin: 0;
+  color: #333;
 }
 
 .input {
-  width: 100%;
+  width: 96%;
   padding: 10px;
-  font-size: 16px;
-  border: 1px solid #ccc;
+  border: 1px solid #ddd;
   border-radius: 5px;
-  box-sizing: border-box;
-  margin-top: 5px;
-}
-
-.input:focus {
-  border-color: #007bff;
-  outline: none;
+  font-size: 16px;
+  color: #333;
+  background-color: #f9f9f9;
 }
 
 .button {
-  background-color: #007bff;
+  background-color: #e91e63;
   color: white;
   border: none;
   padding: 10px 20px;
-  font-size: 16px;
   border-radius: 5px;
+  font-size: 16px;
   cursor: pointer;
+  width: 100%;
   margin-top: 20px;
   transition: background-color 0.3s ease;
 }
 
 .button:hover {
-  background-color: #0056b3;
+  background-color: #d81b60;
+}
+
+.sideSection {
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 600px;
+  text-align: center;
+  color: #555;
 }
 
 /* Адаптивность */
 @media (max-width: 768px) {
   .container {
-    flex-direction: column; /* На мобильных колонки становятся вертикальными */
+    padding: 10px;
   }
 
   .profileSection,
   .sideSection {
-    max-width: 100%; /* На мобильных занимают всю ширину */
+    padding: 15px;
+  }
+
+  .title {
+    font-size: 20px;
+  }
+
+  .input {
+    font-size: 14px;
+  }
+
+  .button {
+    font-size: 14px;
+    padding: 8px 16px;
   }
 }

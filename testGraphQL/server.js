@@ -147,17 +147,75 @@ app.get('/profile', authenticateToken, async (req, res) => {
             return res.status(404).json({ error: 'User not found' });
         }
 
-        // Возвращаем данные пользователя и его роль
-        res.json({
-            user: {
-                id: user.id,
-                username: user.username,
-                email: user.email,
-                phone: user.phone,
-                surname: user.surname,
-                role: user?.role_name, // Название роли
-            }
-        });
+        res.json({ user });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.put('/profile', authenticateToken, async (req, res) => {
+    const { username, email, phone, surname, birthdate } = req.body;
+
+    try {
+        // Проверяем, есть ли уже дата рождения в базе данных
+        const { rows: existingUser } = await pool.query(
+            'SELECT birthdate FROM users WHERE id = $1',
+            [req.user.id]
+        );
+
+        // Если дата рождения уже есть, не обновляем её
+        const finalBirthdate = existingUser[0].birthdate || birthdate;
+
+        const { rows } = await pool.query(
+            `UPDATE users 
+             SET username = $1, email = $2, phone = $3, surname = $4, birthdate = $5
+             WHERE id = $6 
+             RETURNING *`,
+            [username, email, phone, surname, finalBirthdate, req.user.id]
+        );
+
+        const user = rows[0];
+
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        res.json({ user });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.get('/driver/deliveries', authenticateToken, async (req, res) => {
+    try {
+        const driverId = req.user.id; // ID доставщика из токена
+
+        // Получаем deliveryman_info для этого пользователя
+        const { rows: deliverymanInfo } = await pool.query(
+            `SELECT id FROM deliveryman_info WHERE user_id = $1`,
+            [driverId]
+        );
+
+        if (deliverymanInfo.length === 0) {
+            return res.status(404).json({ error: 'Доставщик не найден' });
+        }
+
+        const deliverymanId = deliverymanInfo[0].id;
+
+        // Получаем доставки для этого доставщика
+        const { rows: deliveries } = await pool.query(
+            `SELECT 
+                orders.id AS "orderId", 
+                orders.order_date AS "orderDate", 
+                orders.customer_address AS "customerAddress", 
+                orders.price AS "orderPrice", 
+                (orders.price::numeric * 0.1) AS earnings -- 10% от стоимости заказа
+             FROM orders
+             WHERE delivery_id = $1`,
+            [deliverymanId]
+        );
+
+        res.json({ deliveries });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }

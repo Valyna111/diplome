@@ -23,6 +23,7 @@ import FloristOrders from "@/routs/FloristOrdersPage";
 import EditStock from "@/routs/EditStockPage";
 import EditCatalog from "@/routs/EditCatalogPage";
 import OCP from "@/routs/OCPInput";
+import DeliveryMan from "@/routs/DeliveryDriver";
 
 import CatalogCategories from "@/views/Catalog/CatalogCategories";
 import Navbar from "@/components/NavBar/NavBar";
@@ -68,6 +69,7 @@ const App = () => {
                       <Route path="/item-input" element={<Item/>} />
                       <Route path="/ocp-input" element={<OCP/>} />
                       <Route path="/user-block" element={<UserBlock/>} />
+                      <Route path="/driver/deliveries" element={<DeliveryMan />} />
                       <Route path="*" element={<Navigate to="/main" replace={true} />} />
                     </Routes>
                   </main>

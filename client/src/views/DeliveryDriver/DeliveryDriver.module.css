@@ -1,0 +1,64 @@
+.container {
+    padding: 20px;
+    background-color: #f9f9f9;
+    min-height: 100vh;
+  }
+  
+  .title {
+    font-size: 28px;
+    color: #333;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .earnings {
+    background: #ffffff;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  .earnings h2 {
+    margin: 0;
+    color: #333;
+  }
+  
+  .deliveriesList {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .deliveryCard {
+    background: #ffffff;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .deliveryCard h3 {
+    margin: 0 0 10px 0;
+    color: #e91e63;
+  }
+  
+  .deliveryCard p {
+    margin: 5px 0;
+    color: #555;
+  }
+  
+  /* Адаптивность */
+  @media (max-width: 768px) {
+    .container {
+      padding: 10px;
+    }
+  
+    .title {
+      font-size: 24px;
+    }
+  
+    .deliveryCard {
+      padding: 10px;
+    }
+  }
