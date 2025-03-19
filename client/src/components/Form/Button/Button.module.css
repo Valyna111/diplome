@@ -4,31 +4,40 @@
     padding: 10px 15px;
     border-radius: 5px;
     cursor: pointer;
-    transition: background 0.3s;
+    transition: background 0.3s, border-color 0.3s;
     outline: none;
     background-color: rgb(233, 30, 99);
     display: flex;
     align-items: center;
     justify-content: center;
+    box-sizing: border-box; /* Добавлено */
 }
+
 .button:disabled {
     opacity: 0.5;
     pointer-events: none;
 }
+
 .button:hover {
     background: #d81b60;
 }
-.button:hover .placeholder  {
+
+.button:hover .placeholder {
     font-weight: 500;
 }
+
 .button.second {
     color: black;
-    background-color: azure;
-    border: 1px solid black;
+    background-color: #FFFFFF;
+    border: 1px solid rgb(233, 30, 99);
 }
+
 .button.second:hover {
-    background: #f7bbd1;
+    background-color: #FFFFFF;
+    border: 1px solid rgb(233, 30, 99); /* Оставляем ту же толщину границы */
+    outline: 1px solid rgb(233, 30, 99); /* Добавляем outline для эффекта наведения */
 }
+
 .icon {
     display: flex;
     align-items: center;

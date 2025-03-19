@@ -51,6 +51,8 @@ export default class AuxiliaryStore {
                         data = await this.deleteType(this.ModalItemCategory.data.id);
                     } else if (this.ModalItemCategory.data.type === 'компонент') {
                         data = await  this.deleteItem(this.ModalItemCategory.data.id);
+                    } else if ( this.ModalItemCategory.data.type === 'букет') {
+                        data = await this.rootStore.bouquetStore.deleteBouquet(this.ModalItemCategory.data.id);
                     } else {
                         data = await this.deleteCategory(this.ModalItemCategory.data.id);
                     }

@@ -2,9 +2,10 @@ import { observer } from "mobx-react-lite";
 import Input from "@/components/Form/Input/Input";
 import Button from "@/components/Form/Button/Button";
 import React, { useContext, useState } from "react";
-import s from './ItemDetails.module.css';
+import s from '../From.module.css';
 import StoreContext from "@/store/StoreContext";
 import Select from "@/components/Form/Select/Select";
+import {IoClose} from "react-icons/io5";
 
 const ItemDetails = observer(({
                                   title = 'Добавить компонент',
@@ -116,7 +117,10 @@ const ItemDetails = observer(({
 
     return (
         <div className={s.formContainer}>
-            <h2 className={s.formTitle}>{title}</h2>
+            <div className={s.header}>
+                <h2 className={s.formTitle}>{title}</h2>
+                <IoClose style={{ cursor: 'pointer', width: '25px', height: '25px' }} onClick={onClose} />
+            </div>
             <form className={s.form} onSubmit={handleSubmit}>
                 <Input
                     placeholder="Название компонента"

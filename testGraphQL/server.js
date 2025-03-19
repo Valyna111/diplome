@@ -5,6 +5,13 @@ const cookieParser = require('cookie-parser');
 const { Pool } = require('pg');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
+
+if (!fs.existsSync('uploads')) {
+    fs.mkdirSync('uploads');
+}
 
 const app = express();
 app.use(cookieParser());
@@ -24,6 +31,37 @@ app.use(
         credentials: true,
     })
 );
+// Настройка Multer для сохранения файлов в папку "uploads"
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'uploads/'); // Файлы будут сохраняться в папку "uploads"
+    },
+    filename: (req, file, cb) => {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, uniqueSuffix + path.extname(file.originalname)); // Уникальное имя файла
+    }
+});
+
+const upload = multer({ storage });
+
+// Маршрут для загрузки изображений
+app.post('/upload-image', upload.single('image'), (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ error: 'No file uploaded' });
+        }
+
+        // Возвращаем путь к файлу
+        const filePath = `/uploads/${req.file.filename}`;
+        res.json({ imageUrl: filePath });
+    } catch (error) {
+        console.error('Error uploading image:', error);
+        res.status(500).json({ error: 'Failed to upload image' });
+    }
+});
+
+// Маршрут для отдачи статических файлов (изображений)
+app.use('/uploads', express.static('uploads'));
 
 // Кастомные маршруты
 app.post('/register', async (req, res) => {

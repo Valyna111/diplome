@@ -1,0 +1,67 @@
+.formContainer {
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+.header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+.formTitle {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.fileInputContainer {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.fileInputLabel {
+    color: black;
+    font-weight: 400;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s;
+    outline: none;
+    border: 1px solid rgb(233, 30, 99);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50%;
+    height: 200px;
+    text-align: center;
+}
+.fileInputLabel:hover {
+    border: 1px solid #4e011f;
+    font-weight: 500;
+}
+.fileInput {
+    display: none;
+}
+
+.previewImage {
+    max-width: 100%;
+    height: auto;
+    border-radius: 4px;
+    margin-top: 10px;
+}
+.itemSection {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.itemRow {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    /*flex-wrap: wrap; !* Перенос элементов на новую строку *!*/
+}

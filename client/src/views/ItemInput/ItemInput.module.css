@@ -2,13 +2,12 @@
   display: flex;
   gap: 20px;
   padding: 20px;
-  height: 100vh; /* Занимаем всю высоту экрана */
   transition: all 0.3s linear;
 }
 
 /* Левая часть: Формы */
 .leftSide {
-  display: flex;
+  display: none;
   flex-direction: column;
   gap: 20px;
   width: 30%;
@@ -20,6 +19,7 @@
 .leftSide.slideIn {
   transform: translateX(0);
   opacity: 1;
+  display: flex;
 }
 
 .buttonsContainer {

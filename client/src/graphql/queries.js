@@ -60,20 +60,22 @@ export const GET_BONUS_BY_ID = gql`
 
 // Запросы для таблицы bouquets
 export const GET_ALL_BOUQUETS = gql`
-    query GetAllBouquets {
-        bouquets {
-            id
-            name
-            category {
+    query allBouquets {
+        allBouquets {
+            nodes {
                 id
                 name
+                categoryByCategoryId {
+                    id
+                    name
+                }
+                price
+                image
+                description
+                amount
+                sale
+                secondImage
             }
-            price
-            image
-            description
-            amount
-            sale
-            secondImage
         }
     }
 `;
