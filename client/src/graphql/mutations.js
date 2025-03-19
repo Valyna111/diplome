@@ -1,4 +1,4 @@
-import { gql } from '@apollo/client';
+import {gql} from '@apollo/client';
 
 // Мутации для таблицы item
 export const CREATE_ITEM = gql`
@@ -366,49 +366,21 @@ export const DELETE_FEEDBACK = gql`
     }
 `;
 
-// Мутации для таблицы flowers_in_bouquets
-export const CREATE_FLOWERS_IN_BOUQUET = gql`
-    mutation CreateFlowersInBouquet($flowerId: Int!, $amount: Int!, $bouquetId: Int!) {
-        createFlowersInBouquet(input: { flowersInBouquet: { flowerId: $flowerId, amount: $amount, bouquetId: $bouquetId } }) {
-            flowersInBouquet {
+// Мутации для таблицы items_in_bouquets
+export const CREATE_ITEM_IN_BOUQUET = gql`
+    mutation CreateItemsInBouquet($itemId: Int!, $amount: Int!, $bouquetId: Int!) {
+        createItemsInBouquet(input: { itemsInBouquet: { itemId: $itemId, amount: $amount, bouquetId: $bouquetId } }) {
+            itemsInBouquet {
                 id
-                flower {
-                    id
-                    name
-                }
-                amount
-                bouquet {
-                    id
-                    name
-                }
-            }
-        }
-    }
-`;
-
-export const UPDATE_FLOWERS_IN_BOUQUET = gql`
-    mutation UpdateFlowersInBouquet($id: Int!, $flowerId: Int!, $amount: Int!, $bouquetId: Int!) {
-        updateFlowersInBouquetById(input: { id: $id, flowersInBouquetPatch: { flowerId: $flowerId, amount: $amount, bouquetId: $bouquetId } }) {
-            flowersInBouquet {
-                id
-                flower {
-                    id
-                    name
-                }
-                amount
-                bouquet {
-                    id
-                    name
-                }
             }
         }
     }
 `;
 
 export const DELETE_FLOWERS_IN_BOUQUET = gql`
-    mutation DeleteFlowersInBouquet($id: Int!) {
-        deleteFlowersInBouquetById(input: { id: $id }) {
-            flowersInBouquet {
+    mutation DeleteItemsInBouquet($id: Int!) {
+        deleteItemsInBouquetById(input: { id: $id }) {
+            itemsInBouquet {
                 id
             }
         }

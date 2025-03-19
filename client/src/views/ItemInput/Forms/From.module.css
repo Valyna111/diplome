@@ -6,12 +6,14 @@
     flex-direction: column;
     gap: 15px;
 }
+
 .header {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
 }
+
 .formTitle {
     font-size: 24px;
     margin-bottom: 20px;
@@ -40,10 +42,12 @@
     height: 200px;
     text-align: center;
 }
+
 .fileInputLabel:hover {
     border: 1px solid #4e011f;
     font-weight: 500;
 }
+
 .fileInput {
     display: none;
 }
@@ -54,14 +58,21 @@
     border-radius: 4px;
     margin-top: 10px;
 }
+
 .itemSection {
     display: flex;
     flex-direction: column;
     gap: 10px;
 }
+
 .itemRow {
     display: flex;
     flex-direction: row;
     gap: 10px;
     /*flex-wrap: wrap; !* Перенос элементов на новую строку *!*/
+}
+
+.itemRow .item {
+    display: flex;
+    width: 45%;
 }

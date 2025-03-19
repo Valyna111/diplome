@@ -259,11 +259,6 @@ app.get('/driver/deliveries', authenticateToken, async (req, res) => {
     }
 });
 
-
-
-
-
-
 app.use(
     postgraphile(pool, 'public', {
         watchPg: true,

@@ -1,4 +1,4 @@
-import { gql } from '@apollo/client';
+import {gql} from '@apollo/client';
 
 // Запросы для таблицы item
 export const GET_ALL_ITEMS = gql`
@@ -75,17 +75,28 @@ export const GET_ALL_BOUQUETS = gql`
                 amount
                 sale
                 secondImage
+                itemsInBouquetsByBouquetId {
+                    nodes {
+                        id
+                        amount
+                        itemId
+                        itemByItemId {
+                            name
+                            cost
+                        }
+                    }
+                }
             }
         }
     }
 `;
 
 export const GET_BOUQUET_BY_ID = gql`
-    query GetBouquetById($id: Int!) {
+    query bouquetById($id: Int!) {
         bouquetById(id: $id) {
             id
             name
-            category {
+            categoryByCategoryId {
                 id
                 name
             }
@@ -95,6 +106,17 @@ export const GET_BOUQUET_BY_ID = gql`
             amount
             sale
             secondImage
+            itemsInBouquetsByBouquetId {
+                nodes {
+                    id
+                    amount
+                    itemId
+                    itemByItemId {
+                        name
+                        cost
+                    }
+                }
+            }
         }
     }
 `;

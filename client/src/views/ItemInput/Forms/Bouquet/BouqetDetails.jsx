@@ -1,5 +1,5 @@
-import React, { useContext, useEffect, useState } from "react";
-import { observer } from "mobx-react-lite";
+import React, {useContext, useEffect, useState} from "react";
+import {observer} from "mobx-react-lite";
 import Input from "@/components/Form/Input/Input";
 import Button from "@/components/Form/Button/Button";
 import s from '../From.module.css';
@@ -12,12 +12,13 @@ const BouquetDetails = observer(({
                                      title = 'Создать букет',
                                      action = 'create',
                                      itemId = null,
-                                     onClose = () => {},
+                                     onClose = () => {
+                                     },
                                  }) => {
     const rootStore = useContext(StoreContext);
     const [form, setForm] = useState({
         name: '',
-        categoryId: { label: '', value: '' },
+        categoryId: {label: '', value: ''},
         price: '',
         description: '',
         amount: '',
@@ -34,7 +35,7 @@ const BouquetDetails = observer(({
             if (item) {
                 setForm({
                     name: item.name,
-                    categoryId: { label: item?.categoryByCategoryId?.name, value: item.categoryByCategoryId?.id },
+                    categoryId: {label: item?.categoryByCategoryId?.name, value: item.categoryByCategoryId?.id},
                     price: item.price.toString(),
                     description: item.description,
                     amount: item.amount.toString(),
@@ -42,10 +43,11 @@ const BouquetDetails = observer(({
                     image: item.image,
                     secondImage: item.secondImage,
                 });
-                if (item.items) {
-                    setSelectedItems(item.items.map((item) => ({
-                        id: item.id,
-                        quantity: item.quantity,
+                if (item.itemsInBouquetsByBouquetId) {
+                    setSelectedItems(item.itemsInBouquetsByBouquetId.nodes.map((item) => ({
+                        id: item?.id,
+                        quantity: item?.amount,
+                        name: item?.itemByItemId?.name,
                     })));
                 }
             }
@@ -76,7 +78,7 @@ const BouquetDetails = observer(({
     };
 
     const handleAddItem = () => {
-        setSelectedItems([...selectedItems, { id: null, quantity: 1 }]);
+        setSelectedItems([...selectedItems, {id: null, quantity: 1}]);
     };
 
     const handleRemoveItem = (index) => {
@@ -84,9 +86,10 @@ const BouquetDetails = observer(({
         setSelectedItems(newItems);
     };
 
-    const handleItemChange = (index, itemId) => {
+    const handleItemChange = (index, item) => {
         const newItems = [...selectedItems];
-        newItems[index].id = itemId;
+        newItems[index].id = item.value;
+        newItems[index].name = item.label;
         setSelectedItems(newItems);
     };
 
@@ -116,7 +119,12 @@ const BouquetDetails = observer(({
             };
 
             if (action === 'create') {
-                await rootStore.bouquetStore.createBouquet(data);
+                const bouquet = await rootStore.bouquetStore.createBouquet(data);
+                await rootStore.bouquetStore.updateItemsInBouquet(
+                    bouquet.id,
+                    selectedItems,
+                    true
+                );
             } else if (action === 'update' && itemId) {
                 await rootStore.bouquetStore.updateBouquet(itemId, data);
             }
@@ -140,97 +148,115 @@ const BouquetDetails = observer(({
         <div className={s.formContainer}>
             <div className={s.header}>
                 <h2 className={s.formTitle}>{title}</h2>
-                <IoClose style={{ cursor: 'pointer', width: '25px', height: '25px' }} onClick={onClose} />
+                <IoClose style={{cursor: 'pointer', width: '25px', height: '25px'}} onClick={onClose}/>
             </div>
-                <Input
-                    placeholder="Название букета"
-                    value={form.name}
-                    onChange={(e) => setForm({ ...form, name: e.target.value })}
-                />
-                <Select
-                    value={form.categoryId}
-                    onChange={(selectedOption) => {
-                        setForm((prevState) => ({
-                            ...prevState,
-                            categoryId: selectedOption,
-                        }));
-                    }}
-                    options={rootStore.auxiliaryStore.categories.map((category) => ({
-                        label: category?.name,
-                        value: category?.id,
-                    }))}
-                    placeholder={'Категория'}
-                />
-                <Input
-                    placeholder="Цена"
-                    value={form.price}
-                    onChange={(e) => setForm({ ...form, price: e.target.value })}
-                />
-                <div className={s.fileInputContainer}>
-                    <label className={s.fileInputLabel}>
-                        {!form.image && 'Выберите изображение'}
-                        <input
-                            type="file"
-                            accept="image/*"
-                            onChange={(e) => handleImageChange(e, (url) => setForm({ ...form, image: url }))}
-                            className={s.fileInput}
-                        />
-                        {form.image && <img src={`http://localhost:4000${form.image}`} alt="Выбранное изображение" width={150} height={150} className={s.previewImage} />}
-                    </label>
-                    <label className={s.fileInputLabel}>
-                        {!form.secondImage && 'Выберите второе изображение'}
-                        <input
-                            type="file"
-                            accept="image/*"
-                            onChange={(e) => handleImageChange(e, (url) => setForm({ ...form, secondImage: url }))}
-                            className={s.fileInput}
-                        />
-                        {form.secondImage && (
-                            <img src={`http://localhost:4000${form.secondImage}`} alt="Второе изображение" width={150} height={150} className={s.previewImage} />
-                        )}
-                    </label>
-                </div>
-                <Input
-                    placeholder="Описание"
-                    value={form.description}
-                    onChange={(e) => setForm({ ...form, description: e.target.value })}
-                />
-                <Input
-                    placeholder="Количество"
-                    value={form.amount}
-                    onChange={(e) => setForm({ ...form, amount: e.target.value })}
-                />
-                <Input
-                    placeholder="Скидка"
-                    value={form.sale}
-                    onChange={(e) => setForm({ ...form, sale: e.target.value })}
-                />
+            <Input
+                placeholder="Название букета"
+                value={form.name}
+                onChange={(e) => setForm({...form, name: e.target.value})}
+            />
+            <Select
+                value={form.categoryId}
+                onChange={(selectedOption) => {
+                    setForm((prevState) => ({
+                        ...prevState,
+                        categoryId: selectedOption,
+                    }));
+                }}
+                options={rootStore.auxiliaryStore.categories.map((category) => ({
+                    label: category?.name,
+                    value: category?.id,
+                }))}
+                placeholder={'Категория'}
+            />
+            <Input
+                placeholder="Цена"
+                value={form.price}
+                onChange={(e) => setForm({...form, price: e.target.value})}
+            />
+            <div className={s.fileInputContainer}>
+                <label className={s.fileInputLabel}>
+                    {!form.image && 'Выберите изображение'}
+                    <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => handleImageChange(e, (url) => setForm({...form, image: url}))}
+                        className={s.fileInput}
+                    />
+                    {form.image &&
+                        <img src={`http://localhost:4000${form.image}`} alt="Выбранное изображение" width={150}
+                             height={150} className={s.previewImage}/>}
+                </label>
+                <label className={s.fileInputLabel}>
+                    {!form.secondImage && 'Выберите второе изображение'}
+                    <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => handleImageChange(e, (url) => setForm({...form, secondImage: url}))}
+                        className={s.fileInput}
+                    />
+                    {form.secondImage && (
+                        <img src={`http://localhost:4000${form.secondImage}`} alt="Второе изображение" width={150}
+                             height={150} className={s.previewImage}/>
+                    )}
+                </label>
+            </div>
+            <Input
+                placeholder="Описание"
+                value={form.description}
+                onChange={(e) => setForm({...form, description: e.target.value})}
+            />
+            <Input
+                placeholder="Количество"
+                value={form.amount}
+                onChange={(e) => setForm({...form, amount: e.target.value})}
+            />
+            <Input
+                placeholder="Скидка"
+                value={form.sale}
+                onChange={(e) => setForm({...form, sale: e.target.value})}
+            />
 
-                <div className={s.itemSection}>
-                    <h3>Добавление компонентов</h3>
-                    {selectedItems.map((item, index) => (
-                        <div key={index} className={s.itemRow}>
-                            <Select
-                                value={item.id ? { label: rootStore.auxiliaryStore.items.find((i) => i.id === item.id)?.name, value: item.id } : {label: '', value: ''} }
-                                onChange={(selectedOption) => handleItemChange(index, selectedOption.value)}
-                                options={getAvailableItems()}
-                                placeholder="Выберите айтем"
-                            />
-                            <Input
-                                type="number"
-                                placeholder="Количество"
-                                value={item.quantity}
-                                onChange={(e) => handleQuantityChange(index, parseInt(e.target.value))}
-                                min={1}
-                            />
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                                <IoClose style={{ cursor: 'pointer', width: '17px', height: '17px' }} onClick={() => handleRemoveItem(index)}/>
-                            </div>
+            <div className={s.itemSection}>
+                <h3>Добавление компонентов</h3>
+                {selectedItems.map((item, index) => (
+                    <div key={index} className={s.itemRow}>
+                        <Select
+                            value={item?.id ? {
+                                label: item?.name,
+                                value: item.id
+                            } : {label: '', value: ''}}
+                            onChange={(selectedOption) => handleItemChange(index, selectedOption)}
+                            options={getAvailableItems()}
+                            placeholder="Выберите айтем"
+                            rootClassName={s.item}
+                        />
+                        <Input
+                            type="number"
+                            placeholder="Количество"
+                            value={item.quantity}
+                            onChange={(e) => handleQuantityChange(index, parseInt(e.target.value))}
+                            min={1}
+                            className={s.item}
+                        />
+                        <div style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            marginBottom: '8px'
+                        }}>
+                            <IoClose style={{cursor: 'pointer', width: '17px', height: '17px'}}
+                                     onClick={() => handleRemoveItem(index)}/>
                         </div>
-                    ))}
-                    <Button type="second" onClick={handleAddItem} placeholder='Добавить айтем' icon={<IoMdAdd style={{ cursor: 'pointer', width: '17px', height: '17px', color: 'black' }} />}/>
-                </div>
-                <Button type="primary" placeholder={action === 'create' ? 'Создать' : 'Обновить'} onClick={handleSubmit}/>
+                    </div>
+                ))}
+                {rootStore.auxiliaryStore.items.length !== selectedItems.length &&
+                    <Button type="second" onClick={handleAddItem} placeholder='Добавить айтем'
+                            icon={<IoMdAdd
+                                style={{cursor: 'pointer', width: '17px', height: '17px', color: 'black'}}/>}/>
+                }
+            </div>
+            <Button type="primary" placeholder={action === 'create' ? 'Создать' : 'Обновить'} onClick={handleSubmit}/>
         </div>
     );
 });

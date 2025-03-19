@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState} from "react";
 import classNames from "classnames";
-import { IoIosArrowDown, IoMdCheckmark } from "react-icons/io";
+import {IoIosArrowDown, IoMdCheckmark} from "react-icons/io";
 import s from './Select.module.css';
 
 const Select = ({
                     options,
                     onChange,
                     placeholder,
-                    value = { label: '', value: '' }, // value теперь будет объектом { label, value }
+                    value = {label: '', value: ''}, // value теперь будет объектом { label, value }
                     errorMessage,
                     icon,
                     error,
@@ -15,22 +15,23 @@ const Select = ({
                     warning,
                     id,
                     className,
+                    rootClassName,
                     ...props
                 }) => {
     const [isFocused, setIsFocused] = useState(false);
-    const [input, setInput] = useState(value.label || ''); // Отображаем label в поле ввода
+    const [input, setInput] = useState(value?.label || ''); // Отображаем label в поле ввода
     const [filteredOptions, setFilteredOptions] = useState(options);
 
     useEffect(() => {
-        if (value && value.label) {
-            setInput(value.label); // Обновляем input при изменении value
+        if (value && value?.label) {
+            setInput(value?.label || ''); // Обновляем input при изменении value
         }
     }, [value]);
 
     useEffect(() => {
         // Фильтрация опций при изменении input
         const filtered = options.filter(option =>
-            value.label.toLowerCase() === input.toLowerCase() ? true : option.label.toLowerCase().includes(input.toLowerCase())
+            value?.label && value?.label?.toLowerCase() === input.toLowerCase() ? true : option.label.toLowerCase().includes(input.toLowerCase())
         );
         setFilteredOptions(filtered);
     }, [input, options]);
@@ -50,7 +51,7 @@ const Select = ({
     };
 
     return (
-        <div className={classNames(s.root)}>
+        <div className={classNames(s.root, rootClassName)}>
             <div
                 className={classNames(s.container, className, {
                     [s.error]: error,
@@ -84,7 +85,7 @@ const Select = ({
                     })}
                     onClick={() => setIsFocused(!isFocused)}
                 >
-                    <IoIosArrowDown />
+                    <IoIosArrowDown/>
                 </button>
                 {errorMessage && error && !isFocused && <span className={s.errorMessage}>{errorMessage}</span>}
             </div>
@@ -93,11 +94,11 @@ const Select = ({
                     {filteredOptions.map((option, index) => (
                         <div
                             key={index}
-                            className={classNames(s.option, option.label === value.label && s.checked)}
+                            className={classNames(s.option, option.label === value?.label && s.checked)}
                             onClick={() => handleOptionClick(option)}
                         >
                             <span className={s.text}>{option.label}</span>
-                            {option.label === value.label && <IoMdCheckmark className={s.checkIcon} />}
+                            {option.label === value?.label && <IoMdCheckmark className={s.checkIcon}/>}
                         </div>
                     ))}
                 </div>

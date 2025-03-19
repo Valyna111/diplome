@@ -34,7 +34,7 @@
 }
 
 /* 📌 Ссылки в меню */
-.menu a {
+.menu a, .link {
   text-decoration: none;
   color: #e91e63;
   font-size: 18px;

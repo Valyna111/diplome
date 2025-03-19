@@ -16,7 +16,8 @@
 }
 
 .input {
-    flex: 1;
+    width: 100%;
+    align-self: stretch;
     border: none;
     outline: none;
     font-size: 16px;
@@ -111,11 +112,13 @@
     z-index: 9;
     transition: all 0.2s ease;
 }
+
 .options.active {
     max-height: 250px;
     padding: 8px 0px;
     overflow-y: auto;
 }
+
 .option {
     display: flex;
     align-items: center;

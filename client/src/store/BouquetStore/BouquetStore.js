@@ -1,6 +1,6 @@
-import { makeObservable, observable, action, runInAction } from 'mobx';
-import { CREATE_BOUQUET, DELETE_BOUQUET, UPDATE_BOUQUET } from '@/graphql/mutations';
-import { GET_ALL_BOUQUETS } from '@/graphql/queries';
+import {action, makeObservable, observable, runInAction} from 'mobx';
+import {CREATE_BOUQUET, CREATE_ITEM_IN_BOUQUET, DELETE_BOUQUET, UPDATE_BOUQUET} from '@/graphql/mutations';
+import {GET_ALL_BOUQUETS, GET_BOUQUET_BY_ID} from '@/graphql/queries';
 
 export default class BouquetStore {
     bouquets = [];
@@ -17,15 +17,37 @@ export default class BouquetStore {
             updateBouquet: action,
             deleteBouquet: action,
             loadBouquets: action,
+            getBouquet: action,
         });
         this.loadBouquets().then().catch(e => console.error(e));
+    }
+
+    async getBouquet(id) {
+        try {
+            const {data: result} = await this.rootStore.client.query({
+                query: GET_BOUQUET_BY_ID,
+                variables: {
+                    id
+                }, // Чтобы всегда запрашивать свежие данные
+            });
+            const getBouquetById = result.bouquetById.bouquetById;
+            runInAction(() => {
+                const index = this.bouquets.findIndex(cat => cat.id === id);
+                if (index !== -1) {
+                    this.bouquets = [...this.bouquets.slice(0, index), getBouquetById, ...this.bouquets.slice(index + 1)];
+                }
+            });
+            return getBouquetById;
+        } catch (error) {
+            console.error(error);
+        }
     }
 
     // Метод для загрузки букетов
     async loadBouquets() {
         this.isLoading = true;
         try {
-            const { data } = await this.rootStore.client.query({
+            const {data} = await this.rootStore.client.query({
                 query: GET_ALL_BOUQUETS,
                 fetchPolicy: 'network-only', // Чтобы всегда запрашивать свежие данные
             });
@@ -47,13 +69,15 @@ export default class BouquetStore {
     // Метод для создания букета
     async createBouquet(data) {
         try {
-            const { data: result } = await this.rootStore.client.mutate({
+            const {data: result} = await this.rootStore.client.mutate({
                 mutation: CREATE_BOUQUET,
                 variables: data,
             });
+            const bouquet = result.createBouquet.bouquet;
             runInAction(() => {
-                this.bouquets.push(result.createBouquet.bouquet);
+                this.bouquets = [...this.bouquets, bouquet];
             });
+            return bouquet;
         } catch (error) {
             console.error('Error creating bouquet:', error);
         }
@@ -62,17 +86,18 @@ export default class BouquetStore {
     // Метод для обновления букета
     async updateBouquet(id, data) {
         try {
-            const { data: result } = await this.rootStore.client.mutate({
+            const {data: result} = await this.rootStore.client.mutate({
                 mutation: UPDATE_BOUQUET,
-                variables: { id, ...data },
+                variables: {id, ...data},
             });
+            const updatedBouquet = result.updateBouquetById.bouquet;
             runInAction(() => {
-                const updatedBouqet = result.updateBouquetById.bouquet;
                 const index = this.bouquets.findIndex(cat => cat.id === id);
                 if (index !== -1) {
-                    this.bouquets = [...this.bouquets.slice(0, index), updatedBouqet, ...this.bouquets.slice(index + 1)];
+                    this.bouquets = [...this.bouquets.slice(0, index), updatedBouquet, ...this.bouquets.slice(index + 1)];
                 }
             });
+            return updatedBouquet;
         } catch (error) {
             console.error('Error updating bouquet:', error);
         }
@@ -83,13 +108,39 @@ export default class BouquetStore {
         try {
             await this.rootStore.client.mutate({
                 mutation: DELETE_BOUQUET,
-                variables: { id },
+                variables: {id},
             });
             runInAction(() => {
                 this.bouquets = this.bouquets.filter((b) => b.id !== id);
             });
         } catch (error) {
             console.error('Error deleting bouquet:', error);
+        }
+    }
+
+    async updateItemsInBouquet(id, items, isNew) {
+        const bouquet = this.bouquets.find(cat => cat.id === id);
+        if (!bouquet) {
+            return new Error(`No bouquet found with id ${id}`);
+        }
+        try {
+            if (isNew) {
+                items.forEach((item) => {
+                    this.rootStore.client.mutate({
+                        mutation: CREATE_ITEM_IN_BOUQUET,
+                        variables: {
+                            itemId: item.id,
+                            bouquetId: id,
+                            amount: item.quantity,
+                        },
+                    });
+                })
+                await this.getBouquet(id);
+            } else {
+
+            }
+        } catch (error) {
+            console.error('Error updating bouquet:', error);
         }
     }
 }
