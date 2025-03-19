@@ -1,4 +1,7 @@
 import React, { useState } from "react";
+
+import Button from "@/components/Form/Button/Button"; // Подключаем кастомную кнопку
+import Input from "@/components/Form/Input/Input"; // Подключаем кастомный инпут
 import styles from "./CreditCard.module.css"; // Подключаем стили
 
 const CreditCard = () => {
@@ -63,109 +66,117 @@ const CreditCard = () => {
 
   return (
     <div className={styles.container}>
-      <h1>Мои карты</h1>
+      <div className={styles.leftSection}>
+        <h1 className={styles.title}>Мои карты</h1>
 
-      {cards.length > 0 ? (
-        <div className={styles.cardList}>
-          {cards.map((card) => (
-            <div key={card.id} className={styles.card}>
-              <div className={styles.cardHeader}>
-                <span>{card.firstName} {card.lastName}</span>
-                <button
-                  className={styles.deleteButton}
-                  onClick={() => handleDeleteCard(card.id)}
-                >
-                  Удалить
-                </button>
+        {cards.length > 0 ? (
+          <div className={styles.cardList}>
+            {cards.map((card) => (
+              <div key={card.id} className={styles.card}>
+                <div className={styles.cardHeader}>
+                  <span>{card.firstName} {card.lastName}</span>
+                  <Button
+                    className={styles.deleteButton}
+                    onClick={() => handleDeleteCard(card.id)}
+                    type="second"
+                    placeholder="Удалить"
+                  />
+                </div>
+                <div className={styles.cardNumber}>
+                  {maskCardNumber(card.cardNumber)}
+                </div>
               </div>
-              <div className={styles.cardNumber}>
-                {maskCardNumber(card.cardNumber)}
-              </div>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <p>У вас пока нет добавленных карт.</p>
-      )}
+            ))}
+          </div>
+        ) : (
+          <p className={styles.emptyMessage}>У вас пока нет добавленных карт.</p>
+        )}
 
-      <button
-        className={styles.addButton}
-        onClick={() => setShowAddForm(true)}
-      >
-        Добавить карту
-      </button>
+        <Button
+          className={styles.addButton}
+          onClick={() => setShowAddForm(true)}
+          type="primary"
+          placeholder="Добавить карту"
+        />
 
-      {showAddForm && (
-        <div className={styles.formOverlay}>
-          <div className={styles.formContainer}>
-            <h2>Добавить карту</h2>
-            <form onSubmit={(e) => e.preventDefault()}>
-              <div className={styles.formGroup}>
-                <label>Имя (латиницей)</label>
-                <input
-                  type="text"
-                  name="firstName"
+        {showAddForm && (
+          <div className={styles.formOverlay}>
+            <div className={styles.formContainer}>
+              <h2>Добавить карту</h2>
+              <form onSubmit={(e) => e.preventDefault()} className={styles.form}>
+                <Input
+                  className={styles.input}
+                  id="firstName"
                   value={formData.firstName}
                   onChange={handleChange}
                   placeholder="Имя"
+                  name="firstName"
                   required
                 />
-              </div>
-              <div className={styles.formGroup}>
-                <label>Фамилия (латиницей)</label>
-                <input
-                  type="text"
-                  name="lastName"
+                <Input
+                  className={styles.input}
+                  id="lastName"
                   value={formData.lastName}
                   onChange={handleChange}
                   placeholder="Фамилия"
+                  name="lastName"
                   required
                 />
-              </div>
-              <div className={styles.formGroup}>
-                <label>Номер карты</label>
-                <input
-                  type="text"
-                  name="cardNumber"
+                <Input
+                  className={styles.input}
+                  id="cardNumber"
                   value={formData.cardNumber}
                   onChange={handleChange}
                   placeholder="0000 0000 0000 0000"
-                  maxLength={16}
+                  mask="0000 0000 0000 0000"
+                  name="cardNumber"
                   required
                 />
-              </div>
-              <div className={styles.formGroup}>
-                <label>CVV</label>
-                <input
-                  type="text"
-                  name="cvv"
+                <Input
+                  className={styles.input}
+                  id="cvv"
                   value={formData.cvv}
                   onChange={handleChange}
                   placeholder="123"
-                  maxLength={4}
+                  mask="0000"
+                  name="cvv"
                   required
                 />
-              </div>
-              <div className={styles.formActions}>
-                <button
-                  type="button"
-                  className={styles.cancelButton}
-                  onClick={() => setShowAddForm(false)}
-                >
-                  Отмена
-                </button>
-                <button
-                  type="submit"
-                  className={styles.submitButton}
-                  onClick={handleAddCard}
-                >
-                  Добавить
-                </button>
-              </div>
-            </form>
+
+                <div className={styles.formActions}>
+                  <Button
+                    type="second"
+                    onClick={() => setShowAddForm(false)}
+                    placeholder="Отмена"
+                  />
+                  <Button
+                    type="primary"
+                    onClick={handleAddCard}
+                    placeholder="Добавить"
+                  />
+                </div>
+              </form>
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
+
+      <div className={styles.rightSection}>
+        <h2>Как безопасно использовать карты онлайн?</h2>
+        <p>
+          Чтобы избежать мошенничества, следуйте этим простым рекомендациям:
+        </p>
+        <ul>
+          <li>Используйте только проверенные онлайн-магазины.</li>
+          <li>Не передавайте свои данные третьим лицам.</li>
+          <li>Активируйте двухфакторную аутентификацию на ваших аккаунтах.</li>
+          <li>Проверяйте URL на предмет безопасности (начинается с "https://").</li>
+          <li>Будьте осторожны при вводе данных в открытых или общественных сетях.</li>
+        </ul>
+        <p>
+          При возникновении подозрений на мошенничество, немедленно свяжитесь с вашим банком.
+        </p>
+      </div>
     </div>
   );
 };

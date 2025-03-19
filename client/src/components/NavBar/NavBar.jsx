@@ -17,9 +17,11 @@ const Navbar = observer(() => {
 
   // Запрос профиля при загрузке
   useEffect(() => {
+    console.log("Unauthorized:", unauthorized);
+    console.log("User Role:", userRole);
     const fetchProfile = async () => {
       try {
-        const response = await fetch("/profile", {
+        const response = await fetch("http://localhost:4000/profile", {
           method: "GET",
           credentials: "include",
         });
