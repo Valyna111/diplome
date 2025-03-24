@@ -1,104 +1,103 @@
 .container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 20px;
-  background-color: #f9f9f9;
-  min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    min-height: 100vh;
 }
 
 .profileSection {
-  background: #ffffff;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  width: 100%;
-  max-width: 600px;
-  margin-bottom: 20px;
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 600px;
+    margin-bottom: 20px;
 }
 
 .title {
-  font-size: 24px;
-  color: #333;
-  margin-bottom: 20px;
-  text-align: center;
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 20px;
+    text-align: center;
 }
 
 .infoBlock {
-  margin-bottom: 15px;
+    margin-bottom: 15px;
 }
 
 .label {
-  font-weight: bold;
-  color: #555;
-  display: block;
-  margin-bottom: 5px;
+    font-weight: bold;
+    color: #555;
+    display: block;
+    margin-bottom: 5px;
 }
 
 .text {
-  margin: 0;
-  color: #333;
+    margin: 0;
+    color: #333;
 }
 
 .input {
-  width: 96%;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  font-size: 16px;
-  color: #333;
-  background-color: #f9f9f9;
+    width: 96%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+    color: #333;
+    background-color: #f9f9f9;
 }
 
 .button {
-  background-color: #e91e63;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
-  font-size: 16px;
-  cursor: pointer;
-  width: 100%;
-  margin-top: 20px;
-  transition: background-color 0.3s ease;
+    background-color: #e91e63;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 20px;
+    transition: background-color 0.3s ease;
 }
 
 .button:hover {
-  background-color: #d81b60;
+    background-color: #d81b60;
 }
 
 .sideSection {
-  background: #ffffff;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  width: 100%;
-  max-width: 600px;
-  text-align: center;
-  color: #555;
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 600px;
+    text-align: center;
+    color: #555;
 }
 
 /* Адаптивность */
 @media (max-width: 768px) {
-  .container {
-    padding: 10px;
-  }
+    .container {
+        padding: 10px;
+    }
 
-  .profileSection,
-  .sideSection {
-    padding: 15px;
-  }
+    .profileSection,
+    .sideSection {
+        padding: 15px;
+    }
 
-  .title {
-    font-size: 20px;
-  }
+    .title {
+        font-size: 20px;
+    }
 
-  .input {
-    font-size: 14px;
-  }
+    .input {
+        font-size: 14px;
+    }
 
-  .button {
-    font-size: 14px;
-    padding: 8px 16px;
-  }
+    .button {
+        font-size: 14px;
+        padding: 8px 16px;
+    }
 }

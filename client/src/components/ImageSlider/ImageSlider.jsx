@@ -89,9 +89,9 @@ const ImageSlider = () => {
                     animate="center"
                     exit="exit"
                     transition={{
-                        x: {type: "spring", stiffness: 300, damping: 30},
-                        opacity: {duration: 0.2},
-                        scale: {type: "spring", stiffness: 300, damping: 30},
+                        x: {type: "spring", stiffness: 100, damping: 50},
+                        opacity: {duration: 0.5},
+                        scale: {type: "spring", stiffness: 100, damping: 50},
                     }}
                     className={`${styles.sliderImage} ${styles.activeSlide}`}
                 >
@@ -106,9 +106,9 @@ const ImageSlider = () => {
             {/* Next Slide (smaller and to the right) */}
             <motion.div
                 className={`${styles.sliderImage} ${styles.nextSlide}`}
-                initial={{x: "80%", scale: 0.8}}
-                animate={{x: "30%", scale: 0.9}}
-                transition={{type: "spring", stiffness: 300, damping: 30}}
+                initial={{x: "80%", scale: 1}}
+                animate={{x: "30%", scale: 1}}
+                transition={{type: "spring", stiffness: 30, damping: 3}}
             >
                 <img
                     src={images[nextIndex].src}
@@ -118,10 +118,10 @@ const ImageSlider = () => {
             </motion.div>
 
             {/* Navigation buttons */}
-            <button className={styles.prevButton} onClick={() => paginate(-1)}>
+            <button className={styles.prevButton} onClick={() => paginate(1)}>
                 <FaAngleLeft/>
             </button>
-            <button className={styles.nextButton} onClick={() => paginate(1)}>
+            <button className={styles.nextButton} onClick={() => paginate(-1)}>
                 <FaAngleRight/>
             </button>
         </div>
