@@ -1,3 +1,4 @@
+import { UPDATE_USER } from '@/graphql/mutations';
 import { makeObservable, observable, action } from 'mobx';
 
 export default class AuthStore {
@@ -54,6 +55,7 @@ export default class AuthStore {
       logout: action,
       fetchUserProfile: action,
       registerUser: action,
+      updateUser: action
     });
 
     this.fetchUserProfile().then(r => {}).catch((e) => console.error(e));
@@ -206,5 +208,22 @@ export default class AuthStore {
         general: '',
       },
     };
+  }
+  async updateUser(id, data) {
+      try {
+          const {data: result} = await this.rootStore.client.mutate({
+              mutation: UPDATE_USER ,
+              variables: {id, dateOfBirth: data.date_of_birth, ...data},
+          });
+
+          const updated = result.updateUserById.user;
+
+          if(!updated) throw new Error("user not updated")
+          
+          this.fetchUserProfile();
+          return this.currentUser
+      } catch (error) {
+          console.error('Error updating bouquet:', error);
+      }
   }
 }

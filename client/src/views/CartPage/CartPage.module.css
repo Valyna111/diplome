@@ -1,123 +1,163 @@
 .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-  }
-  
-  .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-  }
-  
-  .clearButton {
-    background-color: #ff4d4d;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    font-size: 16px;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  .clearButton:hover {
-    background-color: #ff1a1a;
-  }
-  
-  .cartItems {
-    display: flex;
-    flex-wrap: wrap; /* Перенос карточек на новую строку */
-    gap: 20px; /* Расстояние между карточками */
-  }
-  
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 10px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.clearButton {
+  background-color: #ff4d4d;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  cursor: pointer;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+.clearButton:hover {
+  background-color: #cc0000;
+}
+
+/* Сетка карточек */
+.cartItems {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  justify-content: center; /* Центрирование карточек */
+}
+
+/* Каждая карточка */
+.cartItem {
+  flex: 1 1 calc(33.333% - 15px); /* 3 карточки в ряд, учитывая отступы */
+  max-width: 32%; /* Чтобы карточки не растягивались */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background-color: #f9f9f9;
+}
+
+/* Для планшетов — 2 карточки в ряд */
+@media (max-width: 1023px) {
   .cartItem {
-    flex: 1 1 calc(50% - 20px); /* Две карточки в ряд с отступом */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    padding: 20px;
-    background-color: #f9f9f9;
-    box-sizing: border-box; /* Учитываем padding в ширине */
+    flex: 1 1 calc(50% - 15px);
+    max-width: 48%;
   }
-  
-  .controls {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    margin-top: 10px;
+}
+
+/* Для мобильных — 1 карточка в ряд */
+@media (max-width: 768px) {
+  .cartItem {
+    flex: 1 1 100%;
+    max-width: 100%;
   }
-  
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.removeButton {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  color: #ff4d4d;
+  font-size: 16px;
+}
+
+.removeButton:hover {
+  color: #cc0000;
+}
+
+.counter {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.counter button {
+  background-color: #ddd;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+.counter button:hover {
+  background-color: #ccc;
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+  padding: 15px;
+  border-top: 1px solid #ddd;
+}
+
+.totalPrice {
+  font-size: 1.1em;
+  font-weight: bold;
+}
+
+.checkoutButton {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  cursor: pointer;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+.checkoutButton:hover {
+  background-color: #45a049;
+}
+
+/* Адаптивность для 320px */
+@media (max-width: 320px) {
+  .container {
+    padding: 5px;
+  }
+
+  .header h1 {
+    font-size: 1.5em;
+  }
+
+  .clearButton {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+
   .removeButton {
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: #ff4d4d;
-    font-size: 20px;
+    font-size: 14px;
   }
-  
-  .removeButton:hover {
-    color: #ff1a1a;
-  }
-  
-  .counter {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  
+
   .counter button {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    font-size: 16px;
-    border-radius: 5px;
-    cursor: pointer;
+    padding: 4px 8px;
+    font-size: 12px;
   }
-  
-  .counter button:hover {
-    background-color: #0056b3;
-  }
-  
-  .counter span {
-    font-size: 18px;
-    font-weight: bold;
-  }
-  
-  .footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 40px;
-    padding-top: 20px;
-    border-top: 1px solid #ddd;
-  }
-  
+
   .totalPrice {
-    font-size: 24px;
-    font-weight: bold;
+    font-size: 1em;
   }
-  
+
   .checkoutButton {
-    background-color: #28a745;
-    color: white;
-    border: none;
-    padding: 15px 30px;
-    font-size: 18px;
-    border-radius: 5px;
-    cursor: pointer;
+    padding: 6px 12px;
+    font-size: 12px;
   }
-  
-  .checkoutButton:hover {
-    background-color: #218838;
-  }
-  
-  /* Адаптивность */
-  @media (max-width: 768px) {
-    .cartItem {
-      flex: 1 1 100%; /* Одна карточка в ряд на мобильных */
-    }
-  }
+}

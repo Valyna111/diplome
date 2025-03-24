@@ -1,39 +1,19 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import styles from "./UserProfile.module.css";
+import { observer } from "mobx-react-lite";
+import StoreContext from "@/store/StoreContext";
 
-const UserProfile = () => {
+const UserProfile = observer(() => {
+  const rootStore = useContext(StoreContext);
+  const {authStore} = rootStore;  
+  console.log(authStore.currentUser);
+  const user = authStore.currentUser;
   const [isEditing, setIsEditing] = useState(false);
-  const [userData, setUserData] = useState({
-    username: "",
-    email: "",
-    phone: "",
-    surname: "",
-    birthdate: "", // Поле для даты рождения
-  });
-  const [editableData, setEditableData] = useState({ ...userData });
+  const [editableData, setEditableData] = useState(user);
 
-  // Загрузка данных пользователя при монтировании компонента
-  useEffect(() => {
-    const fetchUserProfile = async () => {
-      try {
-        const response = await fetch("http://localhost:4000/profile", {
-          credentials: "include", // Для отправки куки
-        });
-
-        if (!response.ok) {
-          throw new Error("Ошибка при загрузке данных пользователя");
-        }
-
-        const data = await response.json();
-        setUserData(data.user);
-        setEditableData(data.user);
-      } catch (error) {
-        console.error("Ошибка:", error);
-      }
-    };
-
-    fetchUserProfile();
-  }, []);
+  useEffect(()=>{
+    setEditableData(user); 
+  },[ user ]);
 
   // Обработчик изменения полей
   const handleChange = (e) => {
@@ -43,21 +23,8 @@ const UserProfile = () => {
   // Сохранение данных
   const handleSave = async () => {
     try {
-      const response = await fetch("http://localhost:4000/profile", {
-        method: "PUT", // Используем PUT для обновления данных
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(editableData),
-      });
 
-      if (!response.ok) {
-        throw new Error("Ошибка при сохранении данных");
-      }
-
-      const data = await response.json();
-      setUserData(data.user); // Обновляем данные пользователя
+      await authStore.updateUser(user.id, editableData);
       setIsEditing(false);
     } catch (error) {
       console.error("Ошибка:", error);
@@ -81,7 +48,7 @@ const UserProfile = () => {
               className={styles.input}
             />
           ) : (
-            <p className={styles.text}>{userData.username}</p>
+            <p className={styles.text}>{user?.username}</p>
           )}
         </div>
 
@@ -96,7 +63,7 @@ const UserProfile = () => {
               className={styles.input}
             />
           ) : (
-            <p className={styles.text}>{userData.surname}</p>
+            <p className={styles.text}>{user?.surname}</p>
           )}
         </div>
 
@@ -111,7 +78,7 @@ const UserProfile = () => {
               className={styles.input}
             />
           ) : (
-            <p className={styles.text}>{userData.email}</p>
+            <p className={styles.text}>{user?.email}</p>
           )}
         </div>
 
@@ -126,24 +93,27 @@ const UserProfile = () => {
               className={styles.input}
             />
           ) : (
-            <p className={styles.text}>{userData.phone}</p>
+            <p className={styles.text}>{user?.phone}</p>
           )}
         </div>
 
         <div className={styles.infoBlock}>
           <label className={styles.label}>Дата рождения:</label>
-          {isEditing && !userData.birthdate ? (
+          {isEditing && !user?.date_of_birth ? (
             <input
               type="date"
-              name="birthdate"
-              value={editableData.birthdate}
+              name="date_of_birth"
+              value={editableData.date_of_birth}
               onChange={handleChange}
               className={styles.input}
             />
           ) : (
             <p className={styles.text}>
-              {userData.birthdate || "Дата рождения не указана"}
-            </p>
+            {user?.date_of_birth
+              ? new Date(user.date_of_birth).toISOString().split("T")[0]
+              : "Дата рождения не указана"}
+          </p>
+          
           )}
         </div>
 
@@ -161,6 +131,6 @@ const UserProfile = () => {
       </div>
     </div>
   );
-};
+});
 
 export default UserProfile;

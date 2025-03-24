@@ -665,20 +665,10 @@ export const CREATE_USER = gql`
 `;
 
 export const UPDATE_USER = gql`
-    mutation UpdateUser($id: Int!, $username: String!, $passhash: String!, $email: String, $phone: String, $roleId: Int!, $dateOfBirth: Date, $surname: String!) {
-        updateUserById(input: { id: $id, userPatch: { username: $username, passhash: $passhash, email: $email, phone: $phone, roleId: $roleId, dateOfBirth: $dateOfBirth, surname: $surname } }) {
+    mutation UpdateUser($id: Int!, $username: String!, $passhash: String!, $email: String, $phone: String, $dateOfBirth: Date, $surname: String!) {
+        updateUserById(input: { id: $id, userPatch: { username: $username, passhash: $passhash, email: $email, phone: $phone,  dateOfBirth: $dateOfBirth, surname: $surname } }) {
             user {
                 id
-                username
-                passhash
-                email
-                phone
-                role {
-                    id
-                    name
-                }
-                dateOfBirth
-                surname
             }
         }
     }
