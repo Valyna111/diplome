@@ -1,6 +1,8 @@
-import React, {useEffect, useState} from "react";
-import {FaAngleLeft, FaAngleRight} from "react-icons/fa";
-import {AnimatePresence, motion} from "framer-motion";
+import React from "react";
+import Slider from "react-slick";
+import {FaChevronLeft, FaChevronRight} from "react-icons/fa";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 import styles from "./ImageSlider.module.css";
 import Slider1 from '@/assets/images/slider1.jpg';
 import Slider2 from '@/assets/images/slider2.jpg';
@@ -12,118 +14,72 @@ const images = [
     {src: Slider3, link: "/flower3"},
 ];
 
+const NextArrow = ({onClick}) => (
+    <div className={`${styles.arrow} ${styles.nextArrow}`} onClick={onClick}>
+        <FaChevronRight/>
+    </div>
+);
+
+const PrevArrow = ({onClick}) => (
+    <div className={`${styles.arrow} ${styles.prevArrow}`} onClick={onClick}>
+        <FaChevronLeft/>
+    </div>
+);
+
 const ImageSlider = () => {
-    const [[currentIndex, direction], setCurrentIndex] = useState([0, 0]);
-    const [isHovered, setIsHovered] = useState(false);
-
-    useEffect(() => {
-        const interval = setInterval(() => {
-            if (!isHovered) {
-                setCurrentIndex(([prevIndex]) => [
-                    (prevIndex + 1) % images.length,
-                    1, // direction forward
-                ]);
+    const settings = {
+        dots: true,
+        infinite: true,
+        speed: 500,
+        centerMode: true,  // Включаем режим центрального слайда
+        centerPadding: "10%",  // Отступы по бокам (видимость соседних слайдов)
+        slidesToShow: 1,
+        slidesToScroll: 1,
+        autoplay: true,
+        autoplaySpeed: 5000,
+        pauseOnHover: true,
+        nextArrow: <NextArrow/>,
+        prevArrow: <PrevArrow/>,
+        dotsClass: `slick-dots ${styles.dots}`,
+        customPaging: () => <div className={styles.dot}/>,
+        responsive: [
+            {
+                breakpoint: 1024,
+                settings: {
+                    centerPadding: "7.5%",
+                }
+            },
+            {
+                breakpoint: 768,
+                settings: {
+                    centerPadding: "5%",
+                }
+            },
+            {
+                breakpoint: 480,
+                settings: {
+                    centerMode: false,  // На мобильных отключаем preview
+                    centerPadding: "0",
+                }
             }
-        }, 5000);
-        return () => clearInterval(interval);
-    }, [isHovered]);
-
-    const paginate = (newDirection) => {
-        setCurrentIndex(([prevIndex]) => {
-            const newIndex = (prevIndex + newDirection + images.length) % images.length;
-            return [newIndex, newDirection];
-        });
+        ]
     };
-
-    const variants = {
-        enter: (direction) => ({
-            x: direction > 0 ? "100%" : "-100%",
-            opacity: 0.5,
-            scale: 0.8,
-        }),
-        center: {
-            x: 0,
-            opacity: 1,
-            scale: 1,
-            zIndex: 1,
-        },
-        exit: (direction) => ({
-            x: direction < 0 ? "100%" : "-100%",
-            opacity: 0.5,
-            scale: 0.8,
-            zIndex: 0,
-        }),
-    };
-
-    // Calculate previous and next indices for the carousel effect
-    const prevIndex = (currentIndex - 1 + images.length) % images.length;
-    const nextIndex = (currentIndex + 1) % images.length;
 
     return (
-        <div
-            className={styles.sliderContainer}
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
-        >
-            {/* Previous Slide (smaller and to the left) */}
-            <motion.div
-                className={`${styles.sliderImage} ${styles.prevSlide}`}
-                initial={{x: "-80%", scale: 0.8}}
-                animate={{x: "-30%", scale: 0.9}}
-                transition={{type: "spring", stiffness: 300, damping: 30}}
-            >
-                <img
-                    src={images[prevIndex].src}
-                    alt={`Previous slide`}
-                    className={styles.image}
-                />
-            </motion.div>
-
-            {/* Current Slide (main) */}
-            <AnimatePresence custom={direction}>
-                <motion.div
-                    key={currentIndex}
-                    custom={direction}
-                    variants={variants}
-                    initial="enter"
-                    animate="center"
-                    exit="exit"
-                    transition={{
-                        x: {type: "spring", stiffness: 100, damping: 50},
-                        opacity: {duration: 0.5},
-                        scale: {type: "spring", stiffness: 100, damping: 50},
-                    }}
-                    className={`${styles.sliderImage} ${styles.activeSlide}`}
-                >
-                    <img
-                        src={images[currentIndex].src}
-                        alt={`Slide ${currentIndex + 1}`}
-                        className={styles.image}
-                    />
-                </motion.div>
-            </AnimatePresence>
-
-            {/* Next Slide (smaller and to the right) */}
-            <motion.div
-                className={`${styles.sliderImage} ${styles.nextSlide}`}
-                initial={{x: "80%", scale: 1}}
-                animate={{x: "30%", scale: 1}}
-                transition={{type: "spring", stiffness: 30, damping: 3}}
-            >
-                <img
-                    src={images[nextIndex].src}
-                    alt={`Next slide`}
-                    className={styles.image}
-                />
-            </motion.div>
-
-            {/* Navigation buttons */}
-            <button className={styles.prevButton} onClick={() => paginate(1)}>
-                <FaAngleLeft/>
-            </button>
-            <button className={styles.nextButton} onClick={() => paginate(-1)}>
-                <FaAngleRight/>
-            </button>
+        <div className={styles.sliderContainer}>
+            <Slider {...settings}>
+                {images.map((image, index) => (
+                    <div key={index} className={styles.slide}>
+                        <a href={image.link} className={styles.imageLink}>
+                            <img
+                                src={image.src}
+                                alt={`Slide ${index + 1}`}
+                                className={styles.image}
+                            />
+                        </a>
+                    </div>
+                ))}
+            </Slider>
         </div>
     );
 };

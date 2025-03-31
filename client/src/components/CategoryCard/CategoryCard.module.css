@@ -1,0 +1,74 @@
+.categoryContainer {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.title {
+    text-align: center;
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.sliderWrapper {
+    width: 100%;
+    padding: 0 20px; /* Добавляем отступы по бокам */
+}
+
+.slider {
+    width: 100%;
+}
+
+/* Стилизация точек навигации */
+.slick-dots {
+    bottom: -30px;
+}
+
+.slick-dots li button:before {
+    font-size: 12px;
+    color: #ccc;
+}
+
+.slick-dots li.slick-active button:before {
+    color: #333;
+}
+
+/* Стрелки навигации */
+.slick-prev,
+.slick-next {
+    width: 40px;
+    height: 40px;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 50%;
+    z-index: 1;
+}
+
+.slick-prev:hover,
+.slick-next:hover,
+.slick-prev:focus,
+.slick-next:focus {
+    background: rgba(0, 0, 0, 0.8);
+}
+
+.slick-prev {
+    left: -45px;
+}
+
+.slick-next {
+    right: -45px;
+}
+
+.slick-prev:before,
+.slick-next:before {
+    font-family: "slick"; /* Важно для иконок */
+    font-size: 24px;
+    line-height: 1;
+    color: white;
+    opacity: 1;
+}
+
+.slider_item {
+    margin: 20px;
+}

@@ -1,61 +1,146 @@
 /* Основные стили для главной страницы */
 .mainContainer {
-  background: white;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px;
-  padding: 20px;
+    background: white;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    padding: 20px;
 }
 
 /* 🔹 Новый контейнер для поиска и фильтров */
 .searchFilterContainer {
-  display: flex;
-  justify-content: center; /* Центрируем */
-  align-items: center;
-  gap: 15px; /* Расстояние между элементами */
-  width: 100%;
-  max-width: 800px;
-  margin-top: 10px; /* Отступ сверху */
+    display: flex;
+    justify-content: center; /* Центрируем */
+    align-items: center;
+    gap: 15px; /* Расстояние между элементами */
+    width: 100%;
+    max-width: 800px;
+    margin-top: 10px; /* Отступ сверху */
 }
 
 /* Поиск */
 .searchContainer {
-  flex: 1; /* Равномерное распределение */
-  max-width: 300px; /* Фиксируем ширину */
-  display: flex;
-  justify-content: center;
+    flex: 1; /* Равномерное распределение */
+    max-width: 300px; /* Фиксируем ширину */
+    display: flex;
+    justify-content: center;
 }
 
 /* Фильтры */
 .filterSortContainer {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  gap: 10px;
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
 }
 
 /* Сетка продуктов */
 .productsGrid {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 20px;
-  max-width: 1200px;
-  width: 100%;
-  padding: 20px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    max-width: 1200px;
+    width: 100%;
+    padding: 20px;
 }
 
 /* 🔹 Адаптивность */
 @media (max-width: 768px) {
-  .searchFilterContainer {
-      flex-direction: column; /* На мобильных в колонку */
-      gap: 10px;
-  }
+    .searchFilterContainer {
+        flex-direction: column; /* На мобильных в колонку */
+        gap: 10px;
+    }
 
-  .searchContainer, .filterSortContainer {
-      max-width: 100%;
-  }
+    .searchContainer, .filterSortContainer {
+        max-width: 100%;
+    }
+}
+
+.grid_container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* 2 колонки */
+    gap: 10px;
+    padding: 20px;
+    width: 100%;
+    max-width: 1200px;
+}
+
+.grid_item {
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    background-color: #fdfafa;
+}
+
+.grid_item:hover {
+    box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+    transition: all 0.3s;
+    background-color: #ffffff;
+}
+
+.grid_item span {
+    font-weight: bold;
+    color: #e91e63;
+    font-size: 1.2rem;
+    margin: 8px;
+    display: block;
+}
+
+.grid_item img {
+    display: flex;
+    justify-content: center;
+    align-self: center;
+}
+
+/* Распределение элементов по сетке */
+.grid_item:nth-child(1) {
+    grid-area: 1 / 1;
+}
+
+/* Букеты */
+.grid_item:nth-child(2) {
+    grid-area: 1 / 2;
+}
+
+/* Подарки */
+.grid_item:nth-child(3) {
+    grid-area: 1 / 3 / span 2; /* Розы - занимает 2 строки */
+    min-height: 120px; /* Минимальная высота */
+}
+
+.grid_item:nth-child(4) {
+    grid-area: 2 / 1;
+}
+
+/* Найти причину */
+.grid_item:nth-child(5) {
+    grid-area: 2 / 2;
+}
+
+.grid_item:nth-child(2), .grid_item:nth-child(4) {
+    justify-content: space-between;
+}
+
+.grid_item:nth-child(5) img {
+    margin-left: auto;
+}
+
+/* Адаптивность */
+@media (max-width: 600px) {
+    .grid_container {
+        grid-template-columns: 1fr;
+    }
+
+    .grid_item:nth-child(3) {
+        grid-area: auto; /* Сбрасываем позиционирование */
+        min-height: auto;
+    }
 }

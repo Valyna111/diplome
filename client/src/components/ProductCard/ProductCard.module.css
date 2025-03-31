@@ -1,175 +1,221 @@
 .card {
-  border: 1px solid #e0e0e0;
-  border-radius: 12px;
-  overflow: hidden;
-  background-color: #fff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s, box-shadow 0.2s;
-  display: flex;
-  flex-direction: column;
-  max-width: 300px;
-  margin: 0 auto;
-  position: relative;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    overflow: hidden;
+    background-color: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: flex;
+    flex-direction: column;
+    max-width: 300px;
+    margin: 0 auto;
+    position: relative;
 }
 
 .card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .imageContainer {
-  width: 100%;
-  padding-top: 100%; /* Квадратное соотношение */
-  position: relative;
-  overflow: hidden;
+    width: 100%;
+    padding-top: 100%; /* Квадратное соотношение */
+    position: relative;
+    overflow: hidden;
 }
 
 .image {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 .content {
-  padding: 16px;
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
+    padding: 16px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
 }
 
 .title {
-  font-size: 1.2em;
-  font-weight: 600;
-  margin: 0 0 8px;
-  color: #333;
+    font-size: 1.2em;
+    font-weight: 600;
+    margin: 0 0 8px;
+    color: #333;
 }
 
 .description {
-  font-size: 0.9em;
-  color: #666;
-  margin: 0 0 12px;
+    font-size: 0.9em;
+    color: #666;
+    margin: 0 0 12px;
+
+    /* Обязательные свойства для text-overflow */
+    white-space: nowrap; /* Запрет переноса строк */
+    overflow: hidden; /* Скрытие выходящего текста */
+    text-overflow: ellipsis; /* Многоточие */
+    max-width: 100%; /* Ограничение по ширине */
+
+    /* Дополнительно (если нужно ограничение по высоте) */
+    display: block; /* или inline-block */
 }
 
 .price {
-  font-size: 1.1em;
-  font-weight: 700;
-  color: #000;
-  margin: auto 0 16px;
+    font-size: 1.1em;
+    font-weight: 700;
+    color: #000;
+    margin: auto 0 16px;
 }
 
 /* Кнопка "Избранное" */
 .favoriteButton {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 8px;
-  z-index: 10;
+    position: absolute;
+    top: 3px;
+    right: 3px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    z-index: 10;
 }
 
 .favoriteIcon {
-  color: #ccc;
-  font-size: 1.5em;
-  transition: color 0.2s;
+    color: #ccc;
+    font-size: 1.5em;
+    transition: color 0.2s;
 }
 
 .favoriteIconActive {
-  color: #ff4d4d;
-  font-size: 1.5em;
-  transition: color 0.2s;
+    color: #ff4d4d;
+    font-size: 1.5em;
+    transition: color 0.2s;
 }
 
 .favoriteButton:hover .favoriteIcon {
-  color: #ff4d4d;
+    color: #ff4d4d;
 }
 
 /* Кнопка-иконка "Добавить в корзину" */
 .cartButton {
-  position: absolute;
-  bottom: 12px;
-  right: 12px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 8px;
-  transition: transform 0.2s ease;
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    transition: transform 0.2s ease;
 }
 
 .cartButton:hover {
-  transform: scale(1.1);
+    transform: scale(1.1);
 }
 
 .cartIcon {
-  font-size: 1.8em;
-  color: #4CAF50;
-  transition: color 0.2s;
+    font-size: 1.8em;
+    color: #4CAF50;
+    transition: color 0.2s;
 }
 
 .cartButton:hover .cartIcon {
-  color: #45a049;
+    color: #45a049;
 }
 
 /* Адаптивность для экранов меньше 768px */
 @media (max-width: 768px) {
-  .card {
-    max-width: 100%;
-  }
+    .card {
+        max-width: 100%;
+    }
 
-  .title {
-    font-size: 1.1em;
-  }
+    .title {
+        font-size: 1.1em;
+    }
 
-  .description {
-    font-size: 0.85em;
-  }
+    .description {
+        font-size: 0.85em;
+    }
 
-  .price {
-    font-size: 1em;
-  }
+    .price {
+        font-size: 1em;
+    }
 
-  .cartIcon {
-    font-size: 1.6em;
-  }
+    .cartIcon {
+        font-size: 1.6em;
+    }
 
-  .cartButton {
-    bottom: 10px;
-    right: 10px;
-  }
+    .cartButton {
+        bottom: 10px;
+        right: 10px;
+    }
 }
 
 /* Адаптивность для экранов меньше 480px */
 @media (max-width: 480px) {
-  .card {
-    border-radius: 8px;
-  }
+    .card {
+        border-radius: 8px;
+    }
 
-  .content {
-    padding: 12px;
-  }
+    .content {
+        padding: 12px;
+    }
 
-  .title {
-    font-size: 1em;
-  }
+    .title {
+        font-size: 1em;
+    }
 
-  .description {
-    font-size: 0.8em;
-  }
+    .description {
+        font-size: 0.8em;
+    }
 
-  .price {
-    font-size: 0.9em;
-  }
+    .price {
+        font-size: 0.9em;
+    }
 
-  .cartIcon {
-    font-size: 1.5em;
-  }
+    .cartIcon {
+        font-size: 1.5em;
+    }
 
-  .cartButton {
-    bottom: 8px;
-    right: 8px;
-  }
+    .cartButton {
+        bottom: 8px;
+        right: 8px;
+    }
+}
+
+.discountBadge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: #ff4757;
+    color: white;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: bold;
+    z-index: 2;
+}
+
+.priceContainer {
+    display: flex;
+    flex-direction: column;
+    margin-top: 5px;
+}
+
+.originalPrice {
+    text-decoration: line-through;
+    color: #999;
+    font-size: 14px;
+}
+
+.discountedPrice {
+    color: #ff4757;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.price {
+    font-weight: bold;
+    font-size: 18px;
+    color: #333;
 }

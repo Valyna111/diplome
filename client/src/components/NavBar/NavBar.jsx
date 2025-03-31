@@ -5,6 +5,7 @@ import {observer} from "mobx-react-lite";
 import StoreContext from "@/store/StoreContext";
 import AccountSidebar from "@/components/AccountSidebar/AccountSidebar";
 import styles from "./NavBar.module.css";
+import SearchBar from "@/components/NavBar/SearchBar/SearchBar";
 
 const Navbar = observer(() => {
     const rootStore = useContext(StoreContext);
@@ -32,7 +33,7 @@ const Navbar = observer(() => {
     return (
         <>
             <nav className={styles.navbar}>
-                <div className={styles.logo}>FlowerShop</div>
+                <div className={styles.logo}>FS</div>
 
                 {/* Базовое меню (ТОЛЬКО для customer и гостей) */}
                 {(!authStore?.currentUser || authStore.currentUser?.role_name === "customer") && (
@@ -108,6 +109,7 @@ const Navbar = observer(() => {
 
                 {/* Иконки */}
                 <div className={styles.icons}>
+                    <SearchBar/>
                     {/* Корзина ТОЛЬКО для customer */}
                     {authStore?.currentUser && authStore.currentUser?.role_name === "customer" && (
                         <FaShoppingCart className={styles.icon} onClick={() => navigate("/cart")}/>

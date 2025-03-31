@@ -1,35 +1,90 @@
 import React from "react";
-import { FaHeart, FaRegHeart, FaShoppingCart } from "react-icons/fa"; // Добавлена иконка корзины
+import {useNavigate} from "react-router-dom";
+import {FaHeart, FaRegHeart, FaShoppingCart} from "react-icons/fa";
 import styles from "./ProductCard.module.css";
+import classNames from "classnames";
 
-const ProductCard = ({ image, title, description, price, onAddToCart, onToggleFavorite, isFavorite }) => {
-  const formattedPrice = typeof price === "number" ? price.toFixed(2) : parseFloat(price).toFixed(2);
+const ProductCard = ({
+                         id, // Добавляем id товара для перенаправления
+                         image,
+                         title,
+                         description,
+                         price,
+                         onAddToCart,
+                         onToggleFavorite,
+                         isFavorite,
+                         className,
+                         withDiscount,
+                         discountPercentage
+                     }) => {
+    const navigate = useNavigate();
 
-  return (
-    <div className={styles.card}>
-      {/* Кнопка "Избранное" */}
-      <button className={styles.favoriteButton} onClick={onToggleFavorite}>
-        {isFavorite ? <FaHeart className={styles.favoriteIconActive} /> : <FaRegHeart className={styles.favoriteIcon} />}
-      </button>
+    // Обработчик клика по карточке
+    const handleCardClick = () => {
+        navigate(`/main/catalog/${id}`); // Перенаправляем на страницу товара
+    };
 
-      {/* Изображение товара */}
-      <div className={styles.imageContainer}>
-        <img src={image} alt={title} className={styles.image} />
-      </div>
+    // Останавливаем всплытие события для кнопок
+    const handleButtonClick = (e, callback) => {
+        e.stopPropagation();
+        if (callback) callback();
+    };
 
-      {/* Информация о товаре */}
-      <div className={styles.content}>
-        <h2 className={styles.title}>{title}</h2>
-        <p className={styles.description}>{description}</p>
-        <p className={styles.price}>{formattedPrice} руб.</p>
-      </div>
+    const calculateDiscountedPrice = (price) => {
+        const priceNumber = typeof price === "string" ? parseFloat(price.replace(/\D/g, '')) : price;
+        return (priceNumber * (1 - (0.01 * discountPercentage))).toFixed(2);
+    };
 
-      {/* Иконка корзины */}
-      <button className={styles.cartButton} onClick={onAddToCart}>
-        <FaShoppingCart className={styles.cartIcon} />
-      </button>
-    </div>
-  );
+    const formattedPrice = typeof price === "number" ? price.toFixed(2) : parseFloat(price).toFixed(2);
+    const discountedPrice = calculateDiscountedPrice(price);
+
+    return (
+        <div
+            className={classNames(styles.card, className)}
+            onClick={handleCardClick}
+            style={{cursor: "pointer"}} // Добавляем указатель при наведении
+        >
+            {/* Кнопка "Избранное" */}
+            <button
+                className={styles.favoriteButton}
+                onClick={(e) => handleButtonClick(e, onToggleFavorite)}
+            >
+                {isFavorite ? <FaHeart className={styles.favoriteIconActive}/> :
+                    <FaRegHeart className={styles.favoriteIcon}/>}
+            </button>
+
+            {/* Изображение товара */}
+            <div className={styles.imageContainer}>
+                <img src={`http://localhost:4000${image}`} alt={title} className={styles.image}/>
+                {withDiscount && <div className={styles.discountBadge}>-{discountPercentage}%</div>}
+            </div>
+
+            {/* Информация о товаре */}
+            <div className={styles.content}>
+                <h2 className={styles.title}>{title}</h2>
+                <p className={styles.description}>{description}</p>
+
+                <div className={styles.priceContainer}>
+                    {withDiscount ? (
+                        <>
+                            <span className={styles.originalPrice}>{formattedPrice} руб.</span>
+                            <span className={styles.discountedPrice}>{discountedPrice} руб.</span>
+                        </>
+                    ) : (
+                        <span className={styles.price}>{formattedPrice} руб.</span>
+                    )}
+                </div>
+            </div>
+
+            {/* Иконка корзины */}
+            <button
+                className={styles.cartButton}
+                onClick={(e) => handleButtonClick(e, onAddToCart)}
+            >
+                <FaShoppingCart className={styles.cartIcon}/>
+            </button>
+        </div>
+    );
 };
 
 export default ProductCard;

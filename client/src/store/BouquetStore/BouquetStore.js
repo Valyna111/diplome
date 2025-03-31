@@ -28,15 +28,16 @@ export default class BouquetStore {
                 query: GET_BOUQUET_BY_ID,
                 variables: {
                     id
-                }, // Чтобы всегда запрашивать свежие данные
+                },
             });
-            const getBouquetById = result.bouquetById.bouquetById;
+            const getBouquetById = result.bouquetById;
             runInAction(() => {
                 const index = this.bouquets.findIndex(cat => cat.id === id);
                 if (index !== -1) {
                     this.bouquets = [...this.bouquets.slice(0, index), getBouquetById, ...this.bouquets.slice(index + 1)];
                 }
             });
+            console.log(getBouquetById);
             return getBouquetById;
         } catch (error) {
             console.error(error);
