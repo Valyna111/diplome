@@ -44,7 +44,7 @@ const Navbar = observer(() => {
                         <Link to="/main/catalog" className={styles.link} onClick={() => setMenuOpen(false)}>
                             Каталог
                         </Link>
-                        <Link to="/article" className={styles.link} onClick={() => setMenuOpen(false)}>
+                        <Link to="/main/article" className={styles.link} onClick={() => setMenuOpen(false)}>
                             Полезные статьи
                         </Link>
                     </p>
@@ -53,19 +53,19 @@ const Navbar = observer(() => {
                 {/* Меню по ролям */}
                 {authStore?.currentUser && authStore.currentUser?.role_name === "manager" && (
                     <p className={`${styles.menu} ${menuOpen ? styles.open : ""}`}>
-                        <Link to="/orders" className={styles.link} onClick={() => setMenuOpen(false)}>
+                        <Link to="/dashboard/orders" className={styles.link} onClick={() => setMenuOpen(false)}>
                             Заказы
                         </Link>
-                        <Link to="/clientlist" className={styles.link} onClick={() => setMenuOpen(false)}>
+                        <Link to="/dashboard/clientlist" className={styles.link} onClick={() => setMenuOpen(false)}>
                             Клиенты
                         </Link>
-                        <Link to="/sales" className={styles.link} onClick={() => setMenuOpen(false)}>
+                        <Link to="/dashboard/sales" className={styles.link} onClick={() => setMenuOpen(false)}>
                             Продажи
                         </Link>
-                        <Link to="/promotion-constructor" className={styles.link} onClick={() => setMenuOpen(false)}>
+                        <Link to="/dashboard/promotion-constructor" className={styles.link} onClick={() => setMenuOpen(false)}>
                             Редактор акций
                         </Link>
-                        <Link to="/article-constructor" className={styles.link} onClick={() => setMenuOpen(false)}>
+                        <Link to="/dashboard/article-constructor" className={styles.link} onClick={() => setMenuOpen(false)}>
                             Редактор статей
                         </Link>
                     </p>
@@ -73,13 +73,13 @@ const Navbar = observer(() => {
 
                 {authStore?.currentUser && authStore.currentUser?.role_name === "dboperator" && (
                     <p className={`${styles.menu} ${menuOpen ? styles.open : ""}`}>
-                        <Link to="/item-input" className={styles.link} onClick={() => setMenuOpen(false)}>
+                        <Link to="/dboperations/item-input" className={styles.link} onClick={() => setMenuOpen(false)}>
                             Конструктор букетов
                         </Link>
-                        <Link to="/ocp-input" className={styles.link} onClick={() => setMenuOpen(false)}>
+                        <Link to="/dboperations/ocp-input" className={styles.link} onClick={() => setMenuOpen(false)}>
                             Заполнение пунктов сбора заказов
                         </Link>
-                        <Link to="/user-block" className={styles.link} onClick={() => setMenuOpen(false)}>
+                        <Link to="/dboperations/user-block" className={styles.link} onClick={() => setMenuOpen(false)}>
                             Блокировка пользователей
                         </Link>
                     </p>
@@ -87,10 +87,10 @@ const Navbar = observer(() => {
 
                 {authStore?.currentUser && authStore.currentUser?.role_name === "deliveryman" && (
                     <p className={`${styles.menu} ${menuOpen ? styles.open : ""}`}>
-                        <Link to="/delivery" className={styles.link} onClick={() => setMenuOpen(false)}>
+                        <Link to="/delivery/delivery" className={styles.link} onClick={() => setMenuOpen(false)}>
                             Доставки
                         </Link>
-                        <Link to="/driver/deliveries" className={styles.link} onClick={() => setMenuOpen(false)}>
+                        <Link to="/delivery/driver/deliveries" className={styles.link} onClick={() => setMenuOpen(false)}>
                             Мои доставки
                         </Link>
                     </p>
@@ -98,10 +98,10 @@ const Navbar = observer(() => {
 
                 {authStore?.currentUser && authStore.currentUser?.role_name === "florist" && (
                     <p className={`${styles.menu} ${menuOpen ? styles.open : ""}`}>
-                        <Link to="/florist-orders" className={styles.link} onClick={() => setMenuOpen(false)}>
+                        <Link to="/stock/florist-orders" className={styles.link} onClick={() => setMenuOpen(false)}>
                             Сборка заказов
                         </Link>
-                        <Link to="/florist-edit-stock" className={styles.link} onClick={() => setMenuOpen(false)}>
+                        <Link to="/stock/florist-edit-stock" className={styles.link} onClick={() => setMenuOpen(false)}>
                             Редактирование склада
                         </Link>
                     </p>
@@ -112,7 +112,7 @@ const Navbar = observer(() => {
                     <SearchBar/>
                     {/* Корзина ТОЛЬКО для customer */}
                     {authStore?.currentUser && authStore.currentUser?.role_name === "customer" && (
-                        <FaShoppingCart className={styles.icon} onClick={() => navigate("/cart")}/>
+                        <FaShoppingCart className={styles.icon} onClick={() => navigate("?]/user/cart")}/>
                     )}
                     <FaUser
                         className={styles.icon}

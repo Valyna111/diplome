@@ -8,7 +8,7 @@ const articles = [
     image: "/images/slider1.jpg",
     title: "Как продлить жизнь букета",
     description: "Простые советы, как сохранить свежесть цветов дольше.",
-    link: "/article/1"
+    link: "/main/article/1"
   },
   {
     id: 2,
@@ -50,14 +50,14 @@ const articles = [
     image: "/images/slider3.jpg",
     title: "Какие цветы нельзя ставить рядом",
     description: "Некоторые цветы плохо уживаются друг с другом – узнайте какие.",
-    link: "/article/6"
+    link: "main/article/6"
   },
   {
     id: 8,
     image: "/images/slider3.jpg",
     title: "Какие цветы нельзя ставить рядом",
     description: "Некоторые цветы плохо уживаются друг с другом – узнайте какие.",
-    link: "/article/6"
+    link: "main/article/6"
   },
 ];
 

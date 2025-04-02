@@ -21,19 +21,19 @@ const AccountSidebar = observer(({ isAuthenticated, userRole, isOpen, onClose, o
         {/* Если пользователь залогинен и является Customer */}
         {isAuthenticated && userRole === "customer" && (
           <>
-            <Link to="/profile" className={styles.accountLink} onClick={onClose}>
+            <Link to="/user/profile" className={styles.accountLink} onClick={onClose}>
               Личная информация
             </Link>
-            <Link to="/favorites" className={styles.accountLink} onClick={onClose}>
+            <Link to="/user/favorites" className={styles.accountLink} onClick={onClose}>
               Избранное
             </Link>
-            <Link to="/loyalty-program" className={styles.accountLink} onClick={onClose}>
+            <Link to="/user/loyalty-program" className={styles.accountLink} onClick={onClose}>
               Программа лояльности
             </Link>
-            <Link to="/payment-card" className={styles.accountLink} onClick={onClose}>
+            <Link to="/user/payment-card" className={styles.accountLink} onClick={onClose}>
               Карта для оплаты
             </Link>
-            <Link to="/order-history" className={styles.accountLink} onClick={onClose}>
+            <Link to="/user/order-history" className={styles.accountLink} onClick={onClose}>
               История покупок
             </Link>
           </>
