@@ -620,3 +620,42 @@ export const GET_ARTICLE_BY_ID = gql`
         }
     }
 `;
+
+export const GET_USER_RELATIVE_DATA = gql`
+    query GetUserRelativeData($userId: Int!) {
+        userById(id: $userId) {
+            id
+            username
+            cartsByUserId {
+                nodes {
+                    id
+                    bouquetByBouquetId {
+                        id
+                        name
+                        price
+                        image
+                        description
+                    }
+                }
+            }
+            wishlistsByUserId {
+                nodes {
+                    id
+                    bouquetByBouquetId {
+                        id
+                        name
+                        price
+                        image
+                        description
+                    }
+                }
+            }
+            bonusesByUserId {
+                nodes {
+                    id
+                    bonus
+                }
+            }
+        }
+    }
+`;

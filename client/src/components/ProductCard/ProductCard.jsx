@@ -1,22 +1,24 @@
-import React from "react";
+import React, {useCallback, useContext} from "react";
 import {useNavigate} from "react-router-dom";
 import {FaHeart, FaRegHeart, FaShoppingCart} from "react-icons/fa";
 import styles from "./ProductCard.module.css";
 import classNames from "classnames";
+import {observer} from "mobx-react-lite";
+import StoreContext from "@/store/StoreContext";
 
-const ProductCard = ({
-                         id, // Добавляем id товара для перенаправления
-                         image,
-                         title,
-                         description,
-                         price,
-                         onAddToCart,
-                         onToggleFavorite,
-                         isFavorite,
-                         className,
-                         withDiscount,
-                         discountPercentage
-                     }) => {
+const ProductCard = observer(({
+                                  id, // Добавляем id товара для перенаправления
+                                  image,
+                                  title,
+                                  description,
+                                  price,
+                                  onToggleFavorite,
+                                  isFavorite,
+                                  className,
+                                  withDiscount,
+                                  discountPercentage
+                              }) => {
+    const rootStore = useContext(StoreContext);
     const navigate = useNavigate();
 
     // Обработчик клика по карточке
@@ -38,6 +40,13 @@ const ProductCard = ({
     const formattedPrice = typeof price === "number" ? price.toFixed(2) : parseFloat(price).toFixed(2);
     const discountedPrice = calculateDiscountedPrice(price);
 
+    const onAddToCart = useCallback(() => {
+        if (!rootStore.authStore.currentUser) {
+            rootStore.authStore.setIsModalLogin(true);
+        } else {
+
+        }
+    }, []);
     return (
         <div
             className={classNames(styles.card, className)}
@@ -85,6 +94,6 @@ const ProductCard = ({
             </button>
         </div>
     );
-};
+});
 
 export default ProductCard;

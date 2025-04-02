@@ -2,12 +2,13 @@ const postgraphile = require('postgraphile').default;
 const express = require('express');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
-const { Pool } = require('pg');
+const {Pool} = require('pg');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const {UserDataPlugin} = require("./plugins");
 
 if (!fs.existsSync('uploads')) {
     fs.mkdirSync('uploads');
@@ -42,21 +43,21 @@ const storage = multer.diskStorage({
     }
 });
 
-const upload = multer({ storage });
+const upload = multer({storage});
 
 // Маршрут для загрузки изображений
 app.post('/upload-image', upload.single('image'), (req, res) => {
     try {
         if (!req.file) {
-            return res.status(400).json({ error: 'No file uploaded' });
+            return res.status(400).json({error: 'No file uploaded'});
         }
 
         // Возвращаем путь к файлу
         const filePath = `/uploads/${req.file.filename}`;
-        res.json({ imageUrl: filePath });
+        res.json({imageUrl: filePath});
     } catch (error) {
         console.error('Error uploading image:', error);
-        res.status(500).json({ error: 'Failed to upload image' });
+        res.status(500).json({error: 'Failed to upload image'});
     }
 });
 
@@ -65,12 +66,12 @@ app.use('/uploads', express.static('uploads'));
 
 // Кастомные маршруты
 app.post('/register', async (req, res) => {
-    const { username, email, password, phone, surname } = req.body;
+    const {username, email, password, phone, surname} = req.body;
 
     try {
-        const { rows } = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+        const {rows} = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
         if (rows.length > 0) {
-            return res.status(400).json({ error: 'Пользователь с таким email уже существует' });
+            return res.status(400).json({error: 'Пользователь с таким email уже существует'});
         }
         const hashedPassword = await bcrypt.hash(password, 10);
         const newUser = await pool.query(
@@ -78,29 +79,29 @@ app.post('/register', async (req, res) => {
             [username, email, hashedPassword, phone, surname, 1]
         );
 
-        res.status(201).json({ user: newUser.rows[0] });
+        res.status(201).json({user: newUser.rows[0]});
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(500).json({error: error.message});
     }
 });
 
 app.post('/login', async (req, res) => {
-    const { email, password } = req.body;
+    const {email, password} = req.body;
 
     try {
-        const { rows } = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+        const {rows} = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
         const user = rows[0];
 
         if (!user) {
-            return res.status(400).json({ error: 'Пользователь не найден' });
+            return res.status(400).json({error: 'Пользователь не найден'});
         }
 
         const validPassword = await bcrypt.compare(password, user.passhash);
         if (!validPassword) {
-            return res.status(400).json({ error: 'Неверный пароль' });
+            return res.status(400).json({error: 'Неверный пароль'});
         }
 
-        const sessionToken = jwt.sign({ id: user.id }, 'your-secret-key', { expiresIn: '1h' });
+        const sessionToken = jwt.sign({id: user.id}, 'your-secret-key', {expiresIn: '1h'});
         const expiresAt = new Date(Date.now() + 3600000);
 
         await pool.query(
@@ -115,9 +116,9 @@ app.post('/login', async (req, res) => {
             maxAge: 3600000,
         });
 
-        res.json({ message: 'Login successful', user });
+        res.json({message: 'Login successful', user});
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(500).json({error: error.message});
     }
 });
 
@@ -125,15 +126,15 @@ app.post('/logout', async (req, res) => {
     const sessionToken = req.cookies?.session_token;
 
     if (!sessionToken) {
-        return res.status(400).json({ error: 'Сессия не найдена' });
+        return res.status(400).json({error: 'Сессия не найдена'});
     }
 
     try {
         await pool.query('DELETE FROM user_sessions WHERE session_token = $1', [sessionToken]);
         res.clearCookie('session_token');
-        res.json({ message: 'Logout successful' });
+        res.json({message: 'Logout successful'});
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(500).json({error: error.message});
     }
 });
 
@@ -142,39 +143,39 @@ const authenticateToken = async (req, res, next) => {
     const sessionToken = req.cookies?.session_token;
 
     if (!sessionToken) {
-        return res.status(401).json({ error: 'Unauthorized' });
+        return res.status(401).json({error: 'Unauthorized'});
     }
 
     try {
         // Проверка токена в базе данных
-        const { rows } = await pool.query(
+        const {rows} = await pool.query(
             'SELECT * FROM user_sessions WHERE session_token = $1 AND expires_at > NOW()',
             [sessionToken]
         );
 
         if (rows.length === 0) {
-            return res.status(403).json({ error: 'Invalid or expired session' });
+            return res.status(403).json({error: 'Invalid or expired session'});
         }
 
         // Проверка JWT токена
         jwt.verify(sessionToken, 'your-secret-key', (err, user) => {
             if (err) {
-                return res.status(403).json({ error: 'Invalid token' });
+                return res.status(403).json({error: 'Invalid token'});
             }
             req.user = user;
             next();
         });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(500).json({error: error.message});
     }
 };
 
 app.get('/profile', authenticateToken, async (req, res) => {
     try {
-        const { rows } = await pool.query(
-            `SELECT users.*, role.name AS role_name 
-             FROM users 
-             JOIN role ON users.role_id = role.id 
+        const {rows} = await pool.query(
+            `SELECT users.*, role.name AS role_name
+             FROM users
+                      JOIN role ON users.role_id = role.id
              WHERE users.id = $1`,
             [req.user.id]
         );
@@ -182,21 +183,21 @@ app.get('/profile', authenticateToken, async (req, res) => {
         const user = rows[0];
 
         if (!user) {
-            return res.status(404).json({ error: 'User not found' });
+            return res.status(404).json({error: 'User not found'});
         }
 
-        res.json({ user });
+        res.json({user});
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(500).json({error: error.message});
     }
 });
 
 app.put('/profile', authenticateToken, async (req, res) => {
-    const { username, email, phone, surname, birthdate } = req.body;
+    const {username, email, phone, surname, birthdate} = req.body;
 
     try {
         // Проверяем, есть ли уже дата рождения в базе данных
-        const { rows: existingUser } = await pool.query(
+        const {rows: existingUser} = await pool.query(
             'SELECT birthdate FROM users WHERE id = $1',
             [req.user.id]
         );
@@ -204,10 +205,14 @@ app.put('/profile', authenticateToken, async (req, res) => {
         // Если дата рождения уже есть, не обновляем её
         const finalBirthdate = existingUser[0].birthdate || birthdate;
 
-        const { rows } = await pool.query(
-            `UPDATE users 
-             SET username = $1, email = $2, phone = $3, surname = $4, birthdate = $5
-             WHERE id = $6 
+        const {rows} = await pool.query(
+            `UPDATE users
+             SET username  = $1,
+                 email     = $2,
+                 phone     = $3,
+                 surname   = $4,
+                 birthdate = $5
+             WHERE id = $6
              RETURNING *`,
             [username, email, phone, surname, finalBirthdate, req.user.id]
         );
@@ -215,12 +220,12 @@ app.put('/profile', authenticateToken, async (req, res) => {
         const user = rows[0];
 
         if (!user) {
-            return res.status(404).json({ error: 'User not found' });
+            return res.status(404).json({error: 'User not found'});
         }
 
-        res.json({ user });
+        res.json({user});
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(500).json({error: error.message});
     }
 });
 
@@ -229,33 +234,34 @@ app.get('/driver/deliveries', authenticateToken, async (req, res) => {
         const driverId = req.user.id; // ID доставщика из токена
 
         // Получаем deliveryman_info для этого пользователя
-        const { rows: deliverymanInfo } = await pool.query(
-            `SELECT id FROM deliveryman_info WHERE user_id = $1`,
+        const {rows: deliverymanInfo} = await pool.query(
+            `SELECT id
+             FROM deliveryman_info
+             WHERE user_id = $1`,
             [driverId]
         );
 
         if (deliverymanInfo.length === 0) {
-            return res.status(404).json({ error: 'Доставщик не найден' });
+            return res.status(404).json({error: 'Доставщик не найден'});
         }
 
         const deliverymanId = deliverymanInfo[0].id;
 
         // Получаем доставки для этого доставщика
-        const { rows: deliveries } = await pool.query(
-            `SELECT 
-                orders.id AS "orderId", 
-                orders.order_date AS "orderDate", 
-                orders.customer_address AS "customerAddress", 
-                orders.price AS "orderPrice", 
-                (orders.price::numeric * 0.1) AS earnings -- 10% от стоимости заказа
+        const {rows: deliveries} = await pool.query(
+            `SELECT orders.id                     AS "orderId",
+                    orders.order_date             AS "orderDate",
+                    orders.customer_address       AS "customerAddress",
+                    orders.price                  AS "orderPrice",
+                    (orders.price::numeric * 0.1) AS earnings -- 10% от стоимости заказа
              FROM orders
              WHERE delivery_id = $1`,
             [deliverymanId]
         );
 
-        res.json({ deliveries });
+        res.json({deliveries});
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(500).json({error: error.message});
     }
 });
 
@@ -264,6 +270,7 @@ app.use(
         watchPg: true,
         graphiql: true,
         enhanceGraphiql: true,
+        appendPlugins: [UserDataPlugin]
     })
 );
 

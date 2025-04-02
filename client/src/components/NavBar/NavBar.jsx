@@ -41,7 +41,7 @@ const Navbar = observer(() => {
                         <Link to="/" className={styles.link} onClick={() => setMenuOpen(false)}>
                             Главная
                         </Link>
-                        <Link to="/catalog" className={styles.link} onClick={() => setMenuOpen(false)}>
+                        <Link to="/main/catalog" className={styles.link} onClick={() => setMenuOpen(false)}>
                             Каталог
                         </Link>
                         <Link to="/article" className={styles.link} onClick={() => setMenuOpen(false)}>

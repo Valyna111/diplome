@@ -24,15 +24,12 @@ import EditStock from "@/routs/EditStockPage";
 import EditCatalog from "@/routs/EditCatalogPage";
 import OCP from "@/routs/OCPInput";
 import DeliveryMan from "@/routs/DeliveryDriver";
-
-import CatalogCategories from "@/views/Catalog/CatalogCategories";
 import Navbar from "@/components/NavBar/NavBar";
 import Footer from "@/components/Footer/Footer";
 import AuthTestButtons from "@/views/Test/AuthTestButtons";
 import AuthModal from "./views/Modals/Auth/AuthModal";
 import Item from "./routs/ItemInput";
 import UserBlock from "./routs/UserComments";
-import Bouquet from "@/views/Bouquet/Bouquet";
 
 let rootStore;
 
@@ -48,8 +45,6 @@ const App = () => {
                     <main className={s.main}>
                         <Routes>
                             <Route path="/main/*" element={<Main/>}/>
-                            <Route path="/catalog" element={<CatalogCategories/>}/>
-                            <Route path="/catalog/:id" element={<Bouquet/>}/>
                             <Route path="/article/*" element={<Article/>}/>
                             <Route path="/profile/*" element={<UserProfile/>}/>
                             <Route path="/favorites" element={<Favorite/>}/>

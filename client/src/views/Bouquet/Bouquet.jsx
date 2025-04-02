@@ -1,10 +1,12 @@
 import {observer} from "mobx-react-lite";
-import {useContext, useEffect, useState} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import StoreContext from "@/store/StoreContext";
 import s from './Bouquet.module.css';
 import {useParams} from "react-router-dom";
 import {AnimatePresence, motion} from "framer-motion";
 import {FaChevronDown, FaChevronUp, FaMinus, FaPlus, FaShoppingCart} from "react-icons/fa";
+import ArticlesComp from "@/components/ArticlesComp/ArticlesComp";
+import CategoryCard from "@/components/CategoryCard/CategoryCard";
 
 const Bouquet = observer(() => {
     const rootStore = useContext(StoreContext);
@@ -272,7 +274,8 @@ const Bouquet = observer(() => {
                     </div>
                 </div>
             </div>
-
+            <ArticlesComp/>
+            <CategoryCard title='Отличное дополнение:' data={rootStore.bouquetStore.bouquets}/>
             <AnimatePresence>
                 {zoomImage && (
                     <motion.div
