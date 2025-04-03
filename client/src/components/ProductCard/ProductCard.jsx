@@ -1,6 +1,6 @@
 import React, {useContext, useState} from "react";
 import {useNavigate} from "react-router-dom";
-import {FaHeart, FaMinus, FaPlus, FaRegHeart, FaShoppingCart} from "react-icons/fa";
+import {FaHeart, FaMinus, FaPlus, FaRegHeart, FaShoppingCart, FaTrash} from "react-icons/fa";
 import {AnimatePresence, motion} from "framer-motion";
 import styles from "./ProductCard.module.css";
 import classNames from "classnames";
@@ -15,7 +15,11 @@ const ProductCard = observer(({
                                   price,
                                   className,
                                   withDiscount,
-                                  discountPercentage
+                                  discountPercentage,
+                                  compactView = false,
+                                  showRemoveButton = false,
+                                  onRemove,
+                                  showQuantityControls = true
                               }) => {
     const rootStore = useContext(StoreContext);
     const navigate = useNavigate();
@@ -23,7 +27,9 @@ const ProductCard = observer(({
     const [isCartAnimating, setIsCartAnimating] = useState(false);
 
     const handleCardClick = () => {
-        navigate(`/main/catalog/${id}`);
+        if (!compactView) {
+            navigate(`/main/catalog/${id}`);
+        }
     };
 
     const handleButtonClick = async (e, callback) => {
@@ -65,99 +71,124 @@ const ProductCard = observer(({
         }
     };
 
-    return (
-        <div
-            className={classNames(styles.card, className)}
-            onClick={handleCardClick}
-            style={{cursor: "pointer"}}
-        >
-            {/* Кнопка "Избранное" с анимацией */}
-            <button
-                className={styles.favoriteButton}
-                onClick={(e) => handleButtonClick(e, handleFavoriteToggle)}
-            >
-                <AnimatePresence mode="wait">
-                    <motion.div
-                        key={isFavorite ? "filled" : "outlined"}
-                        initial={{scale: 0.8, opacity: 0}}
-                        animate={{
-                            scale: isAnimating ? [1, 1.2, 1] : 1,
-                            opacity: 1
-                        }}
-                        exit={{scale: 0.8, opacity: 0}}
-                        transition={{duration: 0.3}}
-                    >
-                        {isFavorite ? (
-                            <FaHeart className={styles.favoriteIconActive}/>
-                        ) : (
-                            <FaRegHeart className={styles.favoriteIcon}/>
-                        )}
-                    </motion.div>
-                </AnimatePresence>
-            </button>
+    const handleRemove = (e) => {
+        e.stopPropagation();
+        if (onRemove) onRemove(id);
+    };
 
-            {/* Изображение товара */}
-            <div className={styles.imageContainer}>
+    return (
+        <motion.div
+            className={classNames(styles.card, className, {
+                [styles.compact]: compactView
+            })}
+            onClick={handleCardClick}
+            style={{cursor: compactView ? 'default' : 'pointer'}}
+            whileHover={!compactView ? {y: -4, boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)'} : {}}
+            transition={{duration: 0.2}}
+        >
+            {!compactView && (
+                <button
+                    className={styles.favoriteButton}
+                    onClick={(e) => handleButtonClick(e, handleFavoriteToggle)}
+                >
+                    <AnimatePresence mode="wait">
+                        <motion.div
+                            key={isFavorite ? "filled" : "outlined"}
+                            initial={{scale: 0.8, opacity: 0}}
+                            animate={{
+                                scale: isAnimating ? [1, 1.2, 1] : 1,
+                                opacity: 1
+                            }}
+                            exit={{scale: 0.8, opacity: 0}}
+                            transition={{duration: 0.3}}
+                        >
+                            {isFavorite ? (
+                                <FaHeart className={styles.favoriteIconActive}/>
+                            ) : (
+                                <FaRegHeart className={styles.favoriteIcon}/>
+                            )}
+                        </motion.div>
+                    </AnimatePresence>
+                </button>
+            )}
+
+            <div className={classNames(styles.imageContainer, {
+                [styles.compactImage]: compactView
+            })}>
                 <img src={`http://localhost:4000${image}`} alt={title} className={styles.image}/>
                 {withDiscount && <div className={styles.discountBadge}>-{discountPercentage}%</div>}
             </div>
 
-            {/* Информация о товаре */}
             <div className={styles.content}>
-                <h2 className={styles.title}>{title}</h2>
-                <p className={styles.description}>{description}</p>
+                <h2 className={classNames(styles.title, {
+                    [styles.compactTitle]: compactView
+                })}>{title}</h2>
+
+                {!compactView && (
+                    <p className={styles.description}>{description}</p>
+                )}
 
                 <div className={styles.footer}>
                     <div className={styles.priceContainer}>
                         {withDiscount ? (
                             <>
-                                <span className={styles.originalPrice}>{formattedPrice} руб.</span>
+                                {!compactView && (
+                                    <span className={styles.originalPrice}>{formattedPrice} руб.</span>
+                                )}
                                 <span className={styles.discountedPrice}>{discountedPrice} руб.</span>
                             </>
                         ) : (
                             <span className={styles.price}>{formattedPrice} руб.</span>
                         )}
                     </div>
-                    <div className={styles.cartContainer}>
-                        {itemCount > 0 ? (
-                            <motion.div
-                                className={styles.quantityControls}
-                                initial={{opacity: 0}}
-                                animate={{
-                                    opacity: 1,
-                                    scale: isCartAnimating ? [1, 1.1, 1] : 1
-                                }}
-                                transition={{duration: 0.2}}
-                            >
-                                <button
-                                    className={styles.quantityButton}
-                                    onClick={(e) => handleButtonClick(e, () => handleCartAction(itemCount - 1))}
+
+                    {showRemoveButton ? (
+                        <button
+                            className={styles.removeButton}
+                            onClick={handleRemove}
+                        >
+                            <FaTrash/>
+                        </button>
+                    ) : showQuantityControls ? (
+                        <div className={styles.cartContainer}>
+                            {itemCount > 0 ? (
+                                <motion.div
+                                    className={styles.quantityControls}
+                                    initial={{opacity: 0}}
+                                    animate={{
+                                        opacity: 1,
+                                        scale: isCartAnimating ? [1, 1.1, 1] : 1
+                                    }}
+                                    transition={{duration: 0.2}}
                                 >
-                                    <FaMinus/>
-                                </button>
-                                <span className={styles.quantity}>{itemCount}</span>
-                                <button
-                                    className={styles.quantityButton}
-                                    onClick={(e) => handleButtonClick(e, () => handleCartAction(itemCount + 1))}
+                                    <button
+                                        className={styles.quantityButton}
+                                        onClick={(e) => handleButtonClick(e, () => handleCartAction(itemCount - 1))}
+                                    >
+                                        <FaMinus/>
+                                    </button>
+                                    <span className={styles.quantity}>{itemCount}</span>
+                                    <button
+                                        className={styles.quantityButton}
+                                        onClick={(e) => handleButtonClick(e, () => handleCartAction(itemCount + 1))}
+                                    >
+                                        <FaPlus/>
+                                    </button>
+                                </motion.div>
+                            ) : (
+                                <motion.button
+                                    className={styles.cartButton}
+                                    onClick={(e) => handleButtonClick(e, () => handleCartAction(1))}
+                                    whileTap={{scale: 0.9}}
                                 >
-                                    <FaPlus/>
-                                </button>
-                            </motion.div>
-                        ) : (
-                            <motion.button
-                                className={styles.cartButton}
-                                onClick={(e) => handleButtonClick(e, () => handleCartAction(1))}
-                                whileTap={{scale: 0.9}}
-                            >
-                                <FaShoppingCart className={styles.cartIcon}/>
-                            </motion.button>
-                        )}
-                    </div>
+                                    <FaShoppingCart className={styles.cartIcon}/>
+                                </motion.button>
+                            )}
+                        </div>
+                    ) : null}
                 </div>
             </div>
-
-
-        </div>
+        </motion.div>
     );
 });
 

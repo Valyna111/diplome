@@ -102,8 +102,6 @@ const FavoritesPage = observer(() => {
                                 image={product.image}
                                 title={product.name}
                                 price={product.price}
-                                isFavorite={authStore.isInWishlist(product.id)}
-                                onToggleFavorite={() => authStore.toggleWishlistItem(product.id)}
                             />
                         </motion.div>
                     ))}

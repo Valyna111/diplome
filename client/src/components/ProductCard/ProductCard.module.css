@@ -12,16 +12,28 @@
     position: relative;
 }
 
-.card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+/* Компактный режим */
+.card.compact {
+    flex-direction: row;
+    align-items: center;
+    padding: 0.8rem;
+    max-width: 100%;
+    border-radius: 8px;
 }
 
 .imageContainer {
     width: 100%;
-    padding-top: 100%; /* Квадратное соотношение */
+    padding-top: 100%;
     position: relative;
     overflow: hidden;
+}
+
+.compactImage {
+    width: 80px;
+    height: 80px;
+    padding-top: 0;
+    margin-right: 1rem;
+    border-radius: 6px;
 }
 
 .image {
@@ -40,34 +52,34 @@
     flex-direction: column;
 }
 
+.card.compact .content {
+    padding: 0;
+}
+
 .title {
     font-size: 1.2em;
     font-weight: 600;
     margin: 0 0 8px;
     color: #333;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
 
-    white-space: nowrap; /* Запрет переноса строк */
-    overflow: hidden; /* Скрытие выходящего текста */
-    text-overflow: ellipsis; /* Многоточие */
-    max-width: 100%; /* Ограничение по ширине */
-
-    /* Дополнительно (если нужно ограничение по высоте) */
-    display: block; /* или inline-block */
+.compactTitle {
+    font-size: 1em;
+    margin-bottom: 4px;
 }
 
 .description {
     font-size: 0.9em;
     color: #666;
     margin: 0 0 12px;
-
-    /* Обязательные свойства для text-overflow */
-    white-space: nowrap; /* Запрет переноса строк */
-    overflow: hidden; /* Скрытие выходящего текста */
-    text-overflow: ellipsis; /* Многоточие */
-    max-width: 100%; /* Ограничение по ширине */
-
-    /* Дополнительно (если нужно ограничение по высоте) */
-    display: block; /* или inline-block */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
 }
 
 .price {
@@ -76,7 +88,6 @@
     color: #000;
 }
 
-/* Кнопка "Избранное" */
 .favoriteButton {
     position: absolute;
     top: 3px;
@@ -104,7 +115,6 @@
     color: #ff4d4d;
 }
 
-/* Кнопка-иконка "Добавить в корзину" */
 .cartButton {
     background: none;
     border: none;
@@ -126,66 +136,6 @@
     color: #45a049;
 }
 
-/* Адаптивность для экранов меньше 768px */
-@media (max-width: 768px) {
-    .card {
-        max-width: 100%;
-    }
-
-    .title {
-        font-size: 1.1em;
-    }
-
-    .description {
-        font-size: 0.85em;
-    }
-
-    .price {
-        font-size: 1em;
-    }
-
-    .cartIcon {
-        font-size: 1.6em;
-    }
-
-    .cartButton {
-        bottom: 10px;
-        right: 10px;
-    }
-}
-
-/* Адаптивность для экранов меньше 480px */
-@media (max-width: 480px) {
-    .card {
-        border-radius: 8px;
-    }
-
-    .content {
-        padding: 12px;
-    }
-
-    .title {
-        font-size: 1em;
-    }
-
-    .description {
-        font-size: 0.8em;
-    }
-
-    .price {
-        font-size: 0.9em;
-    }
-
-    .cartIcon {
-        font-size: 1.5em;
-    }
-
-    .cartButton {
-        bottom: 8px;
-        right: 8px;
-    }
-}
-
 .discountBadge {
     position: absolute;
     top: 10px;
@@ -204,6 +154,12 @@
     flex-direction: column;
 }
 
+.card.compact .priceContainer {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+}
+
 .originalPrice {
     text-decoration: line-through;
     color: #999;
@@ -216,10 +172,18 @@
     font-size: 18px;
 }
 
+.card.compact .discountedPrice {
+    font-size: 16px;
+}
+
 .price {
     font-weight: bold;
     font-size: 18px;
     color: #333;
+}
+
+.card.compact .price {
+    font-size: 16px;
 }
 
 .cartContainer {
@@ -267,4 +231,72 @@
     justify-content: space-between;
     align-items: center;
     height: 50px;
+}
+
+.card.compact .footer {
+    height: auto;
+    margin-top: 0.5rem;
+}
+
+.removeButton {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #e53e3e;
+    font-size: 1rem;
+    padding: 0.5rem;
+    transition: transform 0.2s;
+}
+
+.removeButton:hover {
+    transform: scale(1.1);
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .card {
+        max-width: 100%;
+    }
+
+    .title {
+        font-size: 1.1em;
+    }
+
+    .description {
+        font-size: 0.85em;
+    }
+
+    .price {
+        font-size: 1em;
+    }
+
+    .cartIcon {
+        font-size: 1.6em;
+    }
+}
+
+@media (max-width: 480px) {
+    .card {
+        border-radius: 8px;
+    }
+
+    .content {
+        padding: 12px;
+    }
+
+    .title {
+        font-size: 1em;
+    }
+
+    .description {
+        font-size: 0.8em;
+    }
+
+    .price {
+        font-size: 0.9em;
+    }
+
+    .cartIcon {
+        font-size: 1.5em;
+    }
 }
