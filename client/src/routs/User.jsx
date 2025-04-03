@@ -1,4 +1,3 @@
-
 import {Route, Routes} from 'react-router-dom';
 
 import UserProfile from "@/views/UserProfile/UserProfile";
@@ -10,12 +9,12 @@ import CartPage from '@/views/CartPage/CartPage';
 
 const User = () => (
     <Routes>
-        <Route path="/profile" element={<UserProfile />} />
-        <Route path="/favorites" element={<FavoritesPage />} />
-        <Route path="/loyalty-program" element={<Loyalty/>} />
-        <Route path="/payment-card" element={<CreditCard/>} />
-        <Route path="/order-history" element={<PurchaseHistory/>} />
-        <Route path="/cart" element={<CartPage/>} />
+        <Route path="/profile" element={<UserProfile/>}/>
+        <Route path="/favorites" element={<FavoritesPage/>}/>
+        {/*<Route path="/loyalty-program" element={<Loyalty/>} />*/}
+        <Route path="/payment-card" element={<CreditCard/>}/>
+        <Route path="/order-history" element={<PurchaseHistory/>}/>
+        <Route path="/cart" element={<CartPage/>}/>
     </Routes>
 );
 export default User;

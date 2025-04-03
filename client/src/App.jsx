@@ -5,7 +5,7 @@ import RootStore from "@/store/RootStore";
 import StoreContext from "@/store/StoreContext";
 
 import Main from "@/routs/Main";
-import PromotionPage from "@/routs/PromotionDetail";
+// import PromotionPage from "@/routs/PromotionDetail";
 import Navbar from "@/components/NavBar/NavBar";
 import Footer from "@/components/Footer/Footer";
 import AuthTestButtons from "@/views/Test/AuthTestButtons";
@@ -30,13 +30,13 @@ const App = () => {
                     <main className={s.main}>
                         <Routes>
                             <Route path="/main/*" element={<Main/>}/>
-                            <Route  path="/dashboard/*" element={<Dashboard/>}/>
-                            <Route path ="/user/*" element={<User/>}/>
-                            <Route path="/dboperations/*" element ={<DBoperations/>}/>
+                            <Route path="/dashboard/*" element={<Dashboard/>}/>
+                            <Route path="/user/*" element={<User/>}/>
+                            <Route path="/dboperations/*" element={<DBoperations/>}/>
                             <Route path="/stock/*" element={<Stock/>}/>
                             <Route path="/dilivery/*" element={<Delivery/>}/>
                             <Route path="/test" element={<AuthTestButtons/>}/>
-                            <Route path="/promotion-page" element={<PromotionPage/>}/>
+                            {/*<Route path="/promotion-page" element={<PromotionPage/>}/>*/}
                             <Route path="*" element={<Navigate to="/main" replace={true}/>}/>
                         </Routes>
                     </main>

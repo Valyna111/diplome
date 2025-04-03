@@ -8,7 +8,7 @@ const jwt = require('jsonwebtoken');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
-const {UserDataPlugin} = require("./plugins");
+const {UserDataPlugin, StoreMutationsPlugin} = require("./plugins");
 
 if (!fs.existsSync('uploads')) {
     fs.mkdirSync('uploads');
@@ -270,7 +270,7 @@ app.use(
         watchPg: true,
         graphiql: true,
         enhanceGraphiql: true,
-        appendPlugins: [UserDataPlugin]
+        appendPlugins: [UserDataPlugin, StoreMutationsPlugin]
     })
 );
 

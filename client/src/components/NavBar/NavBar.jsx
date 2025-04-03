@@ -1,6 +1,7 @@
 import React, {useContext, useEffect, useState} from "react";
 import {FaBars, FaShoppingCart, FaTimes, FaUser} from "react-icons/fa";
 import {Link, useNavigate} from "react-router-dom";
+import {motion} from "framer-motion";
 import {observer} from "mobx-react-lite";
 import StoreContext from "@/store/StoreContext";
 import AccountSidebar from "@/components/AccountSidebar/AccountSidebar";
@@ -12,7 +13,20 @@ const Navbar = observer(() => {
     const {authStore} = rootStore;
     const [menuOpen, setMenuOpen] = useState(false);
     const [accountMenuOpen, setAccountMenuOpen] = useState(false);
+    const [cartItemsCount, setCartItemsCount] = useState(0);
+    const [isCartAnimating, setIsCartAnimating] = useState(false);
     const navigate = useNavigate();
+
+    useEffect(() => {
+        if (authStore?.cart) {
+            const count = authStore.cart.reduce((sum, item) => sum + item.quantity, 0);
+            if (count !== cartItemsCount) {
+                setIsCartAnimating(true);
+                setCartItemsCount(count);
+                setTimeout(() => setIsCartAnimating(false), 500);
+            }
+        }
+    }, [authStore?.cart]);
 
     useEffect(() => {
         if (menuOpen || accountMenuOpen) {
@@ -62,10 +76,12 @@ const Navbar = observer(() => {
                         <Link to="/dashboard/sales" className={styles.link} onClick={() => setMenuOpen(false)}>
                             Продажи
                         </Link>
-                        <Link to="/dashboard/promotion-constructor" className={styles.link} onClick={() => setMenuOpen(false)}>
+                        <Link to="/dashboard/promotion-constructor" className={styles.link}
+                              onClick={() => setMenuOpen(false)}>
                             Редактор акций
                         </Link>
-                        <Link to="/dashboard/article-constructor" className={styles.link} onClick={() => setMenuOpen(false)}>
+                        <Link to="/dashboard/article-constructor" className={styles.link}
+                              onClick={() => setMenuOpen(false)}>
                             Редактор статей
                         </Link>
                     </p>
@@ -90,7 +106,8 @@ const Navbar = observer(() => {
                         <Link to="/delivery/delivery" className={styles.link} onClick={() => setMenuOpen(false)}>
                             Доставки
                         </Link>
-                        <Link to="/delivery/driver/deliveries" className={styles.link} onClick={() => setMenuOpen(false)}>
+                        <Link to="/delivery/driver/deliveries" className={styles.link}
+                              onClick={() => setMenuOpen(false)}>
                             Мои доставки
                         </Link>
                     </p>
@@ -112,7 +129,26 @@ const Navbar = observer(() => {
                     <SearchBar/>
                     {/* Корзина ТОЛЬКО для customer */}
                     {authStore?.currentUser && authStore.currentUser?.role_name === "customer" && (
-                        <FaShoppingCart className={styles.icon} onClick={() => navigate("?]/user/cart")}/>
+                        <div className={styles.cartWrapper}>
+                            <FaShoppingCart
+                                className={styles.icon}
+                                onClick={() => navigate("/user/cart")}
+                            />
+                            {cartItemsCount > 0 && (
+                                <motion.div
+                                    className={styles.cartBadge}
+                                    key={cartItemsCount}
+                                    initial={{scale: 0}}
+                                    animate={{
+                                        scale: isCartAnimating ? [1, 1.3, 1] : 1,
+                                        rotate: isCartAnimating ? [0, 10, -10, 0] : 0
+                                    }}
+                                    transition={{duration: 0.5}}
+                                >
+                                    {cartItemsCount}
+                                </motion.div>
+                            )}
+                        </div>
                     )}
                     <FaUser
                         className={styles.icon}

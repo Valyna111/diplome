@@ -818,3 +818,49 @@ export const DELETE_ARTICLE = gql`
         }
     }
 `;
+
+export const TOGGLE_WISHLIST = gql`
+    mutation ToggleWishlistItem($userId: Int!, $bouquetId: Int!) {
+        toggleWishlistItem(userId: $userId, bouquetId: $bouquetId) {
+            success
+            wishlist {
+                id
+                name
+                price
+                image
+            }
+        }
+    }
+`
+export const CLEAR_WISHLIST = gql`
+    mutation ClearWishlist($userId: Int!) {
+        clearWishlist(userId: $userId) {
+            success
+        }
+    }
+`
+
+export const SYNC_CART = gql`
+    mutation SyncCart($userId: Int!, $updates: [CartItemUpdateInput!]!, $deletes: [CartItemDeleteInput!]!) {
+        syncCart(userId: $userId, updates: $updates, deletes: $deletes) {
+            success
+            cart {
+                id
+                user_id
+                items {
+                    id
+                    quantity
+                    addons
+                    createdAt
+                    bouquet {
+                        id
+                        name
+                        price
+                        image
+                    }
+                }
+            }
+            message
+        }
+    }
+`

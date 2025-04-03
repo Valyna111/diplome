@@ -128,3 +128,34 @@
         overflow: hidden;
     }
 }
+
+.cartWrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.cartBadge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: #e91e63;
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+/* Анимация для иконки корзины */
+.icon {
+    transition: transform 0.2s;
+}
+
+.icon:hover {
+    transform: scale(1.1);
+}

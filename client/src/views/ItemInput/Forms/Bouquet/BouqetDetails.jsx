@@ -126,6 +126,11 @@ const BouquetDetails = observer(({
                     true
                 );
             } else if (action === 'update' && itemId) {
+                await rootStore.bouquetStore.updateItemsInBouquet(
+                    itemId,
+                    selectedItems,
+                    false
+                );
                 await rootStore.bouquetStore.updateBouquet(itemId, data);
             }
             onClose();

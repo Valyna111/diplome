@@ -1,5 +1,5 @@
-import {UPDATE_USER} from '@/graphql/mutations';
-import {action, makeObservable, observable} from 'mobx';
+import {CLEAR_WISHLIST, SYNC_CART, TOGGLE_WISHLIST, UPDATE_USER} from '@/graphql/mutations';
+import {action, computed, makeObservable, observable, runInAction, toJS} from 'mobx';
 import {GET_USER_RELATIVE_DATA} from "@/graphql/queries";
 
 export default class AuthStore {
@@ -50,6 +50,9 @@ export default class AuthStore {
             isLoading: observable,
             isModalLogin: observable,
             isModalRegister: observable,
+            cart: observable,
+            wishlist: observable,
+            bonuses: observable,
             setIsModalRegister: action,
             setIsModalLogin: action,
             setCurrentUser: action,
@@ -61,10 +64,21 @@ export default class AuthStore {
             registerUser: action,
             updateUser: action,
             getAllReleativeData: action,
+            syncCart: action,
+            toggleWishlistItem: action,
+            clearWishlist: action,
+            isInWishlist: computed,
         });
 
         this.fetchUserProfile().then(r => {
         }).catch((e) => console.error(e));
+    }
+
+    get isInWishlist() {
+        return (bouquetId) => {
+            if (!this.currentUser || !this.wishlist) return false;
+            return this.wishlist.some(item => item.id === bouquetId);
+        };
     }
 
     // Регистрация пользователя
@@ -244,12 +258,14 @@ export default class AuthStore {
                 fetchPolicy: 'network-only' // Чтобы всегда получать свежие данные
             });
 
-            if (data.user) {
-                this.cart = data.user.cart.map(item => item.bouquet);
-                this.wishlist = data.user.wishlist.map(item => item.bouquet);
-                this.bonuses = data.user.bonuses.length > 0 ? data.user.bonuses[0].bonus : 0;
-            }
-
+            runInAction(() => {
+                if (data) {
+                    this.cart = data.getUserFullData.cart.items;
+                    this.wishlist = data.getUserFullData.wishlist;
+                    this.bonuses = [];
+                }
+            });
+            console.log(toJS(this.cart));
             return {
                 cart: this.cart,
                 wishlist: this.wishlist,
@@ -269,80 +285,76 @@ export default class AuthStore {
         this.bonuses = [];
     }
 
-    async addToCart(bouquetId) {
-        if (!this.currentUser) {
-            throw new Error('User not authenticated');
-        }
+    async syncCart(items) {
+        if (!this.currentUser) return this.setIsModalLogin(true);
 
         try {
-            await this.rootStore.client.mutate({
-                mutation: ADD_TO_CART,
-                variables: {
-                    userId: this.currentUser.id,
-                    bouquetId: bouquetId
+            // Разделяем элементы на обновления и удаления
+            const updates = [];
+            const deletes = [];
+
+            items.forEach(item => {
+                if (item.operation === 'delete') {
+                    deletes.push({bouquetId: item.bouquetId});
+                } else {
+                    updates.push({
+                        bouquetId: item.bouquetId,
+                        quantity: item.quantity || 1,
+                        addons: item.addons || []
+                    });
                 }
             });
 
-            // Обновляем данные корзины
-            await this.getAllReleativeData(this.currentUser.id);
-        } catch (error) {
-            console.error('Error adding to cart:', error);
-            throw error;
-        }
-    }
-
-    async removeFromCart(cartId) {
-        try {
-            await this.rootStore.client.mutate({
-                mutation: REMOVE_FROM_CART,
-                variables: {cartId}
-            });
-
-            // Обновляем данные корзины
-            if (this.currentUser?.id) {
-                await this.getAllReleativeData(this.currentUser.id);
-            }
-        } catch (error) {
-            console.error('Error removing from cart:', error);
-            throw error;
-        }
-    }
-
-    async addToWishlist(bouquetId) {
-        if (!this.currentUser) {
-            throw new Error('User not authenticated');
-        }
-
-        try {
-            await this.rootStore.client.mutate({
-                mutation: ADD_TO_WISHLIST,
+            const {data} = await this.rootStore.client.mutate({
+                mutation: SYNC_CART,
                 variables: {
                     userId: this.currentUser.id,
-                    bouquetId: bouquetId
+                    updates,
+                    deletes
                 }
             });
 
-            // Обновляем данные wishlist
-            await this.getAllReleativeData(this.currentUser.id);
+            this.cart = data.syncCart.cart.items;
+            return true;
         } catch (error) {
-            console.error('Error adding to wishlist:', error);
+            console.error('Error syncing cart:', error);
             throw error;
         }
     }
 
-    async removeFromWishlist(wishlistId) {
+    async toggleWishlistItem(bouquetId) {
+        if (!this.currentUser) return this.setIsModalLogin(true);
+
         try {
-            await this.rootStore.client.mutate({
-                mutation: REMOVE_FROM_WISHLIST,
-                variables: {wishlistId}
+            const {data} = await this.rootStore.client.mutate({
+                mutation: TOGGLE_WISHLIST,
+                variables: {
+                    userId: this.currentUser.id,
+                    bouquetId
+                }
             });
 
-            // Обновляем данные wishlist
-            if (this.currentUser?.id) {
-                await this.getAllReleativeData(this.currentUser.id);
-            }
+            this.wishlist = data.toggleWishlistItem.wishlist;
+            return this.isInWishlist(bouquetId);
         } catch (error) {
-            console.error('Error removing from wishlist:', error);
+            console.error('Error toggling wishlist item:', error);
+            throw error;
+        }
+    }
+
+    async clearWishlist() {
+        if (!this.currentUser) return this.setIsModalLogin(true);
+
+        try {
+            await this.rootStore.client.mutate({
+                mutation: CLEAR_WISHLIST,
+                variables: {userId: this.currentUser.id}
+            });
+
+            this.wishlist = [];
+            return true;
+        } catch (error) {
+            console.error('Error clearing wishlist:', error);
             throw error;
         }
     }

@@ -45,6 +45,14 @@
     font-weight: 600;
     margin: 0 0 8px;
     color: #333;
+
+    white-space: nowrap; /* Запрет переноса строк */
+    overflow: hidden; /* Скрытие выходящего текста */
+    text-overflow: ellipsis; /* Многоточие */
+    max-width: 100%; /* Ограничение по ширине */
+
+    /* Дополнительно (если нужно ограничение по высоте) */
+    display: block; /* или inline-block */
 }
 
 .description {
@@ -66,7 +74,6 @@
     font-size: 1.1em;
     font-weight: 700;
     color: #000;
-    margin: auto 0 16px;
 }
 
 /* Кнопка "Избранное" */
@@ -99,13 +106,9 @@
 
 /* Кнопка-иконка "Добавить в корзину" */
 .cartButton {
-    position: absolute;
-    bottom: 12px;
-    right: 12px;
     background: none;
     border: none;
     cursor: pointer;
-    padding: 8px;
     transition: transform 0.2s ease;
 }
 
@@ -199,7 +202,6 @@
 .priceContainer {
     display: flex;
     flex-direction: column;
-    margin-top: 5px;
 }
 
 .originalPrice {
@@ -218,4 +220,51 @@
     font-weight: bold;
     font-size: 18px;
     color: #333;
+}
+
+.cartContainer {
+    display: flex;
+    align-items: center;
+}
+
+.quantityControls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: white;
+    border-radius: 8px;
+    padding: 0.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.quantityButton {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #4CAF50;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+}
+
+.quantityButton:hover {
+    color: #45a049;
+    transform: scale(1.1);
+}
+
+.quantity {
+    font-weight: bold;
+    min-width: 1.5rem;
+    text-align: center;
+}
+
+.footer {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    height: 50px;
 }

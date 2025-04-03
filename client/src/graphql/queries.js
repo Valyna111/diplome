@@ -622,38 +622,55 @@ export const GET_ARTICLE_BY_ID = gql`
 `;
 
 export const GET_USER_RELATIVE_DATA = gql`
-    query GetUserRelativeData($userId: Int!) {
-        userById(id: $userId) {
-            id
-            username
-            cartsByUserId {
-                nodes {
+    query GetUserFullData($userId: Int!) {
+        getUserFullData(userId: $userId) {
+            user {
+                id
+                username
+                email
+            }
+            cart {
+                id
+                user_id
+                items {
                     id
-                    bouquetByBouquetId {
+                    quantity
+                    addons
+                    createdAt
+                    bouquet {
                         id
                         name
                         price
                         image
-                        description
                     }
                 }
             }
-            wishlistsByUserId {
-                nodes {
+            wishlist {
+                id
+                name
+                price
+                image
+            }
+            bonuses
+            orders {
+                id
+                orderDate
+                price
+                statusName
+                customerAddress
+                createdAt
+                items {
                     id
-                    bouquetByBouquetId {
+                    quantity
+                    price
+                    createdAt
+                    addons
+                    bouquet {
                         id
                         name
                         price
                         image
-                        description
                     }
-                }
-            }
-            bonusesByUserId {
-                nodes {
-                    id
-                    bonus
                 }
             }
         }
