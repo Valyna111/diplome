@@ -1,119 +1,245 @@
-import React, { useState, useMemo } from 'react';
-import Button from '@/components/Form/Button/Button';
-import Input from '@/components/Form/Input/Input';
-import Select from '@/components/Form/Select/Select';
-import { Table } from 'antd';
+import React, {useContext, useEffect, useState} from 'react';
+import {observer} from 'mobx-react-lite';
+import {Button, Input, message, Modal, Select, Table} from 'antd';
+import {PlusOutlined, ShoppingCartOutlined, UserAddOutlined} from '@ant-design/icons';
+import {motion} from 'framer-motion';
+import StoreContext from '@/store/StoreContext';
 import s from './OCPInput.module.css';
 
-const OCPInput = () => {
-  const [showAddOCPForm, setShowAddOCPForm] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [ocpList, setOcpList] = useState([]);
-  const [form, setForm] = useState({ address: '', id: null });
-  const [selectedOcpId, setSelectedOcpId] = useState(null);
-  const [selectedCourier, setSelectedCourier] = useState(null);
-  const [selectedAddress, setSelectedAddress] = useState(null);
+const OCPInput = observer(() => {
+    const {ocpStore, authStore, auxiliaryStore} = useContext(StoreContext);
+    const [isCreateModalVisible, setIsCreateModalVisible] = useState(false);
+    const [isAssignModalVisible, setIsAssignModalVisible] = useState(false);
+    const [isAddItemModalVisible, setIsAddItemModalVisible] = useState(false);
+    const [selectedOCP, setSelectedOCP] = useState(null);
+    const [newAddress, setNewAddress] = useState('');
+    const [selectedDeliveryman, setSelectedDeliveryman] = useState(null);
+    const [selectedItem, setSelectedItem] = useState(null);
+    const [itemAmount, setItemAmount] = useState(1);
 
-  const handleCreateOCP = () => setShowAddOCPForm(true);
+    useEffect(() => {
+        ocpStore.fetchAllOCPs();
+        auxiliaryStore.loadItems();
+        authStore.getAllUsers();
+    }, []);
 
-  const handleSaveOCP = () => {
-    if (form.id) {
-      setOcpList(ocpList.map(ocp => (ocp.id === form.id ? { ...ocp, address: form.address } : ocp)));
-    } else {
-      setOcpList([...ocpList, { id: Date.now(), address: form.address }]);
-    }
-    setShowAddOCPForm(false);
-    setForm({ address: '', id: null });
-  };
+    const handleCreateOCP = async () => {
+        try {
+            await ocpStore.createOCP(newAddress);
+            message.success('Пункт выдачи успешно создан');
+            setIsCreateModalVisible(false);
+            setNewAddress('');
+        } catch (error) {
+            message.error('Ошибка при создании пункта выдачи');
+        }
+    };
 
-  const handleMatchCourier = () => {
-    if (selectedCourier && selectedAddress) {
-      console.log(`Сопоставлено: Курьер ${selectedCourier} -> Адрес ${selectedAddress}`);
-      // Здесь можно добавить логику сохранения
-    }
-  };
+    const handleAssignDeliveryman = async () => {
+        try {
+            await ocpStore.assignDeliveryman(selectedOCP.id, selectedDeliveryman);
+            message.success('Доставщик успешно назначен');
+            setIsAssignModalVisible(false);
+            setSelectedDeliveryman(null);
+        } catch (error) {
+            message.error('Ошибка при назначении доставщика');
+        }
+    };
 
-  const filteredOcpList = useMemo(() => {
-    return ocpList.filter(ocp => ocp.address.toLowerCase().includes(searchQuery.toLowerCase()));
-  }, [ocpList, searchQuery]);
+    const handleAddItem = async () => {
+        try {
+            await ocpStore.addItemToOCP(selectedOCP.id, selectedItem, parseInt(itemAmount));
+            message.success('Товар успешно добавлен');
+            setIsAddItemModalVisible(false);
+            setSelectedItem(null);
+            setItemAmount(1);
+        } catch (error) {
+            message.error('Ошибка при добавлении товара');
+        }
+    };
 
-  const dataSourceOCP = useMemo(() => filteredOcpList.map((ocp) => ({
-    key: ocp.id,
-    id: ocp.id,
-    address: ocp.address
-  })), [filteredOcpList]);
+    // Filter users with deliveryman role (assuming role_id 3 is for deliverymen)
+    const deliverymanOptions = authStore.users
+        .filter(user => user.roleByRoleId.id === 6)
+        .map(user => ({
+            value: user.id,
+            label: `${user.username} (${user.email})`
+        }));
 
-  const ocpColumns = [
-    { title: 'ID', dataIndex: 'id', key: 'id' },
-    { title: 'Адрес', dataIndex: 'address', key: 'address' },
-    {
-      title: 'Действия',
-      key: 'actions',
-      render: (_, record) => (
-        <Button type="second" onClick={() => setSelectedOcpId(record.id)} placeholder="Выбрать" />
-      ),
-    },
-  ];
+    const itemOptions = auxiliaryStore.items.map(item => ({
+        value: item.id,
+        label: `${item.name} (${item.price} руб.)`
+    }));
 
-  return (
-    <div className={s.container}>
-      {showAddOCPForm && (
-        <div className={s.formContainer}>
-          <h2 className={s.formTitle}>{form.id ? 'Редактировать OCP' : 'Создать OCP'}</h2>
-          <div className={s.form}>
-            <Input
-              placeholder="Адрес OCP"
-              value={form.address}
-              onChange={(e) => setForm({ ...form, address: e.target.value })}
-              className={s.input}
+    const columns = [
+        {
+            title: 'Адрес',
+            dataIndex: 'address',
+            key: 'address',
+            render: (text) => <span className={s.addressCell}>{text}</span>
+        },
+        {
+            title: 'Товары',
+            key: 'items',
+            render: (_, record) => (
+                <div className={s.itemsColumn}>
+                    {record.ocpItems?.map(item => (
+                        <motion.div
+                            key={item.id}
+                            className={s.itemTag}
+                            whileHover={{scale: 1.05}}
+                        >
+                            {item.item?.name} × {item.amount}
+                        </motion.div>
+                    ))}
+                </div>
+            )
+        },
+        {
+            title: 'Доставщики',
+            key: 'deliverymen',
+            render: (_, record) => (
+                <div className={s.deliverymenColumn}>
+                    {record.deliverymen?.map(dm => (
+                        <div key={dm.id} className={s.deliverymanTag}>
+                            {dm.user?.username}
+                        </div>
+                    ))}
+                </div>
+            )
+        },
+        {
+            title: 'Действия',
+            key: 'actions',
+            render: (_, record) => (
+                <div className={s.actionsColumn}>
+                    <Button
+                        type="primary"
+                        icon={<UserAddOutlined/>}
+                        onClick={() => {
+                            setSelectedOCP(record);
+                            setIsAssignModalVisible(true);
+                        }}
+                        className={s.actionButton}
+                    >
+                        Назначить
+                    </Button>
+                    <Button
+                        type="primary"
+                        icon={<ShoppingCartOutlined/>}
+                        onClick={() => {
+                            setSelectedOCP(record);
+                            setIsAddItemModalVisible(true);
+                        }}
+                        className={s.actionButton}
+                    >
+                        Добавить товар
+                    </Button>
+                </div>
+            )
+        }
+    ];
+
+    return (
+        <motion.div
+            initial={{opacity: 0}}
+            animate={{opacity: 1}}
+            transition={{duration: 0.5}}
+            className={s.container}
+        >
+            <div className={s.header}>
+                <h1 className={s.title}>Управление пунктами выдачи (OCP)</h1>
+                <Button
+                    type="primary"
+                    icon={<PlusOutlined/>}
+                    onClick={() => setIsCreateModalVisible(true)}
+                    className={s.addButton}
+                >
+                    Создать пункт выдачи
+                </Button>
+            </div>
+
+            <Table
+                columns={columns}
+                dataSource={ocpStore.ocpList}
+                rowKey="id"
+                loading={ocpStore.isLoading}
+                className={s.table}
+                pagination={{pageSize: 5}}
             />
-            <Button type="primary" placeholder={form.id ? 'Сохранить' : 'Создать'} onClick={handleSaveOCP} className={s.submitButton} />
-            <Button type="second" placeholder="Отмена" onClick={() => setShowAddOCPForm(false)} className={s.cancelButton} />
-          </div>
-        </div>
-      )}
 
-      <div className={s.mainContent}>
-        <div className={s.leftSide}>
-          <div className={s.header}>
-            <Input
-              placeholder="Поиск OCP"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className={s.searchInput}
-            />
-            <Button type="primary" onClick={handleCreateOCP} placeholder="Создать OCP" className={s.createButton} />
-          </div>
+            {/* Модалка создания OCP */}
+            <Modal
+                title="Создать новый пункт выдачи"
+                visible={isCreateModalVisible}
+                onOk={handleCreateOCP}
+                onCancel={() => setIsCreateModalVisible(false)}
+                okText="Создать"
+                cancelText="Отмена"
+            >
+                <Input
+                    placeholder="Адрес пункта выдачи"
+                    value={newAddress}
+                    onChange={(e) => setNewAddress(e.target.value)}
+                    className={s.modalInput}
+                />
+            </Modal>
 
-          <Table
-            dataSource={dataSourceOCP}
-            columns={ocpColumns}
-            pagination={false}
-            className={s.table}
-          />
-        </div>
+            {/* Модалка назначения доставщика */}
+            <Modal
+                title={`Назначить доставщика для ${selectedOCP?.address}`}
+                visible={isAssignModalVisible}
+                onOk={handleAssignDeliveryman}
+                onCancel={() => {
+                    setIsAssignModalVisible(false);
+                    setSelectedDeliveryman(null);
+                }}
+                okText="Назначить"
+                cancelText="Отмена"
+            >
+                <Select
+                    placeholder="Выберите доставщика"
+                    className={s.modalSelect}
+                    onChange={(value) => setSelectedDeliveryman(value)}
+                    options={deliverymanOptions}
+                    showSearch
+                    optionFilterProp="label"
+                    style={{width: '100%'}}
+                />
+            </Modal>
 
-        <div className={s.rightSide}>
-          <h2 className={s.sectionTitle}>Назначить доставщика</h2>
-          <div className={s.matchForm}>
-            <Select
-              options={['Курьер 1', 'Курьер 2', 'Курьер 3']}
-              placeholder="Выберите доставщика"
-              onChange={setSelectedCourier}
-              className={s.select}
-            />
-            <Select
-              options={ocpList.map(ocp => ocp.address)}
-              placeholder="Выберите адрес"
-              onChange={setSelectedAddress}
-              className={s.select}
-            />
-            <Button type="primary" onClick={handleMatchCourier} className={s.matchButton}>Сопоставить</Button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
+            {/* Модалка добавления товара */}
+            <Modal
+                title={`Добавить товар в ${selectedOCP?.address}`}
+                visible={isAddItemModalVisible}
+                onOk={handleAddItem}
+                onCancel={() => {
+                    setIsAddItemModalVisible(false);
+                    setSelectedItem(null);
+                    setItemAmount(1);
+                }}
+                okText="Добавить"
+                cancelText="Отмена"
+            >
+                <Select
+                    placeholder="Выберите товар"
+                    className={s.modalSelect}
+                    onChange={(value) => setSelectedItem(value)}
+                    options={itemOptions}
+                    showSearch
+                    optionFilterProp="label"
+                    style={{width: '100%', marginBottom: 16}}
+                />
+                <Input
+                    type="number"
+                    placeholder="Количество"
+                    value={itemAmount}
+                    onChange={(e) => setItemAmount(e.target.value)}
+                    className={s.modalInput}
+                    min={1}
+                />
+            </Modal>
+        </motion.div>
+    );
+});
 
 export default OCPInput;

@@ -220,6 +220,7 @@ CREATE TABLE public.users
     role_id       INT       DEFAULT 1 NOT NULL,
     date_of_birth DATE,
     surname       VARCHAR(50)         NOT NULL,
+    is_blocked    BOOLEAN   DEFAULT FALSE,
     created_at    TIMESTAMP DEFAULT NOW()
 );
 ALTER TABLE public.users
@@ -341,3 +342,7 @@ ALTER TABLE ONLY public.order_items
 
 ALTER TABLE ONLY public.order_items
     ADD CONSTRAINT fk_bouquet FOREIGN KEY (bouquet_id) REFERENCES public.bouquets (id);
+
+COMMENT ON TABLE public.ocp_item IS E'@name PickupPointItems';
+COMMENT ON TABLE public.ocp IS E'@name PickupPoint';
+COMMENT ON TABLE public.deliveryman_info IS E'@name DeliverymanAssignment';

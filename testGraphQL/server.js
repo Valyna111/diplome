@@ -8,7 +8,7 @@ const jwt = require('jsonwebtoken');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
-const {UserDataPlugin, StoreMutationsPlugin} = require("./plugins");
+const {UserDataPlugin, StoreMutationsPlugin, BlockUserPlugin, OCPSchemaPlugin} = require("./plugins");
 
 if (!fs.existsSync('uploads')) {
     fs.mkdirSync('uploads');
@@ -66,7 +66,7 @@ app.use('/uploads', express.static('uploads'));
 
 // Кастомные маршруты
 app.post('/register', async (req, res) => {
-    const {username, email, password, phone, surname} = req.body;
+    const {username, email, password, phone, surname, role} = req.body;
 
     try {
         const {rows} = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
@@ -76,7 +76,7 @@ app.post('/register', async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10);
         const newUser = await pool.query(
             'INSERT INTO users (username, email, passhash, phone, surname, role_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
-            [username, email, hashedPassword, phone, surname, 1]
+            [username, email, hashedPassword, phone, surname, role || 1]
         );
 
         res.status(201).json({user: newUser.rows[0]});
@@ -270,7 +270,7 @@ app.use(
         watchPg: true,
         graphiql: true,
         enhanceGraphiql: true,
-        appendPlugins: [UserDataPlugin, StoreMutationsPlugin]
+        appendPlugins: [UserDataPlugin, StoreMutationsPlugin, BlockUserPlugin, OCPSchemaPlugin]
     })
 );
 

@@ -2,18 +2,18 @@ import classNames from 'classnames';
 import s from './Button.module.css';
 
 const Button = ({
-    className,
-    onClick,
-    placeholder,
-    icon,
-    id,
-    loader,
-    disabled,
-    width,
-    type = 'primary',
-    iconPosition,
-    ...props
-}) => (
+                    className,
+                    onClick,
+                    placeholder,
+                    icon,
+                    id,
+                    loader,
+                    disabled,
+                    width,
+                    type = 'primary',
+                    iconPosition,
+                    ...props
+                }) => (
     <button
         id={id}
         className={classNames(s.button, className, {
@@ -21,7 +21,7 @@ const Button = ({
             [s.second]: type === 'second',
         })}
         onClick={onClick}
-        style={{ width: width }}
+        style={{width: width}}
         disabled={disabled || loader}
         {...props}
     >

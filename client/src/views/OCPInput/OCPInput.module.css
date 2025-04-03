@@ -1,157 +1,63 @@
-/* OCPInput.module.css */
-
-/* Общие стили */
 .container {
-  display: flex;
-  flex-direction: column;
-  padding: 20px;
-}
-
-.formContainer {
-  margin-bottom: 20px;
-}
-
-.formTitle {
-  font-size: 1.5rem;
-  margin-bottom: 10px;
-}
-
-.form {
-  display: flex;
-  flex-direction: column;
-}
-
-.input {
-  margin-bottom: 10px;
-}
-
-.submitButton, .cancelButton {
-  margin-top: 10px;
-}
-
-.mainContent {
-  display: flex;
-  justify-content: space-between;
-  gap: 20px;
-}
-
-.leftSide, .rightSide {
-  width: 48%;
+    padding: 24px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
 }
 
-.searchInput {
-  width: 80%;
+.title {
+    font-size: 24px;
+    color: #333;
+    margin: 0;
 }
 
-.createButton {
-  width: 18%;
+.addButton {
+    height: 40px;
 }
 
 .table {
-  margin-top: 20px;
+    margin-top: 16px;
 }
 
-/* Стили для адаптивности */
-@media (max-width: 1200px) {
-  .mainContent {
-    flex-direction: column;
-  }
-
-  .leftSide, .rightSide {
-    width: 100%;
-  }
-
-  .searchInput {
-    width: 70%;
-  }
-
-  .createButton {
-    width: 25%;
-  }
+.addressCell {
+    font-weight: 500;
 }
 
-@media (max-width: 768px) {
-  .formTitle {
-    font-size: 1.2rem;
-  }
-
-  .input {
-    padding: 8px;
-  }
-
-  .submitButton, .cancelButton {
-    padding: 10px;
-  }
-
-  .mainContent {
-    flex-direction: column;
-  }
-
-  .leftSide, .rightSide {
-    width: 100%;
-  }
-
-  .header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .searchInput {
-    width: 100%;
-  }
-
-  .createButton {
-    width: 100%;
-  }
-
-  .table {
-    margin-top: 10px;
-  }
+.itemsColumn, .deliverymenColumn {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
 }
 
-@media (max-width: 480px) {
-  .formTitle {
-    font-size: 1rem;
-  }
+.itemTag, .deliverymanTag {
+    background: #f0f0f0;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+}
 
-  .input {
-    padding: 6px;
-  }
+.actionsColumn {
+    display: flex;
+    gap: 8px;
+}
 
-  .submitButton, .cancelButton {
-    padding: 8px;
-  }
+.actionButton {
+    height: 32px;
+}
 
-  .createButton {
+.modalInput, .modalSelect {
     width: 100%;
-  }
+    margin-bottom: 16px;
+}
 
-  .header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .searchInput {
-    width: 100%;
-    margin-bottom: 10px;
-  }
-
-  .table {
-    margin-top: 10px;
-  }
-
-  .matchButton {
-    width: 100%;
-    margin-top: 10px;
-  }
-
-  .select {
-    width: 100%;
-  }
+/* Анимации */
+.itemTag {
+    transition: all 0.2s ease;
 }

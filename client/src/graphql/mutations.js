@@ -864,3 +864,21 @@ export const SYNC_CART = gql`
         }
     }
 `
+export const BLOCK_USER = gql`
+    mutation BlockUser($userId: Int!, $isBlocked: Boolean!) {
+        blockUser(userId: $userId, isBlocked: $isBlocked) {
+            success
+            message
+            user {
+                id
+                username
+                email
+                isBlocked
+                roleByRoleId {
+                    id
+                    name
+                }
+            }
+        }
+    }
+`;

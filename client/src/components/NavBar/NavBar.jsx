@@ -89,14 +89,14 @@ const Navbar = observer(() => {
 
                 {authStore?.currentUser && authStore.currentUser?.role_name === "dboperator" && (
                     <p className={`${styles.menu} ${menuOpen ? styles.open : ""}`}>
-                        <Link to="/dboperations/item-input" className={styles.link} onClick={() => setMenuOpen(false)}>
-                            Конструктор букетов
+                        <Link to="/dboperations/item" className={styles.link} onClick={() => setMenuOpen(false)}>
+                            Букеты
                         </Link>
-                        <Link to="/dboperations/ocp-input" className={styles.link} onClick={() => setMenuOpen(false)}>
-                            Заполнение пунктов сбора заказов
+                        <Link to="/dboperations/ocp" className={styles.link} onClick={() => setMenuOpen(false)}>
+                            Пункты сбора
                         </Link>
-                        <Link to="/dboperations/user-block" className={styles.link} onClick={() => setMenuOpen(false)}>
-                            Блокировка пользователей
+                        <Link to="/dboperations/user" className={styles.link} onClick={() => setMenuOpen(false)}>
+                            Пользователи
                         </Link>
                     </p>
                 )}

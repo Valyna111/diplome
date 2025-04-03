@@ -1,6 +1,6 @@
-import {CLEAR_WISHLIST, SYNC_CART, TOGGLE_WISHLIST, UPDATE_USER} from '@/graphql/mutations';
+import {BLOCK_USER, CLEAR_WISHLIST, SYNC_CART, TOGGLE_WISHLIST, UPDATE_USER} from '@/graphql/mutations';
 import {action, computed, makeObservable, observable, runInAction} from 'mobx';
-import {GET_USER_RELATIVE_DATA} from "@/graphql/queries";
+import {GET_ALL_USERS, GET_USER_RELATIVE_DATA} from "@/graphql/queries";
 
 export default class AuthStore {
     currentUser = null;
@@ -10,6 +10,7 @@ export default class AuthStore {
     cart = [];
     wishlist = [];
     bonuses = [];
+    users = []; // Добавляем список всех пользователей
     // Состояния для формы входа
     loginForm = {
         email: '',
@@ -45,6 +46,7 @@ export default class AuthStore {
 
         makeObservable(this, {
             currentUser: observable,
+            users: observable,
             loginForm: observable,
             registerForm: observable,
             isLoading: observable,
@@ -66,6 +68,8 @@ export default class AuthStore {
             getAllReleativeData: action,
             syncCart: action,
             toggleWishlistItem: action,
+            getAllUsers: action,
+            toggleUserBlock: action,
             clearWishlist: action,
             isInWishlist: computed,
         });
@@ -97,6 +101,7 @@ export default class AuthStore {
                     password: userData.password,
                     phone: userData.phone,
                     surname: userData.lastName,
+                    role: userData.role,
                 }),
             });
 
@@ -109,6 +114,9 @@ export default class AuthStore {
             alert('Регистрация прошла успешно!');
             this.setIsModalRegister(false);
             this.resetFormStates();
+            if (userData.role) {
+                await this.getAllUsers();
+            }
         } catch (error) {
             throw error;
         } finally {
@@ -365,6 +373,60 @@ export default class AuthStore {
             return true;
         } catch (error) {
             console.error('Error clearing wishlist:', error);
+            throw error;
+        }
+    }
+
+    // Получение списка всех пользователей
+    async getAllUsers() {
+        this.isLoading = true;
+        try {
+            const {data} = await this.rootStore.client.query({
+                query: GET_ALL_USERS,
+                fetchPolicy: 'network-only'
+            });
+
+            runInAction(() => {
+                this.users = data.allUsers.nodes;
+            });
+            return this.users;
+        } catch (error) {
+            console.error('Error fetching users:', error);
+            throw error;
+        } finally {
+            this.isLoading = false;
+        }
+    }
+
+    // Блокировка/разблокировка пользователя
+    async toggleUserBlock(userId, isBlocked) {
+        try {
+            const {data} = await this.rootStore.client.mutate({
+                mutation: BLOCK_USER,
+                variables: {
+                    userId: Number(userId), // Явное преобразование в число
+                    isBlocked: !isBlocked
+                }
+            });
+
+            if (data?.blockUser?.success) {
+                runInAction(() => {
+                    // Создаём полностью новый массив для триггера обновления
+                    const updatedUsers = this.users.map(user =>
+                        user.id === userId
+                            ? {
+                                ...user,
+                                isBlocked: !user.isBlocked, // Инвертируем текущее значение
+                            }
+                            : user
+                    );
+                    this.users = updatedUsers; // Полная замена массива
+                });
+                return true;
+            }
+            return false;
+        } catch (error) {
+            console.error('Error toggling user block:', error);
             throw error;
         }
     }

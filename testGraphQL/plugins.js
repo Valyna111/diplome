@@ -221,7 +221,6 @@ const StoreMutationsPlugin = makeExtendSchemaPlugin(build => {
                 user_id: Int!
                 items: [CustomCartItem!]!  # Теперь items доступен как поле
                 created_at: String!
-                updated_at: String!
             }
 
             input CustomCartItemInput {
@@ -448,5 +447,241 @@ const StoreMutationsPlugin = makeExtendSchemaPlugin(build => {
         }
     };
 });
+const BlockUserPlugin = makeExtendSchemaPlugin(build => {
+    return {
+        typeDefs: gql`
+            type BlockUserPayload {
+                success: Boolean!
+                message: String
+                user: User
+            }
 
-module.exports = {UserDataPlugin, StoreMutationsPlugin};
+            extend type Mutation {
+                blockUser(userId: Int!, isBlocked: Boolean!): BlockUserPayload!
+            }
+        `,
+        resolvers: {
+            Mutation: {
+                blockUser: async (_, {userId, isBlocked}, {pgClient}) => {
+                    try {
+                        await pgClient.query('BEGIN');
+
+                        // 1. Проверяем существование пользователя
+                        const userCheck = await pgClient.query(
+                            `SELECT id
+                             FROM users
+                             WHERE id = $1`,
+                            [userId]
+                        );
+
+                        if (userCheck.rows.length === 0) {
+                            throw new Error('Пользователь не найден');
+                        }
+
+                        // 2. Обновляем статус блокировки
+                        const {rows: [updatedUser]} = await pgClient.query(
+                            `UPDATE users
+                             SET is_blocked = $1
+                             WHERE id = $2
+                             RETURNING
+                                 id,
+                                 username,
+                                 email,
+                                 phone,
+                                 is_blocked as "isBlocked",
+                                 role_id,
+                                 surname,
+                                 created_at as "createdAt"`,
+                            [isBlocked, userId]
+                        );
+
+                        // 3. Получаем информацию о роли
+                        const role = await pgClient.query(
+                            `SELECT id, name
+                             FROM role
+                             WHERE id = $1`,
+                            [updatedUser.role_id]
+                        );
+
+                        await pgClient.query('COMMIT');
+
+                        return {
+                            success: true,
+                            message: `Пользователь успешно ${isBlocked ? 'заблокирован' : 'разблокирован'}`,
+                            user: {
+                                ...updatedUser,
+                                roleByRoleId: role.rows[0]
+                            }
+                        };
+                    } catch (error) {
+                        await pgClient.query('ROLLBACK');
+                        console.error('Block user error:', error);
+                        return {
+                            success: false,
+                            message: error.message
+                        };
+                    }
+                }
+            }
+        }
+    };
+});
+const OCPSchemaPlugin = makeExtendSchemaPlugin(build => {
+    return {
+        typeDefs: gql`
+            type Ocp {
+                id: Int!
+                address: String!
+                createdAt: String!
+                ocpItems: [OcpItem!]!
+                deliverymen: [DeliverymanInfo!]!
+            }
+
+            type OcpItem {
+                id: Int!
+                itemId: Int!
+                amount: Int!
+                ocpId: Int!
+                createdAt: String!
+                item: Item!
+            }
+
+            type DeliverymanInfo {
+                id: Int!
+                userId: Int!
+                ocpId: Int!
+                createdAt: String!
+                user: User!
+            }
+
+            extend type Query {
+                allOcp: [Ocp!]!
+                ocpById(id: Int!): Ocp
+            }
+
+            extend type Mutation {
+                createOcp(address: String!): Ocp
+                createOcpItem(ocpId: Int!, itemId: Int!, amount: Int!): OcpItem
+                assignDeliveryman(ocpId: Int!, userId: Int!): DeliverymanInfo
+            }
+        `,
+        resolvers: {
+            Ocp: {
+                createdAt: (parent) => parent.created_at || new Date().toISOString(),
+                ocpItems: async (parent, _, {pgClient}) => {
+                    const {rows} = await pgClient.query(
+                        `SELECT id, item_id as "itemId", amount, ocp_id as "ocpId", created_at
+                         FROM ocp_item
+                         WHERE ocp_id = $1`,
+                        [parent.id]
+                    );
+                    return rows.map(row => ({
+                        ...row,
+                        createdAt: row.created_at
+                    }));
+                },
+                deliverymen: async (parent, _, {pgClient}) => {
+                    const {rows} = await pgClient.query(
+                        `SELECT id, user_id as "userId", ocp_id as "ocpId", created_at
+                         FROM deliveryman_info
+                         WHERE ocp_id = $1`,
+                        [parent.id]
+                    );
+                    return rows.map(row => ({
+                        ...row,
+                        createdAt: row.created_at
+                    }));
+                }
+            },
+            OcpItem: {
+                createdAt: (parent) => parent.created_at || new Date().toISOString(),
+                item: async (parent, _, {pgClient}) => {
+                    const {rows} = await pgClient.query(
+                        `SELECT *
+                         FROM item
+                         WHERE id = $1`,
+                        [parent.itemId]
+                    );
+                    return rows[0];
+                }
+            },
+            DeliverymanInfo: {
+                createdAt: (parent) => parent.created_at || new Date().toISOString(),
+                user: async (parent, _, {pgClient}) => {
+                    const {rows} = await pgClient.query(
+                        `SELECT *
+                         FROM users
+                         WHERE id = $1`,
+                        [parent.userId]
+                    );
+                    return rows[0];
+                }
+            },
+            Query: {
+                allOcp: async (_, __, {pgClient}) => {
+                    const {rows} = await pgClient.query(
+                        `SELECT id, address, created_at
+                         FROM ocp
+                         ORDER BY created_at DESC`
+                    );
+                    return rows.map(row => ({
+                        ...row,
+                        createdAt: row.created_at
+                    }));
+                },
+                ocpById: async (_, {id}, {pgClient}) => {
+                    const {rows} = await pgClient.query(
+                        `SELECT id, address, created_at
+                         FROM ocp
+                         WHERE id = $1`,
+                        [id]
+                    );
+                    return rows[0] ? {
+                        ...rows[0],
+                        createdAt: rows[0].created_at
+                    } : null;
+                }
+            },
+            Mutation: {
+                createOcp: async (_, {address}, {pgClient}) => {
+                    const {rows} = await pgClient.query(
+                        `INSERT INTO ocp (address)
+                         VALUES ($1)
+                         RETURNING id, address, created_at`,
+                        [address]
+                    );
+                    return {
+                        ...rows[0],
+                        createdAt: rows[0].created_at
+                    };
+                },
+                createOcpItem: async (_, {ocpId, itemId, amount}, {pgClient}) => {
+                    const {rows} = await pgClient.query(
+                        `INSERT INTO ocp_item (ocp_id, item_id, amount)
+                         VALUES ($1, $2, $3)
+                         RETURNING id, item_id as "itemId", amount, ocp_id as "ocpId", created_at`,
+                        [ocpId, itemId, amount]
+                    );
+                    return {
+                        ...rows[0],
+                        createdAt: rows[0].created_at
+                    };
+                },
+                assignDeliveryman: async (_, {ocpId, userId}, {pgClient}) => {
+                    const {rows} = await pgClient.query(
+                        `INSERT INTO deliveryman_info (ocp_id, user_id)
+                         VALUES ($1, $2)
+                         RETURNING id, user_id as "userId", ocp_id as "ocpId", created_at`,
+                        [ocpId, userId]
+                    );
+                    return {
+                        ...rows[0],
+                        createdAt: rows[0].created_at
+                    };
+                }
+            }
+        }
+    };
+});
+
+module.exports = {UserDataPlugin, StoreMutationsPlugin, BlockUserPlugin, OCPSchemaPlugin};

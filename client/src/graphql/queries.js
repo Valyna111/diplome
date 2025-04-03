@@ -493,19 +493,22 @@ export const GET_TYPE_BY_ID = gql`
 
 // Запросы для таблицы users
 export const GET_ALL_USERS = gql`
-    query GetAllUsers {
-        users {
-            id
-            username
-            passhash
-            email
-            phone
-            role {
+    query allUsers {
+        allUsers {
+            nodes {
+                createdAt
+                dateOfBirth
+                email
                 id
-                name
+                isBlocked
+                phone
+                roleByRoleId {
+                    name
+                    id
+                }
+                username
+                surname
             }
-            dateOfBirth
-            surname
         }
     }
 `;
