@@ -1,5 +1,5 @@
 import {CLEAR_WISHLIST, SYNC_CART, TOGGLE_WISHLIST, UPDATE_USER} from '@/graphql/mutations';
-import {action, computed, makeObservable, observable, runInAction, toJS} from 'mobx';
+import {action, computed, makeObservable, observable, runInAction} from 'mobx';
 import {GET_USER_RELATIVE_DATA} from "@/graphql/queries";
 
 export default class AuthStore {
@@ -255,17 +255,17 @@ export default class AuthStore {
             const {data} = await this.rootStore.client.query({
                 query: GET_USER_RELATIVE_DATA,
                 variables: {userId: id},
-                fetchPolicy: 'network-only' // Чтобы всегда получать свежие данные
+                fetchPolicy: 'network-only'
             });
 
             runInAction(() => {
                 if (data) {
-                    this.cart = data.getUserFullData.cart.items;
-                    this.wishlist = data.getUserFullData.wishlist;
+                    // Добавляем проверку на существование корзины
+                    this.cart = data.getUserFullData.cart?.items || [];
+                    this.wishlist = data.getUserFullData.wishlist || [];
                     this.bonuses = [];
                 }
             });
-            console.log(toJS(this.cart));
             return {
                 cart: this.cart,
                 wishlist: this.wishlist,
@@ -273,7 +273,17 @@ export default class AuthStore {
             };
         } catch (error) {
             console.error('Error fetching user relative data:', error);
-            throw error;
+            // Возвращаем пустые данные при ошибке
+            runInAction(() => {
+                this.cart = [];
+                this.wishlist = [];
+                this.bonuses = [];
+            });
+            return {
+                cart: [],
+                wishlist: [],
+                bonuses: []
+            };
         } finally {
             this.isLoading = false;
         }
