@@ -19,6 +19,12 @@
     padding: 0.8rem;
     max-width: 100%;
     border-radius: 8px;
+    align-self: stretch;
+    margin: 0;
+}
+
+.card.compact .content .title {
+    text-align: left;
 }
 
 .imageContainer {

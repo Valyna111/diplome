@@ -57,20 +57,20 @@
 }
 
 .emptyButtonPrimary {
-    background: #4299e1;
+    background: #e91e63;
     color: white;
     border: none;
 }
 
 .emptyButtonPrimary:hover {
-    background: #3182ce;
+    background: #d81b60;
     transform: translateY(-2px);
 }
 
 .emptyButtonSecondary {
     background: white;
-    color: #4299e1;
-    border: 1px solid #4299e1;
+    color: #e91e63;
+    border: 1px solid #e91e63;
 }
 
 .emptyButtonSecondary:hover {

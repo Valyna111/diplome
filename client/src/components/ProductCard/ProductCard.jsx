@@ -27,9 +27,7 @@ const ProductCard = observer(({
     const [isCartAnimating, setIsCartAnimating] = useState(false);
 
     const handleCardClick = () => {
-        if (!compactView) {
-            navigate(`/main/catalog/${id}`);
-        }
+        navigate(`/main/catalog/${id}`);
     };
 
     const handleButtonClick = async (e, callback) => {
@@ -82,7 +80,6 @@ const ProductCard = observer(({
                 [styles.compact]: compactView
             })}
             onClick={handleCardClick}
-            style={{cursor: compactView ? 'default' : 'pointer'}}
             whileHover={!compactView ? {y: -4, boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)'} : {}}
             transition={{duration: 0.2}}
         >

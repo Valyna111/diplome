@@ -4,9 +4,10 @@ import StoreContext from "@/store/StoreContext";
 import ProductCard from "@/components/ProductCard/ProductCard";
 import styles from "./CartPage.module.css";
 import {AnimatePresence, motion} from "framer-motion";
-import {FaArrowLeft, FaShoppingBag, FaTrash} from "react-icons/fa";
+import {FaShoppingBag, FaTrash} from "react-icons/fa";
 import EmptyCart from "./EmptyCart";
 import {useNavigate} from "react-router-dom";
+import {IoIosArrowBack} from "react-icons/io";
 
 const CartPage = observer(() => {
     const {authStore} = useContext(StoreContext);
@@ -139,6 +140,8 @@ const CartPage = observer(() => {
         );
     }
 
+    const sortedCartItems = [...cartItems].sort((a, b) => b.createdAt - a.createdAt);
+
     return (
         <motion.div
             className={styles.container}
@@ -147,20 +150,18 @@ const CartPage = observer(() => {
             exit={{opacity: 0}}
             transition={{duration: 0.3}}
         >
+            <button
+                className={styles.backButton}
+                onClick={handleGoBack}
+            >
+                <IoIosArrowBack/>
+            </button>
             <motion.div
                 className={styles.header}
                 initial={{opacity: 0, y: -20}}
                 animate={{opacity: 1, y: 0}}
                 transition={{duration: 0.3}}
             >
-                <button
-                    className={styles.backButton}
-                    onClick={handleGoBack}
-                    whileHover={{scale: 1.05}}
-                    whileTap={{scale: 0.95}}
-                >
-                    <FaArrowLeft/>
-                </button>
                 <h1 className={styles.title}>Корзина</h1>
                 <motion.button
                     className={styles.clearButton}
@@ -180,7 +181,7 @@ const CartPage = observer(() => {
                 animate="visible"
             >
                 <AnimatePresence>
-                    {cartItems.map((item) => (
+                    {sortedCartItems.map((item) => (
                         <motion.div
                             key={item.id}
                             className={styles.cartItem}
