@@ -1,10 +1,58 @@
+/* Основные стили модального окна */
 .delete__text {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     font-weight: 400;
+    line-height: 1.5;
+    padding: 0 5px;
+    text-align: center;
 }
+
 .errorMessage {
     color: #ff4d4f;
     font-size: 14px;
     margin-top: 8px;
     text-align: center;
+}
+
+.inputContainer {
+    width: 100%;
+    padding: 0 10px;
+    box-sizing: border-box;
+}
+
+/* Адаптация для планшетов */
+@media (max-width: 768px) {
+    .delete__text {
+        font-size: 1rem;
+        padding: 0;
+    }
+}
+
+/* Адаптация для мобильных */
+@media (max-width: 480px) {
+    .delete__text {
+        font-size: 0.95rem;
+        line-height: 1.4;
+    }
+    
+    .errorMessage {
+        font-size: 13px;
+    }
+    
+    .inputContainer {
+        padding: 0;
+    }
+}
+
+/* Особые стили для 320px */
+@media (max-width: 360px) {
+    .delete__text {
+        font-size: 0.85rem; /* Еще меньше размер шрифта */
+        padding: 0 8px; /* Добавляем небольшие отступы по бокам */
+    }
+    
+    .errorMessage {
+        font-size: 12px;
+        margin-top: 6px;
+    }
 }

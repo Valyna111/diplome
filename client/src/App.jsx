@@ -34,7 +34,7 @@ const App = () => {
                             <Route path="/user/*" element={<User/>}/>
                             <Route path="/dboperations/*" element={<DBoperations/>}/>
                             <Route path="/stock/*" element={<Stock/>}/>
-                            <Route path="/dilivery/*" element={<Delivery/>}/>
+                            <Route path="/delivery/*" element={<Delivery/>}/>
                             <Route path="/test" element={<AuthTestButtons/>}/>
                             {/*<Route path="/promotion-page" element={<PromotionPage/>}/>*/}
                             <Route path="*" element={<Navigate to="/main" replace={true}/>}/>

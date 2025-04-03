@@ -9,138 +9,121 @@
     padding: 20px;
 }
 
-/* 🔹 Новый контейнер для поиска и фильтров */
-.searchFilterContainer {
-    display: flex;
-    justify-content: center; /* Центрируем */
-    align-items: center;
-    gap: 15px; /* Расстояние между элементами */
-    width: 100%;
-    max-width: 800px;
-    margin-top: 10px; /* Отступ сверху */
-}
-
-/* Поиск */
-.searchContainer {
-    flex: 1; /* Равномерное распределение */
-    max-width: 300px; /* Фиксируем ширину */
-    display: flex;
-    justify-content: center;
-}
-
-/* Фильтры */
-.filterSortContainer {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-}
-
-/* Сетка продуктов */
-.productsGrid {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 20px;
-    max-width: 1200px;
-    width: 100%;
-    padding: 20px;
-}
-
-/* 🔹 Адаптивность */
-@media (max-width: 768px) {
-    .searchFilterContainer {
-        flex-direction: column; /* На мобильных в колонку */
-        gap: 10px;
-    }
-
-    .searchContainer, .filterSortContainer {
-        max-width: 100%;
-    }
-}
-
+/* Сетка категорий - базовая версия (мобильные) */
 .grid_container {
     display: grid;
-    grid-template-columns: repeat(2, 1fr); /* 2 колонки */
-    gap: 10px;
-    padding: 20px;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    padding: 15px;
     width: 100%;
     max-width: 1200px;
 }
 
 .grid_item {
-    border: 1px solid #e0e0e0;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    border-radius: 4px;
+    border: 1px solid #f0e0e0;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    border-radius: 10px;
     cursor: pointer;
     display: flex;
-    flex-direction: column;
-    background-color: #fdfafa;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 20px;
+    background-color: #fff9f9;
+    transition: all 0.25s ease;
 }
 
 .grid_item:hover {
-    box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 12px rgba(233, 30, 99, 0.15);
     transform: translateY(-2px);
-    transition: all 0.3s;
-    background-color: #ffffff;
+    background-color: #fff;
 }
 
 .grid_item span {
-    font-weight: bold;
+    font-weight: 600;
     color: #e91e63;
-    font-size: 1.2rem;
-    margin: 8px;
-    display: block;
+    font-size: 1rem;
+    margin-right: 15px;
 }
 
 .grid_item img {
-    display: flex;
-    justify-content: center;
-    align-self: center;
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
 }
 
-/* Распределение элементов по сетке */
-.grid_item:nth-child(1) {
-    grid-area: 1 / 1;
-}
-
-/* Букеты */
-.grid_item:nth-child(2) {
-    grid-area: 1 / 2;
-}
-
-/* Подарки */
-.grid_item:nth-child(3) {
-    grid-area: 1 / 3 / span 2; /* Розы - занимает 2 строки */
-    min-height: 120px; /* Минимальная высота */
-}
-
-.grid_item:nth-child(4) {
-    grid-area: 2 / 1;
-}
-
-/* Найти причину */
-.grid_item:nth-child(5) {
-    grid-area: 2 / 2;
-}
-
-.grid_item:nth-child(2), .grid_item:nth-child(4) {
-    justify-content: space-between;
-}
-
-.grid_item:nth-child(5) img {
-    margin-left: auto;
-}
-
-/* Адаптивность */
-@media (max-width: 600px) {
+/* Планшеты (вертикальная ориентация) */
+@media (min-width: 480px) {
     .grid_container {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
     }
+    
+    .grid_item {
+        flex-direction: column;
+        justify-content: center;
+        padding: 15px;
+        min-height: 120px;
+    }
+    
+    .grid_item span {
+        margin-right: 0;
+        margin-bottom: 10px;
+        font-size: 1.1rem;
+        text-align: center;
+    }
+    
+    .grid_item img {
+        width: 45px;
+        height: 45px;
+    }
+}
 
-    .grid_item:nth-child(3) {
-        grid-area: auto; /* Сбрасываем позиционирование */
-        min-height: auto;
+/* Планшеты (горизонтальная ориентация) и маленькие ноутбуки */
+@media (min-width: 768px) {
+    .grid_container {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 18px;
+        padding: 20px;
+    }
+    
+    .grid_item {
+        min-height: 140px;
+        padding: 20px;
+    }
+    
+    .grid_item span {
+        font-size: 1.15rem;
+    }
+    
+    .grid_item img {
+        width: 50px;
+        height: 50px;
+    }
+}
+
+/* Десктопы */
+@media (min-width: 992px) {
+    .grid_container {
+        grid-template-columns: repeat(5, 1fr);
+    }
+    
+    .grid_item {
+        min-height: 150px;
+    }
+    
+    .grid_item:hover {
+        transform: translateY(-3px);
+    }
+}
+
+/* Большие экраны */
+@media (min-width: 1200px) {
+    .grid_container {
+        gap: 20px;
+    }
+    
+    .grid_item {
+        min-height: 160px;
     }
 }
