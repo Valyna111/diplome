@@ -80,20 +80,21 @@ const ModalItemCategory = observer(() => {
     // TODO удалять связанные записи или просто показывать ошибку
     return (
         <Modal
-            width="400px"
-            isOpen={modal.isOpen}
-            onClose={modal.onClose}
-            onSubmit={handleSubmit}
-            title={`${modal.data?.action} ${modal.data?.type}`}
-            action_text_submit={modal.data?.action === "Удаление" ? 'Удалить' : "Сохранить"}
-            closeButton
-        >
-            {
-                modal.data?.action === "Удаление" ?
-                    <span className={s.delete__text}>
-                        Вы уверены что хотите удалить <span style={{ fontWeight: 500}}>{modal.data?.type}</span> с именем <span style={{ fontWeight: 500}}>{modal.data?.name}</span> удалив все связанные записи будут удалены.
-                    </span>
-                    :
+        width={window.innerWidth <= 768 ? "90%" : "400px"}
+        isOpen={modal.isOpen}
+        onClose={modal.onClose}
+        onSubmit={handleSubmit}
+        title={`${modal.data?.action} ${modal.data?.type}`}
+        action_text_submit={modal.data?.action === "Удаление" ? 'Удалить' : "Сохранить"}
+        closeButton
+    >
+        {
+            modal.data?.action === "Удаление" ?
+                <span className={s.delete__text}>
+                    Вы уверены что хотите удалить <span style={{ fontWeight: 500 }}>{modal.data?.type}</span> с именем <span style={{ fontWeight: 500 }}>{modal.data?.name}</span>? Все связанные записи будут удалены.
+                </span>
+                :
+                <div className={s.inputContainer}>
                     <Input
                         id="name"
                         name="name"
@@ -102,12 +103,13 @@ const ModalItemCategory = observer(() => {
                         value={state.name}
                         placeholder="Название"
                         iconPosition="left"
-                        error={!!state.errors.password}
-                        errorMessage={state.errors.password}
+                        error={!!state.errors.name}
+                        errorMessage={state.errors.name}
                     />
-
-            }
-        </Modal>
+                </div>
+        }
+        {state.errors.general && <div className={s.errorMessage}>{state.errors.general}</div>}
+    </Modal>
     )
 });
 export default ModalItemCategory;

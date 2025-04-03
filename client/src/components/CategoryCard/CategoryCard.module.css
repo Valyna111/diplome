@@ -1,74 +1,166 @@
+/* Основные стили контейнера категории */
 .categoryContainer {
     width: 100%;
     max-width: 1200px;
     margin: 0 auto;
-    padding: 20px;
+    padding: 20px 10px;
+    box-sizing: border-box;
 }
 
 .title {
     text-align: center;
     font-size: 1.8rem;
-    font-weight: bold;
-    margin-bottom: 20px;
+    font-weight: 600;
+    margin-bottom: 25px;
+    color: #333;
 }
 
 .sliderWrapper {
     width: 100%;
-    padding: 0 20px; /* Добавляем отступы по бокам */
+    position: relative;
+    padding: 0 15px;
 }
 
 .slider {
     width: 100%;
+    padding: 10px 0;
 }
 
 /* Стилизация точек навигации */
 .slick-dots {
-    bottom: -30px;
+    bottom: -25px;
 }
 
 .slick-dots li button:before {
-    font-size: 12px;
-    color: #ccc;
+    font-size: 10px;
+    color: #e0e0e0;
+    opacity: 1;
 }
 
 .slick-dots li.slick-active button:before {
-    color: #333;
+    color: #e91e63;
 }
 
-/* Стрелки навигации */
+/* Кастомные стрелки */
 .slick-prev,
 .slick-next {
-    width: 40px;
-    height: 40px;
-    background: rgba(0, 0, 0, 0.5);
+    width: 36px;
+    height: 36px;
+    background: rgba(255, 255, 255, 0.9);
     border-radius: 50%;
-    z-index: 1;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
+    z-index: 2;
 }
 
 .slick-prev:hover,
-.slick-next:hover,
-.slick-prev:focus,
-.slick-next:focus {
-    background: rgba(0, 0, 0, 0.8);
+.slick-next:hover {
+    background: #fff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .slick-prev {
-    left: -45px;
+    left: 5px;
 }
 
 .slick-next {
-    right: -45px;
+    right: 5px;
 }
 
 .slick-prev:before,
 .slick-next:before {
-    font-family: "slick"; /* Важно для иконок */
-    font-size: 24px;
-    line-height: 1;
-    color: white;
-    opacity: 1;
+    display: none;
 }
 
+/* Стили для элементов слайдера */
 .slider_item {
-    margin: 20px;
+    margin: 0 10px;
+    transition: transform 0.3s ease;
+}
+
+.slider_item:hover {
+    transform: translateY(-5px);
+}
+
+/* Адаптация для планшетов (горизонтальная) */
+@media (max-width: 1024px) {
+    .title {
+        font-size: 1.6rem;
+        margin-bottom: 20px;
+    }
+    
+    .slick-prev {
+        left: 0;
+    }
+    
+    .slick-next {
+        right: 0;
+    }
+}
+
+/* Адаптация для планшетов (вертикальная) */
+@media (max-width: 768px) {
+    .categoryContainer {
+        padding: 15px 5px;
+    }
+    
+    .title {
+        font-size: 1.5rem;
+        margin-bottom: 15px;
+    }
+    
+    .sliderWrapper {
+        padding: 0 5px;
+    }
+    
+    .slick-dots {
+        bottom: -20px;
+    }
+    
+    .slider_item {
+        margin: 0 8px;
+    }
+}
+
+/* Адаптация для мобильных устройств */
+@media (max-width: 480px) {
+    .categoryContainer {
+        padding: 10px 0;
+    }
+    
+    .title {
+        font-size: 1.4rem;
+        margin-bottom: 12px;
+    }
+    
+    .sliderWrapper {
+        padding: 0;
+    }
+    
+    .slick-prev,
+    .slick-next {
+        width: 30px;
+        height: 30px;
+    }
+    
+    .slick-dots li button:before {
+        font-size: 8px;
+    }
+    
+    .slider_item {
+        margin: 0 5px;
+    }
+}
+
+/* Очень маленькие экраны */
+@media (max-width: 360px) {
+    .title {
+        font-size: 1.3rem;
+    }
+    
+    .slick-prev,
+    .slick-next {
+        width: 28px;
+        height: 28px;
+    }
 }
