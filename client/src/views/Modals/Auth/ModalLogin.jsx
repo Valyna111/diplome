@@ -96,7 +96,7 @@ const ModalLogin = observer(() => {
       isOpen={authStore.isModalLogin}
       onClose={() => authStore.setIsModalLogin(false)}
       onSubmit={handleLogin}
-      width="400px"
+      width="320px"
       action_text_submit="Вход"
       footer={s.footer}
       isOverlay={false}

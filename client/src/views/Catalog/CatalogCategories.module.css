@@ -1,63 +1,263 @@
-/* Контейнер */
+/* Основные стили */
 .catalogContainer {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    padding: 20px;
-    background-color: #fff;
-    min-height: 100vh;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.title {
+  text-align: center;
+  font-size: 1.8rem;
+  margin-bottom: 30px;
+  color: #333;
+  font-weight: 600;
+}
+
+/* Контейнер фильтров */
+.filtersContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-bottom: 30px;
+  align-items: center;
+  background: #f8f8f8;
+  padding: 15px;
+  border-radius: 8px;
+}
+
+.filterGroup {
+  flex: 1 1 200px;
+  min-width: 0;
+}
+
+.filterInput, .searchInput {
+  width: 100%;
+}
+
+/* Фильтр по цене */
+.priceFilter {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.priceSlider {
+  flex: 1;
+  min-width: 150px;
+}
+
+.priceSlider .ant-slider-track {
+  background-color: #e91e63;
+}
+
+.priceSlider .ant-slider-handle {
+  border-color: #e91e63;
+}
+
+.priceSlider:hover .ant-slider-track {
+  background-color: #e91e63;
+}
+
+.priceSlider:hover .ant-slider-handle {
+  border-color: #e91e63;
+}
+
+.filterLabel {
+  white-space: nowrap;
+  color: #e91e63;
+}
+
+.priceValues {
+  white-space: nowrap;
+}
+
+/* Кнопка сброса */
+.resetButton {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  color: #e91e63;
+  border-color: #e91e63;
+}
+
+.resetButton:hover {
+  color: white;
+  background-color: #e91e63;
+  border-color: #e91e63;
+}
+
+/* Контейнер товаров */
+.productsFlexContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+}
+
+.productCard {
+  flex: 1 1 300px;
+  max-width: 100%;
+  min-width: 250px;
+  transition: transform 0.2s;
+}
+
+.productCard:hover {
+  transform: translateY(-5px);
+}
+
+/* Сообщение "Ничего не найдено" */
+.noResults {
+  width: 100%;
+  text-align: center;
+  padding: 40px;
+  font-size: 1.2rem;
+  color: #666;
+}
+
+/* Адаптация для планшетов */
+@media (max-width: 900px) {
+  .filtersContainer {
+    gap: 12px;
   }
   
-  /* Заголовок */
-  .title {
-    font-size: 24px;
-    font-weight: bold;
-    color: #e91e63;
-    margin-bottom: 20px;
+  .productCard {
+    flex: 1 1 250px;
   }
-  
-  /* Сетка кнопок */
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 15px;
-    max-width: 800px;
-    width: 100%;
-    justify-items: center;
-  }
-  
-  /* Кнопки */
-  .categoryButton {
-    background: #f8e1e7;
-    color: #e91e63;
-    border: none;
+}
+
+/* Мобильные устройства */
+@media (max-width: 600px) {
+  .catalogContainer {
     padding: 15px;
-    font-size: 16px;
-    font-weight: bold;
-    border-radius: 12px;
-    cursor: pointer;
-    transition: all 0.2s;
+  }
+  
+  .filtersContainer {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 15px;
+    padding: 15px;
+  }
+  
+  .filterGroup {
+    flex: 1 1 auto;
     width: 100%;
-    max-width: 250px;
-    text-align: center;
-    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
   }
   
-  .categoryButton:hover {
-    background: #e91e63;
-    color: white;
+  .priceFilter {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
   }
   
-  /* Адаптивность */
-  @media (max-width: 768px) {
-    .grid {
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    }
-  
-    .categoryButton {
-      max-width: 200px;
-      font-size: 14px;
-    }
+  .productCard {
+    flex: 1 1 100%;
+    min-width: auto;
   }
   
+  .resetButton {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* Стили для фильтра по скидке */
+.discountFilter {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.discountFilter .filterLabel {
+  margin-bottom: 5px;
+}
+
+.radioGroup {
+  display: flex;
+  width: 100%;
+  background: #fff;
+  padding: 5px;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.radioGroup .ant-radio-button-wrapper {
+  flex: 1;
+  text-align: center;
+  padding: 8px 5px;
+  border: none;
+  line-height: 1.2;
+  position: relative;
+  margin-right: 0;
+}
+
+.radioGroup .ant-radio-button-wrapper::before {
+  display: none;
+}
+
+.radioGroup .ant-radio-button-wrapper:not(:first-child)::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 15%;
+  height: 70%;
+  width: 1px;
+  background: #eee;
+}
+
+.radioGroup .ant-radio-button-wrapper-checked {
+  background: #e91e63;
+  color: white;
+  border-radius: 4px;
+  z-index: 1;
+}
+
+.radioGroup .ant-radio-button-wrapper:hover {
+  color: #e91e63;
+}
+
+.radioGroup .ant-radio-button-wrapper-checked:hover {
+  color: white;
+  background: #d81b60;
+}
+
+/* Адаптация для узких экранов ноутбуков */
+@media (max-width: 1200px) {
+  .radioGroup .ant-radio-button-wrapper {
+    padding: 8px 2px;
+    font-size: 13px;
+  }
+}
+
+/* Планшеты и небольшие ноутбуки */
+@media (max-width: 992px) {
+  .radioGroup {
+    flex-wrap: wrap;
+    gap: 5px;
+    background: transparent;
+    padding: 0;
+    box-shadow: none;
+  }
+  
+  .radioGroup .ant-radio-button-wrapper {
+    flex: 1 1 calc(33% - 5px);
+    border: 1px solid #d9d9d9 !important;
+    border-radius: 4px !important;
+    margin-bottom: 5px;
+  }
+  
+  .radioGroup .ant-radio-button-wrapper::before {
+    display: none;
+  }
+}
+
+/* Мобильные устройства */
+@media (max-width: 768px) {
+  .radioGroup .ant-radio-button-wrapper {
+    flex: 1 1 100%;
+    padding: 10px;
+    font-size: 14px;
+  }
+}

@@ -16,5 +16,6 @@ export default class RootStore {
         this.auxiliaryStore = new AuxiliaryStore(this);
         this.bouquetStore = new BouquetStore(this);
         this.ocpStore = new OCPStore(this);
+        
     }
 }
