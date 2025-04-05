@@ -36,10 +36,10 @@ const BouquetDetails = observer(({
                 setForm({
                     name: item.name,
                     categoryId: {label: item?.categoryByCategoryId?.name, value: item.categoryByCategoryId?.id},
-                    price: item.price.toString(),
-                    description: item.description,
-                    amount: item.amount.toString(),
-                    sale: item.sale.toString(),
+                    price: item.price?.toString() || '',
+                    description: item?.description || '',
+                    amount: item.amount?.toString() || '',
+                    sale: item.sale?.toString() || '',
                     image: item.image,
                     secondImage: item.secondImage,
                 });
