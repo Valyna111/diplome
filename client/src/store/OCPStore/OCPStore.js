@@ -1,16 +1,23 @@
-import {makeAutoObservable} from 'mobx';
+import {action, makeObservable, observable} from 'mobx';
 import {gql} from '@apollo/client';
 
 class OCPStore {
     ocpList = [];
-    deliverymen = [];
-    items = [];
     isLoading = false;
     selectedOCP = null;
 
     constructor(rootStore) {
         this.rootStore = rootStore;
-        makeAutoObservable(this);
+        makeObservable(this, {
+            ocpList: observable,
+            isLoading: observable,
+            fetchAllOCPs: action,
+            createOCP: action,
+            assignDeliveryman: action,
+            addItemToOCP: action,
+        })
+        this.fetchAllOCPs().then(r => {
+        }).catch((e) => console.error(e));
     }
 
     // Получение всех OCP

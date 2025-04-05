@@ -655,27 +655,183 @@ export const GET_USER_RELATIVE_DATA = gql`
                 image
             }
             bonuses
-            orders {
+        }
+    }
+`;
+
+export const GET_USER_ORDERS = gql`
+    query GetUserOrders($userId: Int!, $status: String, $limit: Int, $offset: Int) {
+        userOrders(userId: $userId, status: $status, limit: $limit, offset: $offset) {
+            nodes {
                 id
                 orderDate
+                orderTime
                 price
-                statusName
-                customerAddress
-                createdAt
+                status {
+                    id
+                    name
+                }
+                address
+                paymentType
+                orderType
                 items {
                     id
                     quantity
                     price
-                    createdAt
                     addons
                     bouquet {
                         id
                         name
                         price
                         image
+                        description
                     }
                 }
+                deliveryInfo {
+                    deliveryman {
+                        id
+                        username
+                        phone
+                    }
+                    assignedAt
+                }
+                ocp {
+                    id
+                    address
+                }
             }
+            totalCount
+        }
+    }
+`;
+
+export const GET_DELIVERYMAN_ORDERS = gql`
+    query GetDeliverymanOrders($deliverymanId: Int!, $status: String, $limit: Int, $offset: Int) {
+        deliverymanOrders(deliverymanId: $deliverymanId, status: $status, limit: $limit, offset: $offset) {
+            nodes {
+                id
+                orderDate
+                orderTime
+                price
+                status {
+                    id
+                    name
+                }
+                address
+                paymentType
+                orderType
+                items {
+                    id
+                    quantity
+                    price
+                    addons
+                    bouquet {
+                        id
+                        name
+                        price
+                        image
+                        description
+                    }
+                }
+                customer {
+                    id
+                    username
+                    phone
+                    address
+                }
+                pickupPoint {
+                    id
+                    address
+                }
+            }
+            totalCount
+        }
+    }
+`;
+
+export const GET_AVAILABLE_ORDERS = gql`
+    query GetAvailableDeliveryOrders($limit: Int, $offset: Int) {
+        availableDeliveryOrders(limit: $limit, offset: $offset) {
+            nodes {
+                id
+                orderDate
+                orderTime
+                price
+                status {
+                    id
+                    name
+                }
+                address
+                paymentType
+                orderType
+                items {
+                    id
+                    quantity
+                    price
+                    addons
+                    bouquet {
+                        id
+                        name
+                        price
+                        image
+                        description
+                    }
+                }
+                customer {
+                    id
+                    username
+                    phone
+                    address
+                }
+                pickupPoint {
+                    id
+                    address
+                }
+            }
+            totalCount
+        }
+    }
+`;
+export const GET_AVAILABLE_FLORIS_ORDERS = gql`
+    query GetAvailableFloristOrders($limit: Int, $offset: Int) {
+        availableFloristOrders(limit: $limit, offset: $offset) {
+            nodes {
+                id
+                orderDate
+                orderTime
+                price
+                status {
+                    id
+                    name
+                }
+                address
+                paymentType
+                orderType
+                items {
+                    id
+                    quantity
+                    price
+                    addons
+                    bouquet {
+                        id
+                        name
+                        price
+                        image
+                        description
+                    }
+                }
+                customer {
+                    id
+                    username
+                    phone
+                    address
+                }
+                pickupPoint {
+                    id
+                    address
+                }
+            }
+            totalCount
         }
     }
 `;

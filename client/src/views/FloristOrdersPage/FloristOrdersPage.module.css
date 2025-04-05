@@ -1,134 +1,143 @@
-/* Основные стили контейнера */
 .container {
     display: flex;
-    gap: 20px;
-    padding: 20px;
-    background-color: #f9f9f9;
     min-height: 100vh;
-  }
-  
-  /* Левая колонка (список заказов) */
-  .leftColumn {
+    padding: 24px;
+    gap: 24px;
+    /*background-color: #f5f5f5;*/
+}
+
+.leftColumn {
+    flex: 0 0 350px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.rightColumn {
     flex: 1;
-    max-width: 300px;
-    background-color: #ffffff;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  }
-  
-  .leftColumn h2 {
-    margin-top: 0;
-    font-size: 24px;
-    color: #333;
-  }
-  
-  /* Список заказов */
-  .ordersList {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-  }
-  
-  /* Карточка заказа */
-  .orderCard {
-    padding: 15px;
-    background-color: #f1f1f1;
+    background: white;
     border-radius: 8px;
+    padding: 24px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    position: relative;
+}
+
+.title {
+    margin: 0 !important;
+}
+
+.orderCard {
+    margin-bottom: 16px;
+    transition: all 0.3s ease;
     cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-  
-  .orderCard:hover {
-    background-color: #e1e1e1;
-  }
-  
-  .orderCard h3 {
-    margin: 0;
+}
+
+.orderCard.selected {
+    border-color: #1890ff;
+    background-color: #f0f9ff;
+}
+
+.orderHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.orderTitle {
+    margin: 0 !important;
+}
+
+.orderPrice {
+    display: block;
     font-size: 18px;
-    color: #333;
-  }
-  
-  .orderCard p {
-    margin: 5px 0;
-    font-size: 14px;
-    color: #555;
-  }
-  
-  /* Правая колонка (детали заказа) */
-  .rightColumn {
-    flex: 2;
-    background-color: #ffffff;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  }
-  
-  .rightColumn h2 {
-    margin-top: 0;
-    font-size: 24px;
-    color: #333;
-  }
-  
-  .rightColumn h3 {
+    color: #1890ff;
+    margin-top: 8px;
+}
+
+.detailsHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.closeButton {
     font-size: 20px;
-    color: #333;
-  }
-  
-  /* Состав заказа */
-  .itemsList {
+    width: 32px;
+    height: 32px;
+}
+
+.customerInfo {
+    display: grid;
+    grid-template-columns: 100px 1fr;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.itemCard {
+    margin-bottom: 8px;
+}
+
+.itemContent {
+    display: flex;
+    justify-content: space-between;
+}
+
+.itemDescription {
+    display: block;
+    color: #666;
+    margin: 4px 0;
+    font-size: 14px;
+}
+
+.itemMeta {
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    margin-bottom: 20px;
-  }
-  
-  .itemCard {
-    padding: 10px;
-    background-color: #f1f1f1;
-    border-radius: 8px;
-  }
-  
-  .itemCard p {
-    margin: 5px 0;
-    font-size: 14px;
-    color: #555;
-  }
-  
-  /* Кнопки изменения статуса */
-  .statusButtons {
+    align-items: flex-end;
+    gap: 4px;
+}
+
+.orderTotal {
     display: flex;
-    gap: 10px;
-  }
-  
-  .button {
-    padding: 10px 20px;
-    background-color: #e91e63;
-    color: #ffffff;
-    border: none;
-    border-radius: 8px;
-    font-size: 14px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-  
-  .button:disabled {
-    background-color: #cccccc;
-    cursor: not-allowed;
-  }
-  
-  .button:hover:not(:disabled) {
-    background-color: #961540;
-  }
-  
-  /* Адаптивность */
-  @media (max-width: 768px) {
+    justify-content: space-between;
+    font-size: 18px;
+    padding: 8px 0;
+}
+
+.actions {
+    display: flex;
+    gap: 16px;
+    margin-top: 24px;
+}
+
+.actionButton {
+    flex: 1;
+    height: 48px;
+}
+
+.emptyCard {
+    text-align: center;
+    padding: 24px;
+}
+
+.spinner {
+    display: flex;
+    justify-content: center;
+    padding: 24px;
+}
+
+@media (max-width: 768px) {
     .container {
-      flex-direction: column;
-      padding: 10px;
+        flex-direction: column;
+        padding: 16px;
     }
-  
+
     .leftColumn {
-      max-width: 100%;
+        flex: 1;
+        width: 100%;
     }
-  }
+
+    .actions {
+        flex-direction: column;
+    }
+}

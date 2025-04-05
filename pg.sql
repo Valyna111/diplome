@@ -76,19 +76,19 @@ CREATE TABLE public.category
 );
 ALTER TABLE public.category
     OWNER TO postgres;
-
--- Таблица credit_info
-CREATE TABLE public.credit_info
-(
-    id          SERIAL PRIMARY KEY,
-    card_number INT         NOT NULL,
-    cvv         INT         NOT NULL,
-    user_id     INT         NOT NULL,
-    owner_name  VARCHAR(50) NOT NULL,
-    created_at  TIMESTAMP DEFAULT NOW()
-);
-ALTER TABLE public.credit_info
-    OWNER TO postgres;
+--
+-- -- Таблица credit_info
+-- CREATE TABLE public.credit_info
+-- (
+--     id          SERIAL PRIMARY KEY,
+--     card_number INT         NOT NULL,
+--     cvv         INT         NOT NULL,
+--     user_id     INT         NOT NULL,
+--     owner_name  VARCHAR(50) NOT NULL,
+--     created_at  TIMESTAMP DEFAULT NOW()
+-- );
+-- ALTER TABLE public.credit_info
+--     OWNER TO postgres;
 
 -- Таблица deliveryman_info
 CREATE TABLE public.deliveryman_info
@@ -151,14 +151,18 @@ ALTER TABLE public.ocp_item
 -- Таблица orders
 CREATE TABLE public.orders
 (
-    id               SERIAL PRIMARY KEY,
-    user_id          INT          NOT NULL,
-    order_date       DATE         NOT NULL,
-    price            MONEY        NOT NULL,
-    status_id        INT          NOT NULL,
-    customer_address VARCHAR(100) NOT NULL,
-    delivery_id      INT          NOT NULL,
-    created_at       TIMESTAMP DEFAULT NOW()
+    id          SERIAL PRIMARY KEY,
+    user_id     INT  NOT NULL,
+    order_date  DATE NOT NULL,
+    order_time  TIME NOT NULL,
+    price       REAL NOT NULL,
+    status_id   INT  NOT NULL,
+    address     VARCHAR(250),
+    delivery_id INT,
+    paymentType VARCHAR(50),
+    orderType   VARCHAR(50),
+    ocp_id      INT REFERENCES public.ocp (id),
+    created_at  TIMESTAMP DEFAULT NOW()
 );
 ALTER TABLE public.orders
     OWNER TO postgres;
@@ -170,7 +174,7 @@ CREATE TABLE public.order_items
     order_id   INT   NOT NULL,
     bouquet_id INT   NOT NULL,
     quantity   INT   NOT NULL DEFAULT 1 CHECK (quantity > 0),
-    price      MONEY NOT NULL, -- Фиксируем цену на момент заказа
+    price      REAL  NOT NULL, -- Фиксируем цену на момент заказа
     addons     JSONB NOT NULL DEFAULT '[]'::jsonb,
     created_at TIMESTAMP      DEFAULT NOW(),
     FOREIGN KEY (order_id) REFERENCES public.orders (id) ON DELETE CASCADE,
@@ -221,6 +225,7 @@ CREATE TABLE public.users
     date_of_birth DATE,
     surname       VARCHAR(50)         NOT NULL,
     is_blocked    BOOLEAN   DEFAULT FALSE,
+    address       VARCHAR(250),
     created_at    TIMESTAMP DEFAULT NOW()
 );
 ALTER TABLE public.users
@@ -338,7 +343,7 @@ ALTER TABLE ONLY public.cart_items
 
 -- Добавляем внешние ключи для новой таблицы cart_items
 ALTER TABLE ONLY public.order_items
-    ADD CONSTRAINT fk_order FOREIGN KEY (order_id) REFERENCES public.order_items (id) ON DELETE CASCADE;
+    ADD CONSTRAINT fk_order FOREIGN KEY (order_id) REFERENCES public.orders (id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY public.order_items
     ADD CONSTRAINT fk_bouquet FOREIGN KEY (bouquet_id) REFERENCES public.bouquets (id);
@@ -346,3 +351,5 @@ ALTER TABLE ONLY public.order_items
 COMMENT ON TABLE public.ocp_item IS E'@name PickupPointItems';
 COMMENT ON TABLE public.ocp IS E'@name PickupPoint';
 COMMENT ON TABLE public.deliveryman_info IS E'@name DeliverymanAssignment';
+COMMENT ON TABLE "public"."order_items" IS E'@name DBOrderItem'
+COMMENT ON TABLE "public"."orders" IS E'@name DBOrders'

@@ -67,7 +67,7 @@ const OCPInput = observer(() => {
 
     const itemOptions = auxiliaryStore.items.map(item => ({
         value: item.id,
-        label: `${item.name} (${item.price} руб.)`
+        label: `${item.name} (${item.cost} руб.)`
     }));
 
     const columns = [

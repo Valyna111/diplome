@@ -469,39 +469,6 @@ export const DELETE_OCP_ITEM = gql`
     }
 `;
 
-// Мутации для таблицы orders
-export const CREATE_ORDER = gql`
-    mutation CreateOrder($userId: Int!, $bouquetId: Int!, $orderDate: Date!, $price: Money!, $statusId: Int!, $customerAddress: String!, $deliveryId: Int!) {
-        createOrder(input: { order: { userId: $userId, bouquetId: $bouquetId, orderDate: $orderDate, price: $price, statusId: $statusId, customerAddress: $customerAddress, deliveryId: $deliveryId } }) {
-            order {
-                id
-                user {
-                    id
-                    username
-                }
-                bouquet {
-                    id
-                    name
-                }
-                orderDate
-                price
-                status {
-                    id
-                    name
-                }
-                customerAddress
-                delivery {
-                    id
-                    user {
-                        id
-                        username
-                    }
-                }
-            }
-        }
-    }
-`;
-
 export const UPDATE_ORDER = gql`
     mutation UpdateOrder($id: Int!, $userId: Int!, $bouquetId: Int!, $orderDate: Date!, $price: Money!, $statusId: Int!, $customerAddress: String!, $deliveryId: Int!) {
         updateOrderById(input: { id: $id, orderPatch: { userId: $userId, bouquetId: $bouquetId, orderDate: $orderDate, price: $price, statusId: $statusId, customerAddress: $customerAddress, deliveryId: $deliveryId } }) {
@@ -657,6 +624,7 @@ export const CREATE_USER = gql`
                     id
                     name
                 }
+                address
                 dateOfBirth
                 surname
             }
@@ -665,8 +633,8 @@ export const CREATE_USER = gql`
 `;
 
 export const UPDATE_USER = gql`
-    mutation UpdateUser($id: Int!, $username: String!, $passhash: String!, $email: String, $phone: String, $dateOfBirth: Date, $surname: String!) {
-        updateUserById(input: { id: $id, userPatch: { username: $username, passhash: $passhash, email: $email, phone: $phone,  dateOfBirth: $dateOfBirth, surname: $surname } }) {
+    mutation UpdateUser($id: Int!, $username: String!, $passhash: String!, $email: String, $phone: String, $dateOfBirth: Date, $surname: String!, $address: String) {
+        updateUserById(input: { id: $id, userPatch: { username: $username, passhash: $passhash, email: $email, phone: $phone,  dateOfBirth: $dateOfBirth, surname: $surname, address: $address} }) {
             user {
                 id
             }
@@ -877,6 +845,183 @@ export const BLOCK_USER = gql`
                 roleByRoleId {
                     id
                     name
+                }
+            }
+        }
+    }
+`;
+
+export const CREATE_ORDER = gql`
+    mutation CreateOrder($input: CreateOrderInput!) {
+        createOrder(input: $input) {
+            id
+            orderDate
+            orderTime
+            price
+            status {
+                id
+                name
+            }
+            address
+            paymentType
+            orderType
+            ocp {
+                id
+                address
+            }
+            items {
+                id
+                quantity
+                price
+                addons
+                bouquet {
+                    id
+                    name
+                    image
+                    description
+                }
+            }
+        }
+    }
+`;
+
+export const UPDATE_ORDER_STATUS = gql`
+    mutation UpdateOrderStatus($orderId: Int!, $statusId: Int!) {
+        updateOrderStatus(orderId: $orderId, statusId: $statusId) {
+            id
+            orderDate
+            orderTime
+            price
+            status {
+                id
+                name
+            }
+            address
+            paymentType
+            orderType
+            items {
+                id
+                quantity
+                price
+                addons
+                bouquet {
+                    id
+                    name
+                    price
+                    image
+                }
+            }
+            customer {
+                id
+                username
+                phone
+            }
+            pickupPoint {
+                id
+                address
+            }
+        }
+    }
+`;
+
+export const TAKE_ORDER = gql`
+    mutation TakeOrder($orderId: Int!, $deliverymanId: Int!) {
+        takeOrder(orderId: $orderId, deliverymanId: $deliverymanId) {
+            success
+            message
+            order {
+                id
+                orderDate
+                orderTime
+                price
+                status {
+                    id
+                    name
+                }
+                address
+                paymentType
+                orderType
+                items {
+                    id
+                    quantity
+                    price
+                    addons
+                    bouquet {
+                        id
+                        name
+                        price
+                        image
+                    }
+                }
+                customer {
+                    id
+                    username
+                    phone
+                }
+                pickupPoint {
+                    id
+                    address
+                }
+            }
+        }
+    }
+`;
+
+export const GET_AVAILABLE_ORDERS = gql`
+    query GetAvailableOrders {
+        availableOrders: orders(
+            where: {
+                orderType: { eq: "delivery" }
+                statusId: { eq: 1 }
+                deliveryId: { isNull: true }
+            }
+        ) {
+            nodes {
+                id
+                orderDate
+                price
+                address
+                items {
+                    nodes {
+                        id
+                        quantity
+                        bouquet {
+                            id
+                            name
+                            image
+                        }
+                    }
+                }
+            }
+        }
+    }
+`;
+
+export const GET_DELIVERYMAN_ORDERS = gql`
+    query GetDeliverymanOrders($deliverymanId: Int!) {
+        deliverymanOrders: orders(
+            where: { deliveryId: { eq: $deliverymanId } }
+            orderBy: [STATUS_ID_ASC, ORDER_DATE_ASC]
+        ) {
+            nodes {
+                id
+                orderDate
+                price
+                status {
+                    id
+                    name
+                }
+                address
+                items {
+                    nodes {
+                        id
+                        quantity
+                        bouquet {
+                            id
+                            name
+                            image
+                        }
+                    }
                 }
             }
         }

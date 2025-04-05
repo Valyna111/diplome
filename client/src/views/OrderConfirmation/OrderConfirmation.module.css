@@ -1,0 +1,35 @@
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.summaryCard {
+    margin-top: 24px;
+    border-radius: 8px;
+}
+
+.summaryTitle {
+    margin-bottom: 16px !important;
+    color: #555;
+}
+
+.ant-result-icon {
+    margin-bottom: 0;
+}
+
+.ant-result-title {
+    font-size: 24px !important;
+}
+
+.ant-result-subtitle {
+    font-size: 16px !important;
+}
+
+.ant-list-item-meta-title {
+    margin-bottom: 4px !important;
+}
+
+.ant-list-item-meta-description {
+    color: #666 !important;
+}

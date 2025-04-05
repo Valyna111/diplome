@@ -8,7 +8,7 @@ const jwt = require('jsonwebtoken');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
-const {UserDataPlugin, StoreMutationsPlugin, BlockUserPlugin, OCPSchemaPlugin} = require("./plugins");
+const {UserDataPlugin, StoreMutationsPlugin, BlockUserPlugin, OCPSchemaPlugin, OrderPlugin} = require("./plugins");
 
 if (!fs.existsSync('uploads')) {
     fs.mkdirSync('uploads');
@@ -101,8 +101,8 @@ app.post('/login', async (req, res) => {
             return res.status(400).json({error: 'Неверный пароль'});
         }
 
-        const sessionToken = jwt.sign({id: user.id}, 'your-secret-key', {expiresIn: '1h'});
-        const expiresAt = new Date(Date.now() + 3600000);
+        const sessionToken = jwt.sign({id: user.id}, 'your-secret-key', {expiresIn: '3h'});
+        const expiresAt = new Date(Date.now() + 36000000);
 
         await pool.query(
             'INSERT INTO user_sessions (user_id, session_token, expires_at) VALUES ($1, $2, $3)',
@@ -113,7 +113,7 @@ app.post('/login', async (req, res) => {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'strict',
-            maxAge: 3600000,
+            maxAge: 36000000,
         });
 
         res.json({message: 'Login successful', user});
@@ -229,48 +229,12 @@ app.put('/profile', authenticateToken, async (req, res) => {
     }
 });
 
-app.get('/driver/deliveries', authenticateToken, async (req, res) => {
-    try {
-        const driverId = req.user.id; // ID доставщика из токена
-
-        // Получаем deliveryman_info для этого пользователя
-        const {rows: deliverymanInfo} = await pool.query(
-            `SELECT id
-             FROM deliveryman_info
-             WHERE user_id = $1`,
-            [driverId]
-        );
-
-        if (deliverymanInfo.length === 0) {
-            return res.status(404).json({error: 'Доставщик не найден'});
-        }
-
-        const deliverymanId = deliverymanInfo[0].id;
-
-        // Получаем доставки для этого доставщика
-        const {rows: deliveries} = await pool.query(
-            `SELECT orders.id                     AS "orderId",
-                    orders.order_date             AS "orderDate",
-                    orders.customer_address       AS "customerAddress",
-                    orders.price                  AS "orderPrice",
-                    (orders.price::numeric * 0.1) AS earnings -- 10% от стоимости заказа
-             FROM orders
-             WHERE delivery_id = $1`,
-            [deliverymanId]
-        );
-
-        res.json({deliveries});
-    } catch (error) {
-        res.status(500).json({error: error.message});
-    }
-});
-
 app.use(
     postgraphile(pool, 'public', {
         watchPg: true,
         graphiql: true,
         enhanceGraphiql: true,
-        appendPlugins: [UserDataPlugin, StoreMutationsPlugin, BlockUserPlugin, OCPSchemaPlugin]
+        appendPlugins: [UserDataPlugin, StoreMutationsPlugin, BlockUserPlugin, OCPSchemaPlugin, OrderPlugin]
     })
 );
 

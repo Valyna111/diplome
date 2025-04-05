@@ -11,31 +11,11 @@ const UserDataPlugin = makeExtendSchemaPlugin(build => {
                 bouquet: Bouquet!
             }
 
-            type OrderWithItems {
-                id: ID!
-                orderDate: String!
-                price: Float!
-                statusName: String!
-                customerAddress: String!
-                createdAt: String!
-                items: [CustomOrderItem!]!
-            }
-
-            type CustomOrderItem {
-                id: ID!
-                quantity: Int!
-                price: Float!
-                addons: JSON!
-                createdAt: String!
-                bouquet: Bouquet!
-            }
-
             type UserExtendedData {
                 user: User!
                 cart: CartWithItems!
                 wishlist: [Bouquet!]!
                 bonuses: Int
-                orders: [OrderWithItems!]!
             }
 
             extend type Query {
@@ -124,71 +104,12 @@ const UserDataPlugin = makeExtendSchemaPlugin(build => {
                         );
                         const bonuses = bonusesQuery.rows[0]?.bonus || 0;
 
-                        // Заказы с элементами
-                        const ordersQuery = await pgClient.query(
-                            `SELECT o.id,
-                                    o.order_date,
-                                    o.price,
-                                    s.name        as status_name,
-                                    o.customer_address,
-                                    o.created_at,
-                                    oi.id         as item_id,
-                                    oi.quantity   as item_quantity,
-                                    oi.price      as item_price,
-                                    oi.addons     as item_addons,
-                                    oi.created_at as item_created_at,
-                                    b.id          as bouquet_id,
-                                    b.name        as bouquet_name,
-                                    b.price       as bouquet_price,
-                                    b.image       as bouquet_image
-                             FROM orders o
-                                      JOIN status s ON o.status_id = s.id
-                                      LEFT JOIN order_items oi ON o.id = oi.order_id
-                                      LEFT JOIN bouquets b ON oi.bouquet_id = b.id
-                             WHERE o.user_id = $1
-                             ORDER BY o.id, oi.id`,
-                            [userId]
-                        );
-
-                        const orders = [];
-                        let currentOrder = null;
-                        ordersQuery.rows.forEach(row => {
-                            if (!currentOrder || currentOrder.id !== row.id) {
-                                currentOrder = {
-                                    id: row.id,
-                                    orderDate: row.order_date,
-                                    price: row.price,
-                                    statusName: row.status_name,
-                                    customerAddress: row.customer_address,
-                                    createdAt: row.created_at,
-                                    items: []
-                                };
-                                orders.push(currentOrder);
-                            }
-
-                            if (row.item_id) {
-                                currentOrder.items.push({
-                                    id: row.item_id,
-                                    quantity: row.item_quantity,
-                                    price: row.item_price,
-                                    addons: row.item_addons || [],
-                                    createdAt: row.item_created_at,
-                                    bouquet: {
-                                        id: row.bouquet_id,
-                                        name: row.bouquet_name,
-                                        price: row.bouquet_price,
-                                        image: row.bouquet_image
-                                    }
-                                });
-                            }
-                        });
 
                         return {
                             user,
                             cart: cartWithItems,
                             wishlist,
                             bonuses,
-                            orders
                         };
                     } catch (error) {
                         console.error('Error in getUserFullData resolver:', error);
@@ -447,6 +368,7 @@ const StoreMutationsPlugin = makeExtendSchemaPlugin(build => {
         }
     };
 });
+
 const BlockUserPlugin = makeExtendSchemaPlugin(build => {
     return {
         typeDefs: gql`
@@ -526,6 +448,7 @@ const BlockUserPlugin = makeExtendSchemaPlugin(build => {
         }
     };
 });
+
 const OCPSchemaPlugin = makeExtendSchemaPlugin(build => {
     return {
         typeDefs: gql`
@@ -684,4 +607,803 @@ const OCPSchemaPlugin = makeExtendSchemaPlugin(build => {
     };
 });
 
-module.exports = {UserDataPlugin, StoreMutationsPlugin, BlockUserPlugin, OCPSchemaPlugin};
+const OrderPlugin = makeExtendSchemaPlugin(build => {
+    return {
+        typeDefs: gql`
+            input CreateOrderInput {
+                userId: Int!
+                items: [OrderItemInput!]!
+                orderType: String!
+                address: String
+                ocpId: Int
+                paymentType: String!
+                orderDate: String!
+                orderTime: String!
+            }
+
+            input OrderItemInput {
+                bouquetId: Int!
+                quantity: Int!
+                price: Float!
+                addons: [String!]
+            }
+
+            type CustomOrderItem {
+                id: ID!
+                quantity: Int!
+                price: Float!
+                addons: JSON!
+                createdAt: String!
+                bouquet: Bouquet!
+            }
+
+            type OrderResponse {
+                id: ID!
+                orderDate: String!
+                orderTime: String!
+                price: Float!
+                status: Status!
+                address: String
+                delivery: DeliverymanInfo
+                paymentType: String!
+                orderType: String!
+                ocp: Ocp
+                items: [CustomOrderItem!]!
+            }
+
+            type TakeOrderResponse {
+                success: Boolean!
+                message: String
+                order: DeliveryOrder
+            }
+
+            type OrderItem {
+                id: ID!
+                quantity: Int!
+                price: Float!
+                addons: JSON!
+                bouquet: Bouquet!
+            }
+
+            type OrderStatus {
+                id: ID!
+                name: String!
+            }
+
+            # Типы для пользователя
+            type UserOrder {
+                id: ID!
+                orderDate: String!
+                orderTime: String!
+                price: Float!
+                status: OrderStatus!
+                address: String
+                paymentType: String!
+                orderType: String!
+                items: [OrderItem!]!
+                ocp: Ocp,
+                deliveryInfo: DeliveryInfo
+            }
+
+            type UserOrderConnection {
+                nodes: [UserOrder!]!
+                totalCount: Int!
+            }
+
+            # Типы для курьера
+            type DeliveryOrder {
+                id: ID!
+                orderDate: String!
+                orderTime: String!
+                price: Float!
+                status: OrderStatus!
+                address: String
+                paymentType: String!
+                orderType: String!
+                items: [OrderItem!]!
+                customer: User!
+                pickupPoint: Ocp
+            }
+
+            type DeliveryOrderConnection {
+                nodes: [DeliveryOrder!]!
+                totalCount: Int!
+            }
+
+            type AvailableOrderConnection {
+                nodes: [DeliveryOrder!]!
+                totalCount: Int!
+            }
+
+            type DeliveryInfo {
+                deliveryman: User
+                assignedAt: String
+            }
+
+            # Запросы
+            extend type Query {
+                # Для пользователя
+                userOrders(
+                    userId: Int!
+                    status: String
+                    limit: Int = 10
+                    offset: Int = 0
+                ): UserOrderConnection!
+
+                # Для курьера
+                deliverymanOrders(
+                    deliverymanId: Int!
+                    status: String
+                    limit: Int = 10
+                    offset: Int = 0
+                ): DeliveryOrderConnection!
+
+                availableDeliveryOrders(
+                    limit: Int = 10
+                    offset: Int = 0
+                ): AvailableOrderConnection!
+
+                availableFloristOrders(
+                    limit: Int = 10
+                    offset: Int = 0
+                ): AvailableOrderConnection!
+            }
+
+            # Мутации
+            extend type Mutation {
+                createOrder(input: CreateOrderInput!): OrderResponse!
+                takeOrder(orderId: Int!, deliverymanId: Int!): TakeOrderResponse!
+                updateOrderStatus(orderId: Int!, statusId: Int!): DeliveryOrder!
+            }
+        `,
+        resolvers: {
+            Query: {
+                // Запросы пользователя
+                userOrders: async (_, {userId, status, limit, offset}, {pgClient}) => {
+                    const query = {
+                        text: `
+                            SELECT o.*,
+                                   json_agg(
+                                           json_build_object(
+                                                   'id', oi.id,
+                                                   'quantity', oi.quantity,
+                                                   'price', oi.price,
+                                                   'addons', oi.addons,
+                                                   'bouquet', json_build_object(
+                                                           'id', b.id,
+                                                           'name', b.name,
+                                                           'price', b.price,
+                                                           'image', b.image,
+                                                           'description', b.description
+                                                              )
+                                           )
+                                   )                                                              AS items,
+                                   (SELECT row_to_json(s) FROM status s WHERE s.id = o.status_id) AS status,
+                                   (SELECT row_to_json(d)
+                                    FROM deliveryman_info d
+                                    WHERE d.id = o.delivery_id)                                   AS delivery_info,
+                                   (SELECT row_to_json(ocp) FROM ocp WHERE ocp.id = o.ocp_id)     AS ocp
+                            FROM orders o
+                                     JOIN order_items oi ON oi.order_id = o.id
+                                     JOIN bouquets b ON b.id = oi.bouquet_id
+                            WHERE o.user_id = $1
+                                ${status ? 'AND s.name = $2' : ''}
+                            GROUP BY o.id
+                            ORDER BY o.order_date DESC
+                            LIMIT $${status ? 3 : 2} OFFSET $${status ? 4 : 3}
+                        `,
+                        values: [userId]
+                    };
+
+                    if (status) query.values.push(status);
+                    query.values.push(limit, offset);
+
+                    const {rows: orders} = await pgClient.query(query);
+                    const {rows: [{count}]} = await pgClient.query(
+                        `SELECT COUNT(*)
+                         FROM orders
+                         WHERE user_id = $1`,
+                        [userId]
+                    );
+
+                    return {
+                        nodes: orders.map(formatUserOrder),
+                        totalCount: parseInt(count, 10)
+                    };
+                },
+
+                // Запросы курьера
+                deliverymanOrders: async (_, {deliverymanId, status, limit, offset}, {pgClient}) => {
+                    const {rows: [deliveryman]} = await pgClient.query(
+                        `SELECT id
+                         FROM deliveryman_info
+                         WHERE user_id = $1`,
+                        [deliverymanId]
+                    );
+
+                    if (!deliveryman) throw new Error('Deliveryman not found');
+
+                    const query = {
+                        text: `
+                            SELECT o.*,
+                                   json_agg(
+                                           json_build_object(
+                                                   'id', oi.id,
+                                                   'quantity', oi.quantity,
+                                                   'price', oi.price,
+                                                   'addons', oi.addons,
+                                                   'bouquet', json_build_object(
+                                                           'id', b.id,
+                                                           'name', b.name,
+                                                           'price', b.price,
+                                                           'image', b.image,
+                                                           'description', b.description
+                                                              )
+                                           )
+                                   )                                                              AS items,
+                                   (SELECT row_to_json(u) FROM users u WHERE u.id = o.user_id)    AS customer,
+                                   (SELECT row_to_json(s) FROM status s WHERE s.id = o.status_id) AS status,
+                                   (SELECT row_to_json(ocp) FROM ocp WHERE ocp.id = o.ocp_id)     AS pickupPoint
+                            FROM orders o
+                                     JOIN order_items oi ON oi.order_id = o.id
+                                     JOIN bouquets b ON b.id = oi.bouquet_id
+                            WHERE o.delivery_id = $1
+                                ${status ? 'AND s.name = $2' : ''}
+                            GROUP BY o.id
+                            ORDER BY o.order_date ASC
+                            LIMIT $${status ? 3 : 2} OFFSET $${status ? 4 : 3}
+                        `,
+                        values: [deliveryman.id]
+                    };
+
+                    if (status) query.values.push(status);
+                    query.values.push(limit, offset);
+
+                    const {rows: orders} = await pgClient.query(query);
+                    const {rows: [{count}]} = await pgClient.query(
+                        `SELECT COUNT(*)
+                         FROM orders
+                         WHERE delivery_id = $1`,
+                        [deliveryman.id]
+                    );
+
+                    return {
+                        nodes: orders.map(formatDeliveryOrder),
+                        totalCount: parseInt(count, 10)
+                    };
+                },
+                availableFloristOrders: async (_, {limit, offset}, {pgClient}) => {
+                    const query = {
+                        text: `
+                            SELECT o.*,
+                                   json_agg(
+                                           json_build_object(
+                                                   'id', oi.id,
+                                                   'quantity', oi.quantity,
+                                                   'price', oi.price,
+                                                   'addons', oi.addons,
+                                                   'bouquet', json_build_object(
+                                                           'id', b.id,
+                                                           'name', b.name,
+                                                           'price', b.price,
+                                                           'image', b.image,
+                                                           'description', b.description
+                                                              )
+                                           )
+                                   )                                                              AS items,
+                                   (SELECT row_to_json(u) FROM users u WHERE u.id = o.user_id)    AS customer,
+                                   (SELECT row_to_json(s) FROM status s WHERE s.id = o.status_id) AS status,
+                                   (SELECT row_to_json(ocp) FROM ocp WHERE ocp.id = o.ocp_id)     AS pickupPoint
+                            FROM orders o
+                                     JOIN order_items oi ON oi.order_id = o.id
+                                     JOIN bouquets b ON b.id = oi.bouquet_id
+                            WHERE o.status_id IN (1, 2, 3) -- Using your custom status IDs (1=Новый, 2=Собран, 3=В процессе)
+                            GROUP BY o.id
+                            ORDER BY CASE o.status_id
+                                         WHEN 1 THEN 1 -- Новый - highest priority
+                                         WHEN 3 THEN 2 -- В процессе
+                                         WHEN 2 THEN 3 -- Собран
+                                         ELSE 4
+                                         END,
+                                     o.order_date ASC
+                            LIMIT $1 OFFSET $2
+                        `,
+                        values: [limit, offset]
+                    };
+
+                    const {rows: orders} = await pgClient.query(query);
+
+                    const {rows: [{count}]} = await pgClient.query(
+                        `SELECT COUNT(*)
+                         FROM orders
+                         WHERE order_type = 'delivery'
+                           AND delivery_id IS NULL
+                           AND status_id IN (1, 2, 3)`
+                    );
+
+                    return {
+                        nodes: orders.map(formatDeliveryOrder),
+                        totalCount: parseInt(count, 10)
+                    };
+                },
+                availableDeliveryOrders: async (_, {limit, offset}, {pgClient}) => {
+                    const query = {
+                        text: `
+                            SELECT o.*,
+                                   json_agg(
+                                           json_build_object(
+                                                   'id', oi.id,
+                                                   'quantity', oi.quantity,
+                                                   'price', oi.price,
+                                                   'addons', oi.addons,
+                                                   'bouquet', json_build_object(
+                                                           'id', b.id,
+                                                           'name', b.name,
+                                                           'price', b.price,
+                                                           'image', b.image,
+                                                           'description', b.description
+                                                              )
+                                           )
+                                   )                                                              AS items,
+                                   (SELECT row_to_json(u) FROM users u WHERE u.id = o.user_id)    AS customer,
+                                   (SELECT row_to_json(s) FROM status s WHERE s.id = o.status_id) AS status,
+                                   (SELECT row_to_json(ocp) FROM ocp WHERE ocp.id = o.ocp_id)     AS pickupPoint
+                            FROM orders o
+                                     JOIN order_items oi ON oi.order_id = o.id
+                                     JOIN bouquets b ON b.id = oi.bouquet_id
+                            WHERE o.order_type = 'delivery'
+                              AND o.delivery_id IS NULL
+                              AND o.status_id IN (1, 2, 3) -- Using your custom status IDs (1=Новый, 2=Собран, 3=В процессе)
+                            GROUP BY o.id
+                            ORDER BY CASE o.status_id
+                                         WHEN 1 THEN 1 -- Новый - highest priority
+                                         WHEN 3 THEN 2 -- В процессе
+                                         WHEN 2 THEN 3 -- Собран
+                                         ELSE 4
+                                         END,
+                                     o.order_date ASC
+                            LIMIT $1 OFFSET $2
+                        `,
+                        values: [limit, offset]
+                    };
+
+                    const {rows: orders} = await pgClient.query(query);
+
+                    const {rows: [{count}]} = await pgClient.query(
+                        `SELECT COUNT(*)
+                         FROM orders
+                         WHERE order_type = 'delivery'
+                           AND delivery_id IS NULL
+                           AND status_id IN (1, 2, 3)`
+                    );
+
+                    return {
+                        nodes: orders.map(formatDeliveryOrder),
+                        totalCount: parseInt(count, 10)
+                    };
+                }
+            },
+            Mutation: {
+                createOrder: async (_, {input}, {pgClient}) => {
+                    await pgClient.query('BEGIN');
+
+                    try {
+                        // 1. Создаем заказ
+                        const {rows: [order]} = await pgClient.query(
+                            `INSERT INTO orders (user_id,
+                                                 price,
+                                                 status_id,
+                                                 address,
+                                                 payment_type,
+                                                 order_type,
+                                                 ocp_id,
+                                                 order_date,
+                                                 order_time)
+                             VALUES ($1, $2, 1, $3, $4, $5, $6, $7, $8)
+                             RETURNING *`,
+                            [
+                                input.userId,
+                                input.items.reduce((sum, item) => sum + (item.price * item.quantity), 0),
+                                input.address,
+                                input.paymentType,
+                                input.orderType,
+                                input.ocpId,
+                                input.orderDate,
+                                input.orderTime
+                            ]
+                        );
+
+                        // 2. Добавляем товары
+                        const items = [];
+                        for (const item of input.items) {
+                            const {rows: [orderItem]} = await pgClient.query(
+                                `INSERT INTO order_items (order_id, bouquet_id, quantity, price, addons)
+                                 VALUES ($1, $2, $3, $4, $5)
+                                 RETURNING *`,
+                                [order.id, item.bouquetId, item.quantity, item.price, JSON.stringify(item.addons || [])]
+                            );
+
+                            // Получаем полную информацию о букете
+                            const {rows: [bouquet]} = await pgClient.query(
+                                `SELECT *
+                                 FROM bouquets
+                                 WHERE id = $1`,
+                                [item.bouquetId]
+                            );
+
+                            items.push({
+                                ...orderItem,
+                                bouquet
+                            });
+                        }
+
+                        // Получаем полную информацию о заказе
+                        const {rows: [status]} = await pgClient.query(
+                            `SELECT *
+                             FROM status
+                             WHERE id = 1`
+                        );
+
+                        let ocp = null;
+                        if (order.ocp_id) {
+                            const {rows: [ocpData]} = await pgClient.query(
+                                `SELECT *
+                                 FROM ocp
+                                 WHERE id = $1`,
+                                [order.ocp_id]
+                            );
+                            ocp = ocpData;
+                        }
+
+                        await pgClient.query('COMMIT');
+
+                        return {
+                            ...order,
+                            status,
+                            items,
+                            orderDate: order.order_date, // Format as 'YYYY-MM-DD'
+                            orderTime: order.order_time, // Already a string in 'HH:MM:SS' format
+                            paymentType: order.payment_type,
+                            orderType: order.order_type,
+                            ocp,
+                            delivery: null,
+
+                        };
+                    } catch (error) {
+                        await pgClient.query('ROLLBACK');
+                        throw error;
+                    }
+                },
+
+                updateOrderStatus: async (_, {orderId, statusId}, {pgClient}) => {
+                    await pgClient.query('BEGIN');
+
+                    try {
+                        // Update the status
+                        const {rows: [order]} = await pgClient.query(
+                            `UPDATE orders
+                             SET status_id = $1
+                             WHERE id = $2
+                             RETURNING *`,
+                            [statusId, orderId]
+                        );
+
+                        // Get the updated status
+                        const {rows: [status]} = await pgClient.query(
+                            `SELECT *
+                             FROM status
+                             WHERE id = $1`,
+                            [statusId]
+                        );
+
+                        // Get order items
+                        const {rows: items} = await pgClient.query(
+                            `SELECT oi.*, b.*
+                             FROM order_items oi
+                                      JOIN bouquets b ON oi.bouquet_id = b.id
+                             WHERE oi.order_id = $1`,
+                            [orderId]
+                        );
+
+                        // Get customer info
+                        const {rows: [customer]} = await pgClient.query(
+                            `SELECT *
+                             FROM users
+                             WHERE id = $1`,
+                            [order.user_id]
+                        );
+
+                        // Get pickup point if exists
+                        let pickupPoint = null;
+                        if (order.ocp_id) {
+                            const {rows: [ocp]} = await pgClient.query(
+                                `SELECT *
+                                 FROM ocp
+                                 WHERE id = $1`,
+                                [order.ocp_id]
+                            );
+                            pickupPoint = ocp;
+                        }
+
+                        // Get delivery info if exists
+                        let delivery = null;
+                        if (order.delivery_id) {
+                            const {rows: [deliveryInfo]} = await pgClient.query(
+                                `SELECT di.*
+                                 FROM deliveryman_info di
+                                 WHERE di.id = $1`,
+                                [order.delivery_id]
+                            );
+                            delivery = deliveryInfo;
+                        }
+
+                        await pgClient.query('COMMIT');
+
+                        return {
+                            id: order.id,
+                            orderDate: order.order_date,
+                            orderTime: order.order_time,
+                            price: order.price,
+                            status: status,
+                            address: order.address,
+                            paymentType: order.payment_type,
+                            orderType: order.order_type,
+                            items: items.map(item => ({
+                                id: item.id,
+                                quantity: item.quantity,
+                                price: item.price,
+                                addons: item.addons,
+                                bouquet: {
+                                    id: item.bouquet_id,
+                                    name: item.name,
+                                    price: item.price,
+                                    image: item.image,
+                                    description: item.description
+                                }
+                            })),
+                            customer: customer,
+                            pickupPoint: pickupPoint,
+                            delivery: delivery
+                        };
+                    } catch (error) {
+                        await pgClient.query('ROLLBACK');
+                        throw error;
+                    }
+                },
+
+                takeOrder: async (_, {orderId, deliverymanId}, {pgClient}) => {
+                    await pgClient.query('BEGIN');
+
+                    try {
+                        // Проверяем, что заказ доступен для взятия
+                        // const {rows: [order]} = await pgClient.query(
+                        //     `SELECT *
+                        //      FROM orders
+                        //      WHERE id = $1
+                        //        AND order_type = 'delivery'
+                        //        AND delivery_id IS NULL`,
+                        //     [orderId]
+                        // );
+                        //
+                        // if (!order) {
+                        //     throw new Error('Заказ недоступен для взятия');
+                        // }
+
+                        // Проверяем, что пользователь является курьером
+                        const {rows: [deliveryman]} = await pgClient.query(
+                            `SELECT *
+                             FROM deliveryman_info
+                             WHERE user_id = $1`,
+                            [deliverymanId]
+                        );
+
+                        if (!deliveryman) {
+                            throw new Error('Пользователь не является курьером');
+                        }
+
+                        // Назначаем курьера
+                        const {rows: [updatedOrder]} = await pgClient.query(
+                            `UPDATE orders
+                             SET delivery_id = $1
+                             WHERE id = $2
+                             RETURNING *`,
+                            [deliveryman.id, orderId]
+                        );
+
+                        // Получаем полную информацию о заказе
+                        const {rows: [status]} = await pgClient.query(
+                            `SELECT *
+                             FROM status
+                             WHERE id = $1`,
+                            [updatedOrder.statusId]
+                        );
+
+                        const {rows: items} = await pgClient.query(
+                            `SELECT oi.*, b.*
+                             FROM order_items oi
+                                      JOIN bouquets b ON oi.bouquet_id = b.id
+                             WHERE oi.order_id = $1`,
+                            [orderId]
+                        );
+
+                        // Форматируем заказ для ответа
+                        const formattedOrder = {
+                            id: updatedOrder.id,
+                            orderDate: updatedOrder.order_date,
+                            orderTime: updatedOrder.order_time,
+                            price: updatedOrder.price,
+                            status: status,
+                            address: updatedOrder.address,
+                            paymentType: updatedOrder.payment_type,
+                            orderType: updatedOrder.order_type,
+                            items: items.map(item => ({
+                                id: item.id,
+                                quantity: item.quantity,
+                                price: item.price,
+                                addons: item.addons,
+                                bouquet: {
+                                    id: item.bouquet_id,
+                                    name: item.name,
+                                    price: item.price,
+                                    image: item.image,
+                                    description: item.description
+                                }
+                            })),
+                            customer: null, // Будет заполнено ниже
+                            pickupPoint: null // Будет заполнено ниже
+                        };
+
+                        // Получаем информацию о клиенте
+                        const {rows: [customer]} = await pgClient.query(
+                            `SELECT *
+                             FROM users
+                             WHERE id = $1`,
+                            [updatedOrder.user_id]
+                        );
+                        formattedOrder.customer = customer;
+
+                        // Получаем информацию о пункте выдачи, если есть
+                        if (updatedOrder.ocp_id) {
+                            const {rows: [ocp]} = await pgClient.query(
+                                `SELECT *
+                                 FROM ocp
+                                 WHERE id = $1`,
+                                [updatedOrder.ocp_id]
+                            );
+                            formattedOrder.pickupPoint = ocp;
+                        }
+
+                        await pgClient.query('COMMIT');
+
+                        return {
+                            success: true,
+                            message: 'Заказ успешно взят',
+                            order: formattedOrder
+                        };
+                    } catch (error) {
+                        await pgClient.query('ROLLBACK');
+                        return {
+                            success: false,
+                            message: error.message,
+                            order: null
+                        };
+                    }
+                },
+                Query: {
+                    availableOrders: async (_, args, {pgClient}) => {
+                        const {rows: orders} = await pgClient.query(`
+                            SELECT o.*,
+                                   json_agg(
+                                           json_build_object(
+                                                   'id', oi.id,
+                                                   'quantity', oi.quantity,
+                                                   'price', oi.price,
+                                                   'addons', oi.addons,
+                                                   'bouquet', json_build_object(
+                                                           'id', b.id,
+                                                           'name', b.name,
+                                                           'image', b.image,
+                                                           'description', b.description
+                                                              )
+                                           )
+                                   )                                                              as items,
+                                   (SELECT row_to_json(s) FROM status s WHERE s.id = o.status_id) as status
+                            FROM orders o
+                                     JOIN order_items oi ON oi.order_id = o.id
+                                     JOIN bouquets b ON b.id = oi.bouquet_id
+                            WHERE o.order_type = 'delivery'
+                              AND o.status_id = 1
+                              AND o.delivery_id IS NULL
+                            GROUP BY o.id
+                        `);
+
+                        return {
+                            nodes: orders.map(order => ({
+                                ...order,
+                                items: order.items,
+                                delivery: null,
+                                ocp: null
+                            }))
+                        };
+                    },
+
+                    deliverymanOrders: async (_, {deliverymanId}, {pgClient}) => {
+                        const {rows: [deliveryman]} = await pgClient.query(
+                            `SELECT id
+                             FROM deliveryman_info
+                             WHERE user_id = $1`,
+                            [deliverymanId]
+                        );
+
+                        if (!deliveryman) {
+                            return {nodes: []};
+                        }
+
+                        const {rows: orders} = await pgClient.query(`
+                            SELECT o.*,
+                                   json_agg(
+                                           json_build_object(
+                                                   'id', oi.id,
+                                                   'quantity', oi.quantity,
+                                                   'price', oi.price,
+                                                   'addons', oi.addons,
+                                                   'bouquet', json_build_object(
+                                                           'id', b.id,
+                                                           'name', b.name,
+                                                           'image', b.image,
+                                                           'description', b.description
+                                                              )
+                                           )
+                                   )                                                              as items,
+                                   (SELECT row_to_json(s) FROM status s WHERE s.id = o.status_id) as status,
+                                   (SELECT row_to_json(d)
+                                    FROM deliveryman_info d
+                                    WHERE d.id = o.delivery_id)                                   as delivery
+                            FROM orders o
+                                     JOIN order_items oi ON oi.order_id = o.id
+                                     JOIN bouquets b ON b.id = oi.bouquet_id
+                            WHERE o.delivery_id = $1
+                            GROUP BY o.id
+                            ORDER BY o.status_id ASC, o.order_date ASC
+                        `, [deliveryman.id]);
+
+                        return {
+                            nodes: orders.map(order => ({
+                                ...order,
+                                items: order.items,
+                                ocp: null
+                            }))
+                        };
+                    }
+                }
+            }
+        }
+    };
+});
+
+function formatUserOrder(order) {
+    return {
+        ...order,
+        orderDate: order.order_date,
+        orderTime: order.order_time,
+        paymentType: order.payment_type,
+        ocp: order.ocp,
+        orderType: order.order_type,
+        deliveryInfo: order.delivery_info ? {
+            deliveryman: order.delivery_info.user,
+            assignedAt: order.delivery_info.created_at
+        } : null
+    };
+}
+
+function formatDeliveryOrder(order) {
+    return {
+        ...order,
+        orderDate: order.order_date,
+        orderTime: order.order_time,
+        paymentType: order.payment_type,
+        orderType: order.order_type
+    };
+}
+
+module.exports = {UserDataPlugin, StoreMutationsPlugin, BlockUserPlugin, OCPSchemaPlugin, OrderPlugin};

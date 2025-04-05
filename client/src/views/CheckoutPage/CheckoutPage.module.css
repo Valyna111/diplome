@@ -1,0 +1,304 @@
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 24px;
+    position: relative;
+}
+
+.title {
+    flex: 1;
+    text-align: center;
+    margin: 0 !important;
+}
+
+.backButton {
+    font-size: 18px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #e91e63;
+}
+
+.steps {
+    margin-bottom: 32px;
+}
+
+.ant-steps-item-process .ant-steps-item-icon {
+    background: #e91e63;
+    border-color: #e91e63;
+}
+
+.ant-steps-item-process .ant-steps-item-icon > .ant-steps-icon {
+    color: white;
+}
+
+.ant-steps-item-finish .ant-steps-item-icon > .ant-steps-icon {
+    color: #e91e63;
+}
+
+.ant-steps-item-finish > .ant-steps-item-container > .ant-steps-item-tail::after {
+    background-color: #e91e63;
+}
+
+.content {
+    flex: 1;
+    margin-bottom: 80px;
+}
+
+.form {
+    padding: 0 10px;
+}
+
+.sectionTitle {
+    margin-bottom: 16px !important;
+    color: #333;
+}
+
+.deliveryMethods,
+.paymentMethods {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.methodCard {
+    cursor: pointer;
+    transition: all 0.2s;
+    border-radius: 8px;
+}
+
+.methodCard:hover {
+    border-color: #e91e63;
+}
+
+.methodCard .ant-radio-wrapper-checked {
+    border-color: #e91e63;
+    background: rgba(233, 30, 99, 0.05);
+}
+
+.methodContent {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.methodIcon {
+    font-size: 24px;
+    color: #e91e63;
+}
+
+.pickupPoints {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.pickupCard {
+    cursor: pointer;
+    transition: all 0.2s;
+    border-radius: 8px;
+}
+
+.pickupCard:hover {
+    border-color: #e91e63;
+}
+
+.pickupCard .ant-radio-wrapper-checked {
+    border-color: #e91e63;
+    background: rgba(233, 30, 99, 0.05);
+}
+
+.pickupContent h4 {
+    margin: 0;
+}
+
+.datetimeRow {
+    display: flex;
+    gap: 16px;
+}
+
+.datePicker {
+    flex: 2;
+}
+
+.timeSelect {
+    flex: 1;
+}
+
+.cardDetails {
+    display: flex;
+    gap: 16px;
+}
+
+.cardExpiry {
+    flex: 1;
+}
+
+.cardCvv {
+    width: 120px;
+}
+
+.summaryCard {
+    border-radius: 8px;
+}
+
+.summaryTitle {
+    margin-bottom: 12px !important;
+    color: #555;
+}
+
+.summaryItem {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.summaryIcon {
+    font-size: 18px;
+    color: #e91e63;
+}
+
+.orderItems {
+    margin-top: 16px;
+}
+
+.orderItem {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.itemInfo {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.totalPrice {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: white;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    padding: 16px 20px;
+}
+
+.footerContent {
+    max-width: 800px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.priceSummary {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.ant-btn-primary {
+    background: #e91e63;
+    border-color: #d81b60;
+}
+
+.ant-btn-primary:hover {
+    background: #d81b60;
+    border-color: #c2185b;
+}
+
+.ant-radio-wrapper-checked .ant-radio-inner {
+    border-color: #e91e63;
+    background-color: #e91e63;
+}
+
+.ant-radio-checked::after {
+    border-color: #e91e63;
+}
+
+.ant-input:focus,
+.ant-input-focused,
+.ant-input:hover,
+.ant-picker-focused,
+.ant-picker:hover {
+    border-color: #e91e63;
+    box-shadow: 0 0 0 2px rgba(233, 30, 99, 0.2);
+}
+
+.ant-select:not(.ant-select-disabled):hover .ant-select-selector,
+.ant-select-focused:not(.ant-select-disabled).ant-select:not(.ant-select-customize-input) .ant-select-selector {
+    border-color: #e91e63;
+    box-shadow: 0 0 0 2px rgba(233, 30, 99, 0.2);
+}
+
+.ant-select-item-option-selected:not(.ant-select-item-option-disabled) {
+    background-color: rgba(233, 30, 99, 0.1);
+}
+
+/* Добавляем в конец файла */
+.loadingOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.8);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.loader {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.loaderInner {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: 4px solid #e91e63;
+    border-top-color: transparent;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.loadingText {
+    font-size: 18px;
+    color: #e91e63;
+    font-weight: 500;
+}

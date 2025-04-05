@@ -104,7 +104,7 @@ const CartPage = observer(() => {
     };
 
     const handleCheckout = () => {
-        navigate("/checkout");
+        navigate("/user/checkout");
     };
 
     const handleGoBack = () => {

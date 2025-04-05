@@ -1,64 +1,146 @@
 .container {
+    max-width: 1200px;
+    margin: 0 auto;
     padding: 20px;
-    background-color: #f9f9f9;
-    min-height: 100vh;
-  }
-  
-  .title {
-    font-size: 28px;
-    color: #333;
+    width: 100%;
+}
+
+.title {
+    margin-bottom: 24px;
     text-align: center;
-    margin-bottom: 20px;
-  }
-  
-  .earnings {
-    background: #ffffff;
-    padding: 15px;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    margin-bottom: 20px;
-    text-align: center;
-  }
-  
-  .earnings h2 {
-    margin: 0;
-    color: #333;
-  }
-  
-  .deliveriesList {
+    color: #2c3e50;
+}
+
+.tabs {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.orderCard {
+    margin-bottom: 16px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease;
+    border: none;
+}
+
+.orderCard:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.orderHeader {
     display: flex;
-    flex-direction: column;
-    gap: 15px;
-  }
-  
-  .deliveryCard {
-    background: #ffffff;
-    padding: 15px;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  }
-  
-  .deliveryCard h3 {
-    margin: 0 0 10px 0;
-    color: #e91e63;
-  }
-  
-  .deliveryCard p {
-    margin: 5px 0;
-    color: #555;
-  }
-  
-  /* Адаптивность */
-  @media (max-width: 768px) {
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.orderPrice {
+    font-size: 18px;
+    color: #1890ff;
+    font-weight: 500;
+}
+
+.orderContent {
+    margin-bottom: 16px;
+}
+
+.orderInfo {
+    margin-bottom: 16px;
+    padding: 12px;
+    background: #f9f9f9;
+    border-radius: 4px;
+}
+
+.itemsTitle {
+    margin-bottom: 12px;
+    color: #2c3e50;
+}
+
+.itemImage {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.orderFooter {
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 12px;
+    border-top: 1px solid #f0f0f0;
+}
+
+/* Стили для списка товаров */
+.ant-list-item {
+    padding: 12px 0 !important;
+}
+
+.ant-list-item-meta {
+    align-items: center !important;
+}
+
+/* Стили для кнопок */
+.ant-btn-primary {
+    background-color: #1890ff;
+    border-color: #1890ff;
+}
+
+.ant-btn-primary:hover {
+    background-color: #40a9ff;
+    border-color: #40a9ff;
+}
+
+/* Стили для вкладок */
+.ant-tabs-nav {
+    margin-bottom: 24px;
+}
+
+.ant-tabs-tab {
+    font-weight: 500;
+}
+
+.ant-tabs-tab-active {
+    color: #1890ff !important;
+}
+
+.ant-tabs-ink-bar {
+    background-color: #1890ff;
+}
+
+/* Адаптивные стили */
+@media (max-width: 768px) {
+    .orderHeader {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .orderPrice {
+        align-self: flex-end;
+    }
+
     .container {
-      padding: 10px;
+        padding: 10px;
     }
-  
-    .title {
-      font-size: 24px;
+}
+
+/* Анимации */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
     }
-  
-    .deliveryCard {
-      padding: 10px;
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
-  }
+}
+
+.orderCard {
+    animation: fadeIn 0.3s ease-out forwards;
+}

@@ -7,7 +7,6 @@ import Button from "@/components/Form/Button/Button";
 const UserProfile = observer(() => {
     const rootStore = useContext(StoreContext);
     const {authStore} = rootStore;
-    console.log(authStore.currentUser);
     const user = authStore.currentUser;
     const [isEditing, setIsEditing] = useState(false);
     const [editableData, setEditableData] = useState(user);
@@ -89,12 +88,27 @@ const UserProfile = observer(() => {
                         <input
                             type="tel"
                             name="phone"
-                            value={editableData.phone}
+                            value={editableData?.phone}
                             onChange={handleChange}
                             className={styles.input}
                         />
                     ) : (
                         <p className={styles.text}>{user?.phone}</p>
+                    )}
+                </div>
+
+                <div className={styles.infoBlock}>
+                    <label className={styles.label}>Домашний адрес:</label>
+                    {isEditing ? (
+                        <input
+                            type="text"
+                            name="address"
+                            value={editableData?.address}
+                            onChange={handleChange}
+                            className={styles.input}
+                        />
+                    ) : (
+                        <p className={styles.text}>{user?.address}</p>
                     )}
                 </div>
 

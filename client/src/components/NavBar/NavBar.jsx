@@ -103,12 +103,12 @@ const Navbar = observer(() => {
 
                 {authStore?.currentUser && authStore.currentUser?.role_name === "deliveryman" && (
                     <p className={`${styles.menu} ${menuOpen ? styles.open : ""}`}>
-                        <Link to="/delivery/delivery" className={styles.link} onClick={() => setMenuOpen(false)}>
-                            Доставки
-                        </Link>
+                        {/*<Link to="/delivery/delivery" className={styles.link} onClick={() => setMenuOpen(false)}>*/}
+                        {/*    Доставки*/}
+                        {/*</Link>*/}
                         <Link to="/delivery/driver/deliveries" className={styles.link}
                               onClick={() => setMenuOpen(false)}>
-                            Мои доставки
+                            Доставка
                         </Link>
                     </p>
                 )}
