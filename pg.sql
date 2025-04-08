@@ -313,8 +313,8 @@ ALTER TABLE ONLY public.item
 ALTER TABLE ONLY public.bonuses
     ADD CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES public.users (id);
 
-ALTER TABLE ONLY public.credit_info
-    ADD CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES public.users (id);
+-- ALTER TABLE ONLY public.credit_info
+--     ADD CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES public.users (id);
 
 ALTER TABLE ONLY public.cart
     ADD CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES public.users (id);
@@ -351,5 +351,5 @@ ALTER TABLE ONLY public.order_items
 COMMENT ON TABLE public.ocp_item IS E'@name PickupPointItems';
 COMMENT ON TABLE public.ocp IS E'@name PickupPoint';
 COMMENT ON TABLE public.deliveryman_info IS E'@name DeliverymanAssignment';
-COMMENT ON TABLE "public"."order_items" IS E'@name DBOrderItem'
-COMMENT ON TABLE "public"."orders" IS E'@name DBOrders'
+COMMENT ON TABLE "public"."order_items" IS E'@name DBOrderItem';
+COMMENT ON TABLE "public"."orders" IS E'@name DBOrders';

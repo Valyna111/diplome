@@ -1,104 +1,66 @@
-/* SalesReport.module.css */
-
 .reportContainer {
-  padding: 20px;
+  padding: 1rem;
+  max-width: 1200px;
+  margin: 0 auto;
   font-family: Arial, sans-serif;
 }
 
-h1 {
+.reportContainer h1 {
   text-align: center;
-  font-size: 28px;
-  margin-bottom: 30px;
+  margin-bottom: 2rem;
+  color: #333;
 }
 
 .chart {
-  margin-top: 40px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 1rem;
+  margin-bottom: 2rem;
 }
 
-h2 {
-  font-size: 20px;
-  color: #333;
-  margin-bottom: 20px;
-}
-
-.loading, .error {
+.chart h2 {
   text-align: center;
-  font-size: 18px;
-  color: #f44336;
+  margin-bottom: 1rem;
+  color: #444;
 }
 
+.loading,
+.error {
+  text-align: center;
+  padding: 2rem;
+  font-size: 1.2rem;
+}
+
+.loading {
+  color: #666;
+}
+
+.error {
+  color: #ff0000;
+}
+
+/* Адаптивность */
 @media (max-width: 768px) {
-  .reportContainer {
-    padding: 15px;
-  }
-
-  h1 {
-    font-size: 24px;
-  }
-
-  h2 {
-    font-size: 18px;
-  }
-
   .chart {
-    margin-top: 30px;
+    padding: 0.5rem;
+  }
+
+  .reportContainer h1 {
+    font-size: 1.5rem;
+  }
+
+  .chart h2 {
+    font-size: 1.2rem;
   }
 }
 
 @media (max-width: 480px) {
   .reportContainer {
-    padding: 10px;
-  }
-
-  h1 {
-    font-size: 22px;
-  }
-
-  h2 {
-    font-size: 16px;
+    padding: 0.5rem;
   }
 
   .chart {
-    margin-top: 20px;
+    margin-bottom: 1rem;
   }
-
-  .loading, .error {
-    font-size: 16px;
-  }
-}
-
-/* Make sure the charts are responsive */
-.recharts-responsive-container {
-  width: 100%;
-  height: auto !important;
-}
-
-.recharts-wrapper {
-  display: flex;
-  justify-content: center;
-}
-
-.recharts-bar-chart {
-  width: 100%;
-}
-
-.recharts-pie-chart {
-  width: 100%;
-}
-
-/* Bar and Pie chart colors */
-.recharts-bar-rectangles .recharts-bar-rectangle {
-  transition: fill 0.3s ease;
-}
-
-.recharts-pie-slice {
-  transition: fill 0.3s ease;
-}
-
-.recharts-tooltip-item {
-  font-size: 14px;
-}
-
-.recharts-tooltip-wrapper {
-  font-size: 14px;
 }
