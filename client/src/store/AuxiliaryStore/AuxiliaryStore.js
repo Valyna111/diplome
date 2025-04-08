@@ -1,21 +1,23 @@
-import { makeObservable, observable, action, runInAction } from 'mobx';
+import {action, makeObservable, observable, runInAction} from 'mobx';
 import {
     CREATE_CATEGORY,
-    UPDATE_CATEGORY,
-    DELETE_CATEGORY,
-    CREATE_TYPE,
-    UPDATE_TYPE,
-    DELETE_TYPE,
     CREATE_ITEM,
-    UPDATE_ITEM,
+    CREATE_TYPE,
+    DELETE_CATEGORY,
     DELETE_ITEM,
+    DELETE_TYPE,
+    UPDATE_CATEGORY,
+    UPDATE_ITEM,
+    UPDATE_TYPE,
 } from '@/graphql/mutations';
-import { GET_ALL_TYPES, GET_ALL_CATEGORIES, GET_ALL_ITEMS } from '@/graphql/queries'; // Импортируем запросы для items
+import {GET_ALL_ARTICLES, GET_ALL_CATEGORIES, GET_ALL_EVENTS, GET_ALL_ITEMS, GET_ALL_TYPES} from '@/graphql/queries'; // Импортируем запросы для items
 
 export default class AuxiliaryStore {
     items = []; // Добавляем массив для items
     types = [];
     categories = [];
+    event = [];
+    articles = [];
     isLoading = false; // Состояние загрузки
     error = null; // Состояние ошибки
 
@@ -23,15 +25,15 @@ export default class AuxiliaryStore {
         isOpen: false,
         data: null,
         title: '',
-        onOpen: ({ type = 'типа', id, action = 'Создание', name = '' }) => {
+        onOpen: ({type = 'типа', id, action = 'Создание', name = ''}) => {
             try {
                 this.ModalItemCategory.isOpen = true;
-                this.ModalItemCategory.data = { type, id, action, name };
+                this.ModalItemCategory.data = {type, id, action, name};
             } catch (error) {
                 console.error(error);
             }
         },
-        onSubmit: async ({ name }) => {
+        onSubmit: async ({name}) => {
             try {
                 let data = {};
                 if (this.ModalItemCategory.data.action === 'Создание') {
@@ -50,8 +52,8 @@ export default class AuxiliaryStore {
                     if (this.ModalItemCategory.data.type === 'типа') {
                         data = await this.deleteType(this.ModalItemCategory.data.id);
                     } else if (this.ModalItemCategory.data.type === 'компонент') {
-                        data = await  this.deleteItem(this.ModalItemCategory.data.id);
-                    } else if ( this.ModalItemCategory.data.type === 'букет') {
+                        data = await this.deleteItem(this.ModalItemCategory.data.id);
+                    } else if (this.ModalItemCategory.data.type === 'букет') {
                         data = await this.rootStore.bouquetStore.deleteBouquet(this.ModalItemCategory.data.id);
                     } else {
                         data = await this.deleteCategory(this.ModalItemCategory.data.id);
@@ -78,6 +80,8 @@ export default class AuxiliaryStore {
             items: observable,
             types: observable,
             categories: observable,
+            articles: observable,
+            event: observable,
             isLoading: observable,
             error: observable,
             ModalItemCategory: observable,
@@ -97,15 +101,48 @@ export default class AuxiliaryStore {
         });
 
         // Инициализация данных при создании стора
-        this.initializeData().then(r => {}).catch((e) => console.error(e));
+        this.initializeData().then(r => {
+        }).catch((e) => console.error(e));
     }
 
     // Метод для загрузки всех типов
     async loadTypes() {
         this.isLoading = true;
         try {
-            const { data } = await this.client.query({
+            const {data} = await this.client.query({
                 query: GET_ALL_TYPES,
+                fetchPolicy: 'network-only', // Чтобы всегда запрашивать свежие данные
+            });
+            this.types = data?.allTypes?.nodes || [];
+        } catch (error) {
+            this.error = error;
+            console.error('Error loading types:', error);
+        } finally {
+            this.isLoading = false;
+        }
+    }
+
+    async loadArticles() {
+        this.isLoading = true;
+        try {
+            const {data} = await this.client.query({
+                query: GET_ALL_ARTICLES,
+                fetchPolicy: 'network-only', // Чтобы всегда запрашивать свежие данные
+            });
+            this.types = data?.allTypes?.nodes || [];
+        } catch (error) {
+            this.error = error;
+            console.error('Error loading types:', error);
+        } finally {
+            this.isLoading = false;
+        }
+    }
+
+    async loadEvents() {
+        this.isLoading = true;
+        try {
+            const {data} = await this.client.query({
+                query: GET_ALL_EVENTS,
                 fetchPolicy: 'network-only', // Чтобы всегда запрашивать свежие данные
             });
             this.types = data?.allTypes?.nodes || [];
@@ -121,7 +158,7 @@ export default class AuxiliaryStore {
     async loadCategories() {
         this.isLoading = true;
         try {
-            const { data } = await this.client.query({
+            const {data} = await this.client.query({
                 query: GET_ALL_CATEGORIES,
                 fetchPolicy: 'network-only', // Чтобы всегда запрашивать свежие данные
             });
@@ -138,7 +175,7 @@ export default class AuxiliaryStore {
     async loadItems() {
         this.isLoading = true;
         try {
-            const { data } = await this.client.query({
+            const {data} = await this.client.query({
                 query: GET_ALL_ITEMS,
                 fetchPolicy: 'network-only', // Чтобы всегда запрашивать свежие данные
             });
@@ -161,13 +198,13 @@ export default class AuxiliaryStore {
     // Метод для создания категории
     async createCategory(name) {
         try {
-            const { data } = await this.client.mutate({
+            const {data} = await this.client.mutate({
                 mutation: CREATE_CATEGORY,
-                variables: { name },
+                variables: {name},
             });
             runInAction(() => {
                 const category = data?.createCategory.category;
-                this.categories = [...this.categories, { id: category.id, name: category.name }];
+                this.categories = [...this.categories, {id: category.id, name: category.name}];
             });
         } catch (error) {
             console.error('Error creating category:', error);
@@ -177,9 +214,9 @@ export default class AuxiliaryStore {
     // Метод для обновления категории
     async updateCategory(id, name) {
         try {
-            const { data } = await this.client.mutate({
+            const {data} = await this.client.mutate({
                 mutation: UPDATE_CATEGORY,
-                variables: { id, name },
+                variables: {id, name},
             });
             runInAction(() => {
                 const updatedCategory = data.updateCategoryById.category;
@@ -198,7 +235,7 @@ export default class AuxiliaryStore {
         try {
             await this.client.mutate({
                 mutation: DELETE_CATEGORY,
-                variables: { id },
+                variables: {id},
             });
             runInAction(() => (this.categories = this.categories.filter(cat => cat.id !== id)));
         } catch (error) {
@@ -209,13 +246,13 @@ export default class AuxiliaryStore {
     // Метод для создания типа
     async createType(name) {
         try {
-            const { data } = await this.client.mutate({
+            const {data} = await this.client.mutate({
                 mutation: CREATE_TYPE,
-                variables: { name },
+                variables: {name},
             });
             runInAction(() => {
                 const type = data?.createType.type;
-                this.types = [...this.types, { id: type.id, name: type.name }];
+                this.types = [...this.types, {id: type.id, name: type.name}];
             });
         } catch (error) {
             console.error('Error creating type:', error);
@@ -225,9 +262,9 @@ export default class AuxiliaryStore {
     // Метод для обновления типа
     async updateType(id, name) {
         try {
-            const { data } = await this.client.mutate({
+            const {data} = await this.client.mutate({
                 mutation: UPDATE_TYPE,
-                variables: { id, name },
+                variables: {id, name},
             });
             runInAction(() => {
                 const updatedType = data?.updateTypeById?.type;
@@ -246,7 +283,7 @@ export default class AuxiliaryStore {
         try {
             await this.client.mutate({
                 mutation: DELETE_TYPE,
-                variables: { id },
+                variables: {id},
             });
             runInAction(() => (this.types = this.types.filter(type => type.id !== id)));
         } catch (error) {
@@ -258,9 +295,9 @@ export default class AuxiliaryStore {
     async createItem(name, typeId, cost) {
         try {
             console.log(name, typeId, cost);
-            const { data } = await this.client.mutate({
+            const {data} = await this.client.mutate({
                 mutation: CREATE_ITEM,
-                variables: { name, typeId, cost },
+                variables: {name, typeId, cost},
             });
             runInAction(() => {
                 const item = data?.createItem.item;
@@ -274,9 +311,9 @@ export default class AuxiliaryStore {
     // Метод для обновления item
     async updateItem(id, name, typeId, cost) {
         try {
-            const { data } = await this.client.mutate({
+            const {data} = await this.client.mutate({
                 mutation: UPDATE_ITEM,
-                variables: { id, name, typeId, cost },
+                variables: {id, name, typeId, cost},
             });
             runInAction(() => {
                 const updatedItem = data?.updateItemById.item;
@@ -295,7 +332,7 @@ export default class AuxiliaryStore {
         try {
             await this.client.mutate({
                 mutation: DELETE_ITEM,
-                variables: { id },
+                variables: {id},
             });
             runInAction(() => (this.items = this.items.filter(item => item.id !== id)));
         } catch (error) {

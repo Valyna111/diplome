@@ -239,81 +239,74 @@ app.use(
 );
 
 // Пример обработчика для /api/reports/monthly-sales
-router.get('/monthly-sales', async (req, res) => {
+app.get('/monthly-sales', async (req, res) => {
     try {
-      const result = await db.query(`
-        SELECT 
-          TO_CHAR(o.order_date, 'Mon') AS month,
-          EXTRACT(MONTH FROM o.order_date) AS month_num,
-          SUM(o.price) AS total
-        FROM orders o
-        JOIN status s ON o.status_id = s.id
-        WHERE s.name IN ('собран', 'доставлен') 
-           OR s.code IN ('completed', 'delivered') -- альтернативные варианты
-        GROUP BY month, month_num
-        ORDER BY month_num
-      `);
-      
-      res.json(result.rows);
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ error: 'Internal server error' });
-    }
-  });
-  
-  // Пример обработчика для /api/reports/bouquet-sales
-  router.get('/bouquet-sales', async (req, res) => {
-    try {
-      const result = await db.query(`
-        SELECT 
-          b.id,
-          b.name,
-          COUNT(oi.id) AS count,
-          SUM(oi.price * oi.quantity) AS total
-        FROM order_items oi
-        JOIN bouquets b ON oi.bouquet_id = b.id
-        JOIN orders o ON oi.order_id = o.id
-        JOIN status s ON o.status_id = s.id
-        WHERE s.name IN ('собран', 'доставлен')
-           OR s.code IN ('completed', 'delivered')
-        GROUP BY b.id, b.name
-        ORDER BY total DESC
-      `);
-      
-      res.json(result.rows);
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ error: 'Internal server error' });
-    }
-  });
-  
-  // Пример обработчика для /api/reports/category-sales
-  router.get('/category-sales', async (req, res) => {
-    try {
-      const result = await db.query(`
-        SELECT 
-          c.id,
-          c.name,
-          COUNT(oi.id) AS count,
-          SUM(oi.price * oi.quantity) AS total
-        FROM order_items oi
-        JOIN bouquets b ON oi.bouquet_id = b.id
-        JOIN categories c ON b.category_id = c.id
-        JOIN orders o ON oi.order_id = o.id
-        JOIN status s ON o.status_id = s.id
-        WHERE s.name IN ('собран', 'доставлен')
-           OR s.code IN ('completed', 'delivered')
-        GROUP BY c.id, c.name
-        ORDER BY total DESC
-      `);
-      
-      res.json(result.rows);
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ error: 'Internal server error' });
-    }
-  });
+        const result = await pool.query(`
+            SELECT TO_CHAR(o.order_date, 'Mon')     AS month,
+                   EXTRACT(MONTH FROM o.order_date) AS month_num,
+                   SUM(o.price)                     AS total
+            FROM orders o
+                     JOIN status s ON o.status_id = s.id
+            WHERE s.name IN ('Cобран', 'Доставлен')
+            GROUP BY month, month_num
+            ORDER BY month_num
+        `);
 
+        res.json(result.rows);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({error: 'Internal server error'});
+    }
+});
+
+// Пример обработчика для /api/reports/bouquet-sales
+app.get('/bouquet-sales', async (req, res) => {
+    try {
+        const result = await pool.query(`
+            SELECT b.id,
+                   b.name,
+                   COUNT(oi.id)                AS count,
+                   SUM(oi.price * oi.quantity) AS total
+            FROM order_items oi
+                     JOIN bouquets b ON oi.bouquet_id = b.id
+                     JOIN orders o ON oi.order_id = o.id
+                     JOIN status s ON o.status_id = s.id
+            WHERE s.name IN ('Cобран', 'Доставлен')
+            GROUP BY b.id, b.name
+            ORDER BY total DESC
+        `);
+
+        res.json(result.rows);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({error: 'Internal server error'});
+    }
+});
+
+// Пример обработчика для /api/reports/category-sales
+app.get('/category-sales', async (req, res) => {
+    try {
+        const result = await pool.query(`
+            SELECT c.id,
+                   c.name,
+                   COUNT(oi.id)                AS count,
+                   SUM(oi.price * oi.quantity) AS total
+            FROM order_items oi
+                     JOIN bouquets b ON oi.bouquet_id = b.id
+                     JOIN categories c ON b.category_id = c.id
+                     JOIN orders o ON oi.order_id = o.id
+                     JOIN status s ON o.status_id = s.id
+            WHERE s.name IN ('Cобран', 'Доставлен')
+            GROUP BY c.id, c.name
+            ORDER BY total DESC
+        `);
+
+        res.json(result.rows);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({error: 'Internal server error'});
+    }
+});
 
 
 app.listen(4000, () => {

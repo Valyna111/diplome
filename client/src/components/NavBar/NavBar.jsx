@@ -78,11 +78,11 @@ const Navbar = observer(() => {
                         </Link>
                         <Link to="/dashboard/promotion-constructor" className={styles.link}
                               onClick={() => setMenuOpen(false)}>
-                            Редактор акций
+                            Акции
                         </Link>
                         <Link to="/dashboard/article-constructor" className={styles.link}
                               onClick={() => setMenuOpen(false)}>
-                            Редактор статей
+                            Статьи
                         </Link>
                     </p>
                 )}

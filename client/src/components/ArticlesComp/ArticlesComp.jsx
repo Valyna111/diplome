@@ -33,7 +33,7 @@ const ArticlesComp = () => {
             {articles.map((article) => (
                 <div key={article.id} className={styles.articleCard}>
                     {/* 🔗 Делаем картинку и текст ссылками на страницу статьи */}
-                    <Link to={`/article/${article.id}`} className={styles.articleLink}>
+                    <Link to={`/main/article/${article.id}`} className={styles.articleLink}>
                         <img src={article.image} alt={article.title} className={styles.articleImage}/>
                         <div className={styles.articleContent}>
                             <h3 className={styles.articleTitle}>{article.title}</h3>

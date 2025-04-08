@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt');
 
-const password = '1234'; // Пароль администратора
+const password = '1851'; // Пароль администратора
 const saltRounds = 10; // Количество раундов для генерации соли
 
 bcrypt.hash(password, saltRounds, (err, hash) => {

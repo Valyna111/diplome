@@ -79,24 +79,13 @@ const Bouquet = observer(() => {
         );
     };
 
-    const addToCart = () => {
+    const addToCart = async () => {
         if (!bouquet) return;
-
-        const totalPrice = bouquet.amount * quantity +
-            selectedAddons.reduce((sum, addon) => sum + addon.price, 0);
-
-        const cartItem = {
-            id: bouquet.id,
-            name: bouquet.name,
-            image: bouquet.image,
-            price: bouquet.amount,
+        await rootStore.authStore.syncCart([{
+            bouquetId: bouquet.id,
             quantity,
-            addons: selectedAddons,
-            totalPrice
-        };
-
-        rootStore.cartStore.addToCart(cartItem);
-        // Можно добавить уведомление об успешном добавлении
+            operation: quantity === 0 ? 'delete' : 'update'
+        }]);
     };
 
     if (loading) {
@@ -245,7 +234,7 @@ const Bouquet = observer(() => {
                     </div>
 
                     <div className={s.priceContainer}>
-                        <span className={s.price}>{bouquet.amount} руб.</span>
+                        <span className={s.price}>{bouquet.price} руб.</span>
                         {selectedAddons.length > 0 && (
                             <div className={s.addonsPrice}>
                                 + {selectedAddons.reduce((sum, addon) => sum + addon.price, 0)} руб. за дополнения
