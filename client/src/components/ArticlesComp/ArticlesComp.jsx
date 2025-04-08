@@ -1,10 +1,12 @@
-import React from "react";
+import React, {useContext} from "react";
 import {Link} from "react-router-dom";
 import styles from "./ArticlesComp.module.css";
 
 import Slider1 from '@/assets/images/slider1.jpg';
 import Slider2 from '@/assets/images/slider2.jpg';
 import Slider3 from '@/assets/images/slider3.jpg';
+import {observer} from "mobx-react-lite";
+import StoreContext from "@/store/StoreContext";
 
 const articles = [
     {
@@ -27,23 +29,26 @@ const articles = [
     }
 ];
 
-const ArticlesComp = () => {
+const ArticlesComp = observer(() => {
+    const {auxiliaryStore} = useContext(StoreContext);
+
     return (
         <div className={styles.articlesContainer}>
-            {articles.map((article) => (
+            {auxiliaryStore.articles.slice(0, 3).map((article) => (
                 <div key={article.id} className={styles.articleCard}>
                     {/* 🔗 Делаем картинку и текст ссылками на страницу статьи */}
                     <Link to={`/main/article/${article.id}`} className={styles.articleLink}>
-                        <img src={article.image} alt={article.title} className={styles.articleImage}/>
+                        <img src={`http://localhost:4000${article?.image1}`} alt={article.title}
+                             className={styles.articleImage}/>
                         <div className={styles.articleContent}>
-                            <h3 className={styles.articleTitle}>{article.title}</h3>
-                            <p className={styles.articleDescription}>{article.description}</p>
+                            <h3 className={styles.articleTitle}>{article?.header}</h3>
+                            <p className={styles.articleDescription}>{article?.description1}</p>
                         </div>
                     </Link>
                 </div>
             ))}
         </div>
     );
-};
+});
 
 export default ArticlesComp;

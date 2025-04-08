@@ -566,14 +566,12 @@ export const GET_WISHLIST_BY_ID = gql`
 
 // Запросы для таблицы events
 export const GET_ALL_EVENTS = gql`
-    query GetAllEvents {
-        events {
-            id
-            description
-            image
-            bouquet {
+    query allEvents {
+        allEvents {
+            nodes {
                 id
-                name
+                description
+                image
             }
         }
     }
@@ -595,16 +593,18 @@ export const GET_EVENT_BY_ID = gql`
 
 // Запросы для таблицы articles
 export const GET_ALL_ARTICLES = gql`
-    query GetAllArticles {
-        articles {
-            id
-            header
-            image1
-            image2
-            image3
-            description1
-            description2
-            description3
+    query allArticles {
+        allArticles {
+            nodes {
+                id
+                header
+                image1
+                image2
+                image3
+                description1
+                description2
+                description3
+            }
         }
     }
 `;

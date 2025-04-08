@@ -3,22 +3,21 @@
     display: flex;
     gap: 20px;
     padding: 20px;
-    background-color: #f9f9f9;
     min-height: 100vh;
-  }
-  
-  /* Левая колонка (список статей) */
-  .leftColumn {
+}
+
+/* Левая колонка (список статей) */
+.leftColumn {
     flex: 1;
     max-width: 300px;
     background-color: #ffffff;
     padding: 20px;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  }
-  
-  /* Кнопка добавления статьи */
-  .addButton {
+}
+
+/* Кнопка добавления статьи */
+.addButton {
     width: 100%;
     margin-bottom: 20px;
     background-color: #007bff;
@@ -29,21 +28,21 @@
     font-size: 16px;
     cursor: pointer;
     transition: background-color 0.3s ease;
-  }
-  
-  .addButton:hover {
+}
+
+.addButton:hover {
     background-color: #0056b3;
-  }
-  
-  /* Список статей */
-  .articlesList {
+}
+
+/* Список статей */
+.articlesList {
     display: flex;
     flex-direction: column;
     gap: 15px;
-  }
-  
-  /* Карточка статьи */
-  .articleCard {
+}
+
+/* Карточка статьи */
+.articleCard {
     display: flex;
     align-items: center;
     gap: 10px;
@@ -52,60 +51,60 @@
     border-radius: 8px;
     cursor: pointer;
     transition: background-color 0.3s ease;
-  }
-  
-  .articleCard:hover {
+}
+
+.articleCard:hover {
     background-color: #e1e1e1;
-  }
-  
-  .articleImage {
+}
+
+.articleImage {
     width: 50px;
     height: 50px;
     border-radius: 8px;
     object-fit: cover;
-  }
-  
-  .articleCard h3 {
+}
+
+.articleCard h3 {
     margin: 0;
     font-size: 14px;
     color: #333;
-  }
-  
-  /* Правая колонка (форма редактирования) */
-  .rightColumn {
+}
+
+/* Правая колонка (форма редактирования) */
+.rightColumn {
     flex: 2;
     background-color: #ffffff;
     padding: 20px;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  }
-  
-  .rightColumn h2 {
+}
+
+.rightColumn h2 {
     margin-top: 0;
     font-size: 24px;
     color: #333;
-  }
-  
-  /* Контейнер для загрузки изображений */
-  .imageUploadContainer {
+}
+
+/* Контейнер для загрузки изображений */
+.imageUploadContainer {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 15px;
     margin-bottom: 20px;
-  }
-  
-  .imageUpload {
+}
+
+.imageUpload {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 10px;
-  }
-  
-  .imageUpload input[type="file"] {
+}
+
+.imageUpload input[type="file"] {
     display: none;
-  }
-  
-  .uploadButton {
+}
+
+.uploadButton {
     width: 100%;
     background-color: #007bff;
     color: #ffffff;
@@ -115,40 +114,40 @@
     font-size: 14px;
     cursor: pointer;
     transition: background-color 0.3s ease;
-  }
-  
-  .uploadButton:hover {
+}
+
+.uploadButton:hover {
     background-color: #0056b3;
-  }
-  
-  .previewImage {
+}
+
+.previewImage {
     width: 100%;
     height: 100px;
     border-radius: 8px;
     object-fit: cover;
-  }
-  
-  /* Группа текстовых полей */
-  .inputGroup {
+}
+
+/* Группа текстовых полей */
+.inputGroup {
     display: flex;
     flex-direction: column;
     gap: 15px;
-  }
-  
-  .sectionBlock {
+}
+
+.sectionBlock {
     display: flex;
     flex-direction: column;
     gap: 10px;
-  }
-  
-  /* Группа кнопок */
-  .buttonGroup {
+}
+
+/* Группа кнопок */
+.buttonGroup {
     display: flex;
     gap: 10px;
     margin-top: 20px;
-  }
-  
-  .publishButton {
+}
+
+.publishButton {
     background-color: #28a745;
     color: #ffffff;
     border: none;
@@ -157,13 +156,13 @@
     font-size: 16px;
     cursor: pointer;
     transition: background-color 0.3s ease;
-  }
-  
-  .publishButton:hover {
+}
+
+.publishButton:hover {
     background-color: #218838;
-  }
-  
-  .deleteButton {
+}
+
+.deleteButton {
     background-color: #dc3545;
     color: #ffffff;
     border: none;
@@ -172,34 +171,34 @@
     font-size: 16px;
     cursor: pointer;
     transition: background-color 0.3s ease;
-  }
-  
-  .deleteButton:hover {
+}
+
+.deleteButton:hover {
     background-color: #c82333;
-  }
-  
-  /* Адаптивность */
-  @media (max-width: 768px) {
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
     .container {
-      flex-direction: column;
-      padding: 10px;
+        flex-direction: column;
+        padding: 10px;
     }
-  
+
     .leftColumn {
-      max-width: 100%;
+        max-width: 100%;
     }
-  
+
     .imageUploadContainer {
-      grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(2, 1fr);
     }
-  }
-  
-  @media (max-width: 480px) {
+}
+
+@media (max-width: 480px) {
     .imageUploadContainer {
-      grid-template-columns: 1fr;
+        grid-template-columns: 1fr;
     }
-  
+
     .buttonGroup {
-      flex-direction: column;
+        flex-direction: column;
     }
-  }
+}

@@ -14,7 +14,6 @@ const ProductCard = observer(({
                                   description,
                                   price,
                                   className,
-                                  withDiscount,
                                   discountPercentage,
                                   compactView = false,
                                   showRemoveButton = false,
@@ -113,7 +112,7 @@ const ProductCard = observer(({
                 [styles.compactImage]: compactView
             })}>
                 <img src={`http://localhost:4000${image}`} alt={title} className={styles.image}/>
-                {withDiscount && <div className={styles.discountBadge}>-{discountPercentage}%</div>}
+                {discountPercentage !== 0 && <div className={styles.discountBadge}>-{discountPercentage}%</div>}
             </div>
 
             <div className={styles.content}>
@@ -127,7 +126,7 @@ const ProductCard = observer(({
 
                 <div className={styles.footer}>
                     <div className={styles.priceContainer}>
-                        {withDiscount ? (
+                        {discountPercentage !== 0 ? (
                             <>
                                 {!compactView && (
                                     <span className={styles.originalPrice}>{formattedPrice} руб.</span>

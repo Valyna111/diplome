@@ -3,22 +3,21 @@
     display: flex;
     gap: 20px;
     padding: 20px;
-    background-color: #f9f9f9;
     min-height: 100vh;
-  }
-  
-  /* Левая колонка (список акций) */
-  .leftColumn {
+}
+
+/* Левая колонка (список акций) */
+.leftColumn {
     flex: 1;
     max-width: 300px;
     background-color: #ffffff;
     padding: 20px;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  }
-  
-  /* Кнопка добавления акции */
-  .addButton {
+}
+
+/* Кнопка добавления акции */
+.addButton {
     width: 100%;
     margin-bottom: 20px;
     background-color: #e91e63;
@@ -29,21 +28,21 @@
     font-size: 16px;
     cursor: pointer;
     transition: background-color 0.3s ease;
-  }
-  
-  .addButton:hover {
+}
+
+.addButton:hover {
     background-color: #e91e63;
-  }
-  
-  /* Список акций */
-  .promotionsList {
+}
+
+/* Список акций */
+.promotionsList {
     display: flex;
     flex-direction: column;
     gap: 15px;
-  }
-  
-  /* Карточка акции */
-  .promotionCard {
+}
+
+/* Карточка акции */
+.promotionCard {
     display: flex;
     align-items: center;
     gap: 10px;
@@ -52,53 +51,53 @@
     border-radius: 8px;
     cursor: pointer;
     transition: background-color 0.3s ease;
-  }
-  
-  .promotionCard:hover {
+}
+
+.promotionCard:hover {
     background-color: #e1e1e1;
-  }
-  
-  .promotionImage {
+}
+
+.promotionImage {
     width: 50px;
     height: 50px;
     border-radius: 8px;
     object-fit: cover;
-  }
-  
-  .promotionCard p {
+}
+
+.promotionCard p {
     margin: 0;
     font-size: 14px;
     color: #333;
-  }
-  
-  /* Правая колонка (форма редактирования) */
-  .rightColumn {
+}
+
+/* Правая колонка (форма редактирования) */
+.rightColumn {
     flex: 2;
     background-color: #ffffff;
     padding: 20px;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  }
-  
-  .rightColumn h2 {
+}
+
+.rightColumn h2 {
     margin-top: 0;
     font-size: 24px;
     color: #333;
-  }
-  
-  /* Контейнер для загрузки изображения */
-  .imageUploadContainer {
+}
+
+/* Контейнер для загрузки изображения */
+.imageUploadContainer {
     display: flex;
     flex-direction: column;
     gap: 15px;
     margin-bottom: 20px;
-  }
-  
-  .imageUploadContainer input[type="file"] {
+}
+
+.imageUploadContainer input[type="file"] {
     display: none;
-  }
-  
-  .uploadButton {
+}
+
+.uploadButton {
     width: 100%;
     background-color: #e91e63;
     color: #ffffff;
@@ -108,34 +107,34 @@
     font-size: 14px;
     cursor: pointer;
     transition: background-color 0.3s ease;
-  }
-  
-  .uploadButton:hover {
+}
+
+.uploadButton:hover {
     background-color: #dc3545;
-  }
-  
-  .previewImage {
+}
+
+.previewImage {
     width: 100%;
     height: 200px;
     border-radius: 8px;
     object-fit: cover;
-  }
-  
-  /* Группа текстовых полей */
-  .inputGroup {
+}
+
+/* Группа текстовых полей */
+.inputGroup {
     display: flex;
     flex-direction: column;
     gap: 15px;
-  }
-  
-  /* Группа кнопок */
-  .buttonGroup {
+}
+
+/* Группа кнопок */
+.buttonGroup {
     display: flex;
     gap: 10px;
     margin-top: 20px;
-  }
-  
-  .publishButton {
+}
+
+.publishButton {
     background-color: #28a745;
     color: #ffffff;
     border: none;
@@ -144,13 +143,13 @@
     font-size: 16px;
     cursor: pointer;
     transition: background-color 0.3s ease;
-  }
-  
-  .publishButton:hover {
+}
+
+.publishButton:hover {
     background-color: #218838;
-  }
-  
-  .deleteButton {
+}
+
+.deleteButton {
     background-color: #dc3545;
     color: #ffffff;
     border: none;
@@ -159,26 +158,26 @@
     font-size: 16px;
     cursor: pointer;
     transition: background-color 0.3s ease;
-  }
-  
-  .deleteButton:hover {
+}
+
+.deleteButton:hover {
     background-color: #c82333;
-  }
-  
-  /* Адаптивность */
-  @media (max-width: 768px) {
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
     .container {
-      flex-direction: column;
-      padding: 10px;
+        flex-direction: column;
+        padding: 10px;
     }
-  
+
     .leftColumn {
-      max-width: 100%;
+        max-width: 100%;
     }
-  }
-  
-  @media (max-width: 480px) {
+}
+
+@media (max-width: 480px) {
     .buttonGroup {
-      flex-direction: column;
+        flex-direction: column;
     }
-  }
+}

@@ -120,13 +120,13 @@
     .imageLink {
         height: 350px;
     }
-    
+
     .arrow {
         width: 36px;
         height: 36px;
         font-size: 18px;
     }
-    
+
     .slick-slide:not(.slick-center) {
         opacity: 0.9;
     }
@@ -137,21 +137,21 @@
     .imageLink {
         height: 300px;
     }
-    
+
     .arrow {
         width: 32px;
         height: 32px;
         font-size: 16px;
     }
-    
+
     .nextArrow {
         right: 1%;
     }
-    
+
     .prevArrow {
         left: 1%;
     }
-    
+
     .dots {
         bottom: 15px;
     }
@@ -162,29 +162,29 @@
     .sliderContainer {
         padding: 0;
     }
-    
+
     .imageLink {
         height: 250px;
         border-radius: 0;
         box-shadow: none;
     }
-    
+
     .slick-slide:not(.slick-center) {
         opacity: 1;
         transform: scale(1);
     }
-    
+
     .slick-center .slide {
         transform: scale(1);
     }
-    
+
     .arrow {
         width: 28px;
         height: 28px;
         font-size: 14px;
         opacity: 0.9;
     }
-    
+
     .dot {
         width: 8px;
         height: 8px;
@@ -196,8 +196,25 @@
     .imageLink {
         height: 200px;
     }
-    
+
     .dots {
         bottom: 10px;
     }
+}
+
+.eventDescription {
+    position: absolute;
+    bottom: 50px;
+    left: 0;
+    right: 0;
+    background: rgba(255, 0, 84, 0.7);
+    color: white;
+    border-radius: 8px;
+    margin: 0 10px;
+    padding: 15px;
+    text-align: center;
+}
+
+.slide {
+    position: relative;
 }

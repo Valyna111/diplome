@@ -1,12 +1,18 @@
 import {action, makeObservable, observable, runInAction} from 'mobx';
 import {
+    CREATE_ARTICLE,
     CREATE_CATEGORY,
+    CREATE_EVENT,
     CREATE_ITEM,
     CREATE_TYPE,
+    DELETE_ARTICLE,
     DELETE_CATEGORY,
+    DELETE_EVENT,
     DELETE_ITEM,
     DELETE_TYPE,
+    UPDATE_ARTICLE,
     UPDATE_CATEGORY,
+    UPDATE_EVENT,
     UPDATE_ITEM,
     UPDATE_TYPE,
 } from '@/graphql/mutations';
@@ -16,7 +22,7 @@ export default class AuxiliaryStore {
     items = []; // Добавляем массив для items
     types = [];
     categories = [];
-    event = [];
+    events = [];
     articles = [];
     isLoading = false; // Состояние загрузки
     error = null; // Состояние ошибки
@@ -81,7 +87,7 @@ export default class AuxiliaryStore {
             types: observable,
             categories: observable,
             articles: observable,
-            event: observable,
+            events: observable,
             isLoading: observable,
             error: observable,
             ModalItemCategory: observable,
@@ -91,6 +97,12 @@ export default class AuxiliaryStore {
             createType: action,
             updateType: action,
             deleteType: action,
+            createArticle: action,
+            updateArticle: action,
+            deleteArticle: action,
+            createEvent: action,
+            updateEvent: action,
+            deleteEvent: action,
             createItem: action,
             updateItem: action,
             deleteItem: action,
@@ -129,7 +141,7 @@ export default class AuxiliaryStore {
                 query: GET_ALL_ARTICLES,
                 fetchPolicy: 'network-only', // Чтобы всегда запрашивать свежие данные
             });
-            this.types = data?.allTypes?.nodes || [];
+            this.articles = data?.allArticles?.nodes || [];
         } catch (error) {
             this.error = error;
             console.error('Error loading types:', error);
@@ -145,7 +157,7 @@ export default class AuxiliaryStore {
                 query: GET_ALL_EVENTS,
                 fetchPolicy: 'network-only', // Чтобы всегда запрашивать свежие данные
             });
-            this.types = data?.allTypes?.nodes || [];
+            this.events = data?.allEvents?.nodes || [];
         } catch (error) {
             this.error = error;
             console.error('Error loading types:', error);
@@ -190,9 +202,13 @@ export default class AuxiliaryStore {
 
     // Метод для инициализации данных (загрузка типов, категорий и items)
     async initializeData() {
-        await this.loadTypes();
-        await this.loadCategories();
-        await this.loadItems();
+        await Promise.all([
+            this.loadTypes(),
+            this.loadCategories(),
+            this.loadItems(),
+            this.loadEvents(),
+            this.loadArticles()
+        ]);
     }
 
     // Метод для создания категории
@@ -288,6 +304,102 @@ export default class AuxiliaryStore {
             runInAction(() => (this.types = this.types.filter(type => type.id !== id)));
         } catch (error) {
             console.error('Error deleting type:', error);
+        }
+    }
+
+    // Метод для создания типа
+    async createArticle(input) {
+        try {
+            const {data} = await this.client.mutate({
+                mutation: CREATE_ARTICLE,
+                variables: input,
+            });
+            runInAction(() => {
+                const article = data?.createArticle.article;
+                this.articles = [...this.articles, article];
+            });
+        } catch (error) {
+            console.error('Error creating articles:', error);
+        }
+    }
+
+    // Метод для обновления типа
+    async updateArticle(input) {
+        try {
+            const {data} = await this.client.mutate({
+                mutation: UPDATE_ARTICLE,
+                variables: input,
+            });
+            runInAction(() => {
+                const updatedArticle = data?.updateArticleById?.article;
+                const index = this.articles.findIndex(art => art.id === input.id);
+                if (index !== -1) {
+                    this.articles = [...this.articles.slice(0, index), updatedArticle, ...this.articles.slice(index + 1)];
+                }
+            });
+        } catch (error) {
+            console.error('Error updating articles:', error);
+        }
+    }
+
+    // Метод для удаления типа
+    async deleteArticle(id) {
+        try {
+            await this.client.mutate({
+                mutation: DELETE_ARTICLE,
+                variables: {id},
+            });
+            runInAction(() => (this.articles = this.articles.filter(art => art.id !== id)));
+        } catch (error) {
+            console.error('Error deleting articles:', error);
+        }
+    }
+
+    // Метод для создания типа
+    async createEvent(input) {
+        try {
+            const {data} = await this.client.mutate({
+                mutation: CREATE_EVENT,
+                variables: input,
+            });
+            runInAction(() => {
+                const event = data?.createEvent.event;
+                this.events = [...this.events, event];
+            });
+        } catch (error) {
+            console.error('Error creating events:', error);
+        }
+    }
+
+    // Метод для обновления типа
+    async updateEvent(input) {
+        try {
+            const {data} = await this.client.mutate({
+                mutation: UPDATE_EVENT,
+                variables: input,
+            });
+            runInAction(() => {
+                const updatedEvent = data?.updateEventById?.event;
+                const index = this.events.findIndex(art => art.id === input.id);
+                if (index !== -1) {
+                    this.events = [...this.events.slice(0, index), updatedEvent, ...this.events.slice(index + 1)];
+                }
+            });
+        } catch (error) {
+            console.error('Error updating events:', error);
+        }
+    }
+
+    // Метод для удаления типа
+    async deleteEvent(id) {
+        try {
+            await this.client.mutate({
+                mutation: DELETE_EVENT,
+                variables: {id},
+            });
+            runInAction(() => (this.events = this.events.filter(art => art.id !== id)));
+        } catch (error) {
+            console.error('Error deleting events:', error);
         }
     }
 
