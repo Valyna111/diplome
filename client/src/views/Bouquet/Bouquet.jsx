@@ -24,6 +24,7 @@ const Bouquet = observer(() => {
     const [isAddingToCart, setIsAddingToCart] = useState(false);
     const [cartQuantity, setCartQuantity] = useState(0);
 
+    // Дополнения к букету (можно получать из API)
     const availableAddons = [
         {id: 1, name: "Воздушные шары (+500 руб.)", price: 500},
         {id: 2, name: "Открытка (+100 руб.)", price: 100},
