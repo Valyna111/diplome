@@ -151,18 +151,18 @@ ALTER TABLE public.ocp_item
 -- Таблица orders
 CREATE TABLE public.orders
 (
-    id          SERIAL PRIMARY KEY,
-    user_id     INT  NOT NULL,
-    order_date  DATE NOT NULL,
-    order_time  TIME NOT NULL,
-    price       REAL NOT NULL,
-    status_id   INT  NOT NULL,
-    address     VARCHAR(250),
-    delivery_id INT,
-    paymentType VARCHAR(50),
-    orderType   VARCHAR(50),
-    ocp_id      INT REFERENCES public.ocp (id),
-    created_at  TIMESTAMP DEFAULT NOW()
+    id           SERIAL PRIMARY KEY,
+    user_id      INT  NOT NULL,
+    order_date   DATE NOT NULL,
+    order_time   TIME NOT NULL,
+    price        REAL NOT NULL,
+    status_id    INT  NOT NULL,
+    address      VARCHAR(250),
+    delivery_id  INT,
+    payment_type VARCHAR(50),
+    order_type   VARCHAR(50),
+    ocp_id       INT REFERENCES public.ocp (id),
+    created_at   TIMESTAMP DEFAULT NOW()
 );
 ALTER TABLE public.orders
     OWNER TO postgres;
@@ -248,7 +248,6 @@ CREATE TABLE IF NOT EXISTS public.events
     id          SERIAL PRIMARY KEY,
     description TEXT NOT NULL,
     image       TEXT NOT NULL,
-    bouquet_id  INT  NOT NULL,
     created_at  TIMESTAMP DEFAULT NOW()
 );
 

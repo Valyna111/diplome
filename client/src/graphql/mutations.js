@@ -701,32 +701,24 @@ export const DELETE_WISHLIST = gql`
 
 // Мутации для таблицы events
 export const CREATE_EVENT = gql`
-    mutation CreateEvent($description: String!, $image: String!, $bouquetId: Int!) {
-        createEvent(input: { event: { description: $description, image: $image, bouquetId: $bouquetId } }) {
+    mutation CreateEvent($description: String!, $image: String!) {
+        createEvent(input: { event: { description: $description, image: $image } }) {
             event {
                 id
                 description
                 image
-                bouquet {
-                    id
-                    name
-                }
             }
         }
     }
 `;
 
 export const UPDATE_EVENT = gql`
-    mutation UpdateEvent($id: Int!, $description: String!, $image: String!, $bouquetId: Int!) {
-        updateEventById(input: { id: $id, eventPatch: { description: $description, image: $image, bouquetId: $bouquetId } }) {
+    mutation UpdateEvent($id: Int!, $description: String!, $image: String!) {
+        updateEventById(input: { id: $id, eventPatch: { description: $description, image: $image } }) {
             event {
                 id
                 description
                 image
-                bouquet {
-                    id
-                    name
-                }
             }
         }
     }
