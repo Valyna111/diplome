@@ -50,7 +50,7 @@ const CategoryCard = observer(({title, withDiscount, data = []}) => {
                             image={b.image}
                             title={b.name}
                             description={b.description}
-                            price={b.amount}
+                            price={b.price}
                             key={b.id}
                             className={styles.slider_item}
                             withDiscount={withDiscount}

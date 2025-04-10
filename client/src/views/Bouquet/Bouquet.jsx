@@ -89,7 +89,7 @@ const Bouquet = observer(() => {
             id: bouquet.id,
             name: bouquet.name,
             image: bouquet.image,
-            price: bouquet.amount,
+            price: bouquet.price,
             quantity,
             addons: selectedAddons,
             totalPrice
