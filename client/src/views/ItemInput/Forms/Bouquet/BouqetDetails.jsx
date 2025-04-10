@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from "react";
+import React, {useContext, useEffect, useMemo, useState} from "react";
 import {observer} from "mobx-react-lite";
 import Input from "@/components/Form/Input/Input";
 import Button from "@/components/Form/Button/Button";
@@ -19,7 +19,7 @@ const BouquetDetails = observer(({
     const [form, setForm] = useState({
         name: '',
         categoryId: {label: '', value: ''},
-        price: '',
+        price: '0',
         description: '',
         amount: '',
         sale: '',
@@ -29,6 +29,26 @@ const BouquetDetails = observer(({
 
     const [selectedItems, setSelectedItems] = useState([]);
 
+    // Автоматический расчет стоимости букета на основе выбранных компонентов
+    const calculateBouquetPrice = useMemo(() => {
+        let total = 0;
+        selectedItems.forEach(item => {
+            const itemData = rootStore.auxiliaryStore.items.find(i => i.id === item.id);
+            if (itemData) {
+                total += itemData.cost * item.quantity;
+            }
+        });
+        return total;
+    }, [selectedItems, rootStore.auxiliaryStore.items]);
+
+    useEffect(() => {
+        // Обновляем цену букета при изменении компонентов
+        setForm(prev => ({
+            ...prev,
+            price: calculateBouquetPrice.toString()
+        }));
+    }, [calculateBouquetPrice]);
+
     useEffect(() => {
         if (action === 'update' && itemId) {
             const item = rootStore.bouquetStore.bouquets.find((item) => item.id === itemId);
@@ -36,7 +56,7 @@ const BouquetDetails = observer(({
                 setForm({
                     name: item.name,
                     categoryId: {label: item?.categoryByCategoryId?.name, value: item.categoryByCategoryId?.id},
-                    price: item.price?.toString() || '',
+                    price: item.price?.toString() || '0',
                     description: item?.description || '',
                     amount: item.amount?.toString() || '',
                     sale: item.sale?.toString() || '',
@@ -54,7 +74,6 @@ const BouquetDetails = observer(({
         }
     }, [action, itemId, rootStore.auxiliaryStore.items]);
 
-    // Загрузка изображения на сервер
     const uploadImage = async (file) => {
         const formData = new FormData();
         formData.append('image', file);
@@ -65,10 +84,9 @@ const BouquetDetails = observer(({
         });
 
         const data = await response.json();
-        return data.imageUrl; // Возвращаем путь к файлу
+        return data.imageUrl;
     };
 
-    // Обработчик изменения изображения
     const handleImageChange = async (e, setImage) => {
         const file = e.target.files[0];
         if (file) {
@@ -99,7 +117,6 @@ const BouquetDetails = observer(({
         setSelectedItems(newItems);
     };
 
-    // Обработчик отправки формы
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -144,7 +161,7 @@ const BouquetDetails = observer(({
         return rootStore.auxiliaryStore.items
             .filter((item) => !selectedIds.includes(item.id))
             .map((item) => ({
-                label: item.name,
+                label: `${item?.name} (${item?.cost} руб.)`,
                 value: item.id,
             }));
     };
@@ -173,11 +190,6 @@ const BouquetDetails = observer(({
                     value: category?.id,
                 }))}
                 placeholder={'Категория'}
-            />
-            <Input
-                placeholder="Цена"
-                value={form.price}
-                onChange={(e) => setForm({...form, price: e.target.value})}
             />
             <div className={s.fileInputContainer}>
                 <label className={s.fileInputLabel}>
@@ -261,6 +273,15 @@ const BouquetDetails = observer(({
                                 style={{cursor: 'pointer', width: '17px', height: '17px', color: 'black'}}/>}/>
                 }
             </div>
+
+            {/* Поле стоимости теперь в конце и только для чтения */}
+            <Input
+                placeholder="Стоимость букета"
+                value={form.price}
+                onChange={(e) => setForm({...form, price: e.target.value})}
+                readOnly
+            />
+
             <Button type="primary" placeholder={action === 'create' ? 'Создать' : 'Обновить'} onClick={handleSubmit}/>
         </div>
     );

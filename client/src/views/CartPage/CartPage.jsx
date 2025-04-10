@@ -8,6 +8,7 @@ import {FaShoppingBag, FaTrash} from "react-icons/fa";
 import EmptyCart from "./EmptyCart";
 import {useNavigate} from "react-router-dom";
 import {IoIosArrowBack} from "react-icons/io";
+import {toast} from "react-toastify";
 
 const CartPage = observer(() => {
     const {authStore} = useContext(StoreContext);
@@ -63,14 +64,26 @@ const CartPage = observer(() => {
             ]);
         } catch (error) {
             console.error("Error removing item:", error);
+            toast.error("Не удалось удалить товар из корзины");
         } finally {
             setIsProcessing(false);
         }
     };
 
     const handleQuantityChange = async (bouquetId, currentQuantity, change) => {
-        const newQuantity = Math.max(1, currentQuantity + change);
-        if (newQuantity === currentQuantity) return;
+        const item = cartItems.find(i => i.bouquet.id === bouquetId);
+        if (!item) return;
+
+        const newQuantity = currentQuantity + change;
+
+        // Проверка минимального количества
+        if (newQuantity < 1) return;
+
+        // Проверка доступного количества
+        if (newQuantity > item.bouquet.amount) {
+            toast.error(`Доступно только ${item.bouquet.amount} шт. этого товара`);
+            return;
+        }
 
         try {
             setIsProcessing(true);
@@ -83,6 +96,7 @@ const CartPage = observer(() => {
             ]);
         } catch (error) {
             console.error("Error updating quantity:", error);
+            toast.error("Не удалось изменить количество");
         } finally {
             setIsProcessing(false);
         }
@@ -96,19 +110,31 @@ const CartPage = observer(() => {
                 operation: "delete"
             }));
             await authStore.syncCart(updates);
+            toast.success("Корзина очищена");
         } catch (error) {
             console.error("Error clearing cart:", error);
+            toast.error("Не удалось очистить корзину");
         } finally {
             setIsProcessing(false);
         }
     };
 
     const handleCheckout = () => {
+        // Проверка наличия товаров перед оформлением
+        const unavailableItems = cartItems.filter(item =>
+            item.quantity > item.bouquet.amount
+        );
+
+        if (unavailableItems.length > 0) {
+            toast.error("Некоторые товары недоступны в таком количестве");
+            return;
+        }
+
         navigate("/user/checkout");
     };
 
     const handleGoBack = () => {
-        navigate(-1); // Возврат на предыдущую страницу
+        navigate(-1);
     };
 
     const totalPrice = cartItems.reduce(
@@ -198,6 +224,8 @@ const CartPage = observer(() => {
                                 compactView={true}
                                 showRemoveButton={false}
                                 showQuantityControls={false}
+                                availableAmount={item.bouquet.amount}
+                                discountPercentage={item.bouquet.sale}
                             />
                             <motion.div className={styles.controls}>
                                 <motion.button
@@ -227,7 +255,7 @@ const CartPage = observer(() => {
                                     </motion.span>
                                     <motion.button
                                         onClick={() => handleQuantityChange(item.bouquet.id, item.quantity, 1)}
-                                        disabled={isProcessing}
+                                        disabled={isProcessing || item.quantity >= item.bouquet.amount}
                                         whileHover={{scale: 1.1}}
                                         whileTap={{scale: 0.9}}
                                     >

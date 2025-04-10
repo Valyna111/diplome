@@ -1,45 +1,94 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 
 body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
 .link {
-  color: var(--Palette-Bright-blue, #0072FF);
-  font-feature-settings: 'clig' off, 'liga' off;
-  font-family: Inter;
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 400;
-  letter-spacing: 0.2px;
-  text-decoration-line: underline;
-  display: flex;
-  justify-self: end;
-  cursor: pointer;
+    color: var(--Palette-Bright-blue, #0072FF);
+    font-feature-settings: 'clig' off, 'liga' off;
+    font-family: Inter;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    letter-spacing: 0.2px;
+    text-decoration-line: underline;
+    display: flex;
+    justify-self: end;
+    cursor: pointer;
 }
+
 .link:hover {
-  font-weight: 500;
+    font-weight: 500;
 }
+
 .ant-tabs-nav {
-  width: 100% !important;
+    width: 100% !important;
 }
 
 .ant-tabs-tab {
-  display: block !important; /* centers text inside tabs */
-  flex: 1;
-  text-align: center !important;
+    display: block !important; /* centers text inside tabs */
+    flex: 1;
+    text-align: center !important;
 }
 
 .ant-tabs-nav > div:nth-of-type(1) {
-  display: unset !important;
-  width: 100% !important;
+    display: unset !important;
+    width: 100% !important;
+}
+
+/* Глобальные стили для Toast */
+.Toastify__toast-container {
+    width: auto;
+    max-width: 450px;
+}
+
+.Toastify__toast {
+    border-radius: 8px;
+    padding: 16px;
+    font-family: 'Your Font', sans-serif;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.Toastify__toast--success {
+    background: #4caf50;
+    color: white;
+}
+
+.Toastify__toast--error {
+    background: #f44336;
+    color: white;
+}
+
+.Toastify__toast--warning {
+    background: #ff9800;
+    color: white;
+}
+
+.Toastify__toast--info {
+    background: #2196f3;
+    color: white;
+}
+
+.Toastify__progress-bar {
+    height: 3px;
+}
+
+.Toastify__close-button {
+    color: white;
+    opacity: 0.8;
+}
+
+.Toastify__close-button:hover {
+    opacity: 1;
 }

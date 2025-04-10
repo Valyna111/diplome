@@ -102,6 +102,7 @@ const FavoritesPage = observer(() => {
                                 image={product.image}
                                 title={product.name}
                                 price={product.price}
+                                availableAmount={product.amount}
                             />
                         </motion.div>
                     ))}

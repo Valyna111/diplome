@@ -7,6 +7,7 @@ import {AnimatePresence, motion} from "framer-motion";
 import {FaChevronDown, FaChevronUp, FaMinus, FaPlus, FaShoppingCart} from "react-icons/fa";
 import ArticlesComp from "@/components/ArticlesComp/ArticlesComp";
 import CategoryCard from "@/components/CategoryCard/CategoryCard";
+import {toast} from "react-toastify";
 
 const Bouquet = observer(() => {
     const rootStore = useContext(StoreContext);
@@ -20,8 +21,9 @@ const Bouquet = observer(() => {
     const [showComponents, setShowComponents] = useState(false);
     const [showAddons, setShowAddons] = useState(false);
     const [selectedAddons, setSelectedAddons] = useState([]);
+    const [isAddingToCart, setIsAddingToCart] = useState(false);
+    const [cartQuantity, setCartQuantity] = useState(0);
 
-    // Дополнения к букету (можно получать из API)
     const availableAddons = [
         {id: 1, name: "Воздушные шары (+500 руб.)", price: 500},
         {id: 2, name: "Открытка (+100 руб.)", price: 100},
@@ -43,6 +45,11 @@ const Bouquet = observer(() => {
             .then((result) => {
                 setBouquet(result);
                 setCurrentImage(result.image);
+
+                // Проверяем, есть ли товар уже в корзине
+                const cartItem = rootStore.authStore.cart.find(item => item.bouquet.id === parseInt(id));
+                setCartQuantity(cartItem?.quantity || 0);
+                setQuantity(cartItem ? Math.max(1, cartItem.quantity) : 1);
             })
             .catch((err) => {
                 console.error("Ошибка загрузки:", err);
@@ -51,7 +58,7 @@ const Bouquet = observer(() => {
             .finally(() => {
                 setLoading(false);
             });
-    }, [id, rootStore.bouquetStore]);
+    }, [id, rootStore.bouquetStore, rootStore.authStore.cart]);
 
     const handleImageChange = (newImage) => {
         setCurrentImage(newImage);
@@ -62,13 +69,19 @@ const Bouquet = observer(() => {
     };
 
     const increaseQuantity = () => {
+        if (!bouquet) return;
+
+        const totalInCart = cartQuantity + quantity;
+        if (totalInCart >= bouquet.amount) {
+            toast.error(`Доступно только ${bouquet.amount - cartQuantity} шт. для добавления`);
+            return;
+        }
+
         setQuantity(prev => prev + 1);
     };
 
     const decreaseQuantity = () => {
-        if (quantity > 1) {
-            setQuantity(prev => prev - 1);
-        }
+        setQuantity(prev => (prev > 1 ? prev - 1 : 1));
     };
 
     const toggleAddon = (addon) => {
@@ -81,11 +94,36 @@ const Bouquet = observer(() => {
 
     const addToCart = async () => {
         if (!bouquet) return;
-        await rootStore.authStore.syncCart([{
-            bouquetId: bouquet.id,
-            quantity,
-            operation: quantity === 0 ? 'delete' : 'update'
-        }]);
+
+        const totalQuantity = cartQuantity + quantity;
+        if (totalQuantity > bouquet.amount) {
+            toast.error(`Максимально доступное количество: ${bouquet.amount} шт. (уже в корзине: ${cartQuantity} шт.)`);
+            return;
+        }
+
+        setIsAddingToCart(true);
+        try {
+            await rootStore.authStore.syncCart([{
+                bouquetId: bouquet.id,
+                quantity: totalQuantity,
+                operation: 'update'
+            }]);
+
+            toast.success(
+                cartQuantity > 0
+                    ? `Количество обновлено: ${totalQuantity} шт. в корзине`
+                    : `${bouquet.name} добавлен в корзину!`
+            );
+
+            // Обновляем количество в корзине после успешного добавления
+            setCartQuantity(totalQuantity);
+            setQuantity(1);
+        } catch (error) {
+            console.error("Ошибка при добавлении в корзину:", error);
+            toast.error("Не удалось добавить товар в корзину");
+        } finally {
+            setIsAddingToCart(false);
+        }
     };
 
     if (loading) {
@@ -121,6 +159,10 @@ const Bouquet = observer(() => {
             </div>
         );
     }
+
+    const totalPrice = bouquet.price + selectedAddons.reduce((sum, addon) => sum + addon.price, 0);
+    const availableToAdd = bouquet.amount - cartQuantity;
+    const maxQuantity = Math.min(availableToAdd, bouquet.amount);
 
     return (
         <div className={s.page}>
@@ -166,7 +208,20 @@ const Bouquet = observer(() => {
                         <p>{bouquet.description}</p>
                     </div>
 
-                    {/* Выпадающий список компонентов букета */}
+                    <div className={s.availability}>
+                        {bouquet.amount > 0 ? (
+                            <>
+                                <span className={s.inStock}>В наличии: {bouquet.amount} шт.</span>
+                                {cartQuantity > 0 && (
+                                    <span className={s.inCart}>Уже в корзине: {cartQuantity} шт.</span>
+                                )}
+                                <span className={s.availableToAdd}>Можно добавить: {availableToAdd} шт.</span>
+                            </>
+                        ) : (
+                            <span className={s.outOfStock}>Нет в наличии</span>
+                        )}
+                    </div>
+
                     <div className={s.dropdownSection}>
                         <button
                             className={s.dropdownHeader}
@@ -196,7 +251,6 @@ const Bouquet = observer(() => {
                         </AnimatePresence>
                     </div>
 
-                    {/* Выпадающий список дополнений */}
                     <div className={s.dropdownSection}>
                         <button
                             className={s.dropdownHeader}
@@ -234,21 +288,32 @@ const Bouquet = observer(() => {
                     </div>
 
                     <div className={s.priceContainer}>
-                        <span className={s.price}>{bouquet.price} руб.</span>
+                        <span className={s.price}>{totalPrice} руб.</span>
                         {selectedAddons.length > 0 && (
-                            <div className={s.addonsPrice}>
-                                + {selectedAddons.reduce((sum, addon) => sum + addon.price, 0)} руб. за дополнения
+                            <div className={s.priceBreakdown}>
+                                <span className={s.basePrice}>({bouquet.price} руб. за букет)</span>
+                                <span className={s.addonsPrice}>
+                                    + {selectedAddons.reduce((sum, addon) => sum + addon.price, 0)} руб. за дополнения
+                                </span>
                             </div>
                         )}
                     </div>
 
                     <div className={s.actionsContainer}>
                         <div className={s.quantitySelector}>
-                            <button onClick={decreaseQuantity} className={s.quantityButton}>
+                            <button
+                                onClick={decreaseQuantity}
+                                className={s.quantityButton}
+                                disabled={quantity <= 1}
+                            >
                                 <FaMinus/>
                             </button>
                             <span className={s.quantityValue}>{quantity}</span>
-                            <button onClick={increaseQuantity} className={s.quantityButton}>
+                            <button
+                                onClick={increaseQuantity}
+                                className={s.quantityButton}
+                                disabled={quantity >= maxQuantity}
+                            >
                                 <FaPlus/>
                             </button>
                         </div>
@@ -256,9 +321,14 @@ const Bouquet = observer(() => {
                         <button
                             className={s.addToCartButton}
                             onClick={addToCart}
+                            disabled={isAddingToCart || bouquet.amount <= 0 || availableToAdd <= 0}
                         >
                             <FaShoppingCart className={s.cartIcon}/>
-                            Добавить в корзину
+                            {isAddingToCart
+                                ? 'Добавляем...'
+                                : cartQuantity > 0
+                                    ? 'Добавить ещё'
+                                    : 'Добавить в корзину'}
                         </button>
                     </div>
                 </div>

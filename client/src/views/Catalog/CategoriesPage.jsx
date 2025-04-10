@@ -52,6 +52,7 @@ const CategoriesPage = () => {
                         title={product.title}
                         description={product.description}
                         price={product.price}
+                        availableAmount={product.amount}
                     />
                 ))}
             </div>

@@ -645,6 +645,8 @@ export const GET_USER_RELATIVE_DATA = gql`
                         name
                         price
                         image
+                        amount
+                        sale
                     }
                 }
             }

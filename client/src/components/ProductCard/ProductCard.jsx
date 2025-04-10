@@ -6,6 +6,7 @@ import styles from "./ProductCard.module.css";
 import classNames from "classnames";
 import {observer} from "mobx-react-lite";
 import StoreContext from "@/store/StoreContext";
+import {toast} from "react-toastify";
 
 const ProductCard = observer(({
                                   id,
@@ -18,7 +19,8 @@ const ProductCard = observer(({
                                   compactView = false,
                                   showRemoveButton = false,
                                   onRemove,
-                                  showQuantityControls = true
+                                  showQuantityControls = true,
+                                  availableAmount = Infinity // Добавляем пропс для доступного количества
                               }) => {
     const rootStore = useContext(StoreContext);
     const navigate = useNavigate();
@@ -47,6 +49,13 @@ const ProductCard = observer(({
     const itemCount = cartItem?.quantity || 0;
 
     const handleCartAction = async (newQuantity) => {
+        // Проверяем, не превышает ли новое количество доступное
+        if (newQuantity > availableAmount) {
+            console.log(newQuantity);
+            toast.error(`Доступно только ${availableAmount} шт. этого букета`);
+            return;
+        }
+
         setIsCartAnimating(true);
         try {
             await rootStore.authStore.syncCart([{
@@ -113,6 +122,12 @@ const ProductCard = observer(({
             })}>
                 <img src={`http://localhost:4000${image}`} alt={title} className={styles.image}/>
                 {discountPercentage !== 0 && <div className={styles.discountBadge}>-{discountPercentage}%</div>}
+                {availableAmount < 5 && availableAmount > 0 && (
+                    <div className={styles.amountBadge}>Осталось: {availableAmount} шт.</div>
+                )}
+                {availableAmount === 0 && (
+                    <div className={styles.soldOutBadge}>Нет в наличии</div>
+                )}
             </div>
 
             <div className={styles.content}>
@@ -166,7 +181,14 @@ const ProductCard = observer(({
                                     <span className={styles.quantity}>{itemCount}</span>
                                     <button
                                         className={styles.quantityButton}
-                                        onClick={(e) => handleButtonClick(e, () => handleCartAction(itemCount + 1))}
+                                        onClick={(e) => handleButtonClick(e, () => {
+                                            if (itemCount >= availableAmount) {
+                                                toast.error(`Максимально доступное количество: ${availableAmount}`);
+                                            } else {
+                                                handleCartAction(itemCount + 1);
+                                            }
+                                        })}
+                                        disabled={itemCount >= availableAmount}
                                     >
                                         <FaPlus/>
                                     </button>
@@ -174,8 +196,15 @@ const ProductCard = observer(({
                             ) : (
                                 <motion.button
                                     className={styles.cartButton}
-                                    onClick={(e) => handleButtonClick(e, () => handleCartAction(1))}
+                                    onClick={(e) => handleButtonClick(e, () => {
+                                        if (availableAmount <= 0) {
+                                            toast.error('Этот букет временно отсутствует');
+                                        } else {
+                                            handleCartAction(1);
+                                        }
+                                    })}
                                     whileTap={{scale: 0.9}}
+                                    disabled={availableAmount <= 0}
                                 >
                                     <FaShoppingCart className={styles.cartIcon}/>
                                 </motion.button>
