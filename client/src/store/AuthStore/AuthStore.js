@@ -7,6 +7,7 @@ export default class AuthStore {
     isLoading = true;
     isModalLogin = false;
     isModalRegister = false;
+    isModalChangePassword = false;
     cart = [];
     wishlist = [];
     bonuses = [];
@@ -52,11 +53,13 @@ export default class AuthStore {
             isLoading: observable,
             isModalLogin: observable,
             isModalRegister: observable,
+            isModalChangePassword: observable,
             cart: observable,
             wishlist: observable,
             bonuses: observable,
             setIsModalRegister: action,
             setIsModalLogin: action,
+            setIsModalChangePassword: action,
             setCurrentUser: action,
             resetFormStates: action,
             resetReleativeData: action,
@@ -71,6 +74,7 @@ export default class AuthStore {
             getAllUsers: action,
             toggleUserBlock: action,
             clearWishlist: action,
+            changePassword: action,
             isInWishlist: computed,
         });
 
@@ -102,6 +106,7 @@ export default class AuthStore {
                     phone: userData.phone,
                     surname: userData.lastName,
                     role: userData.role,
+                    force_password_change: userData.force_password_change,
                 }),
             });
 
@@ -133,17 +138,23 @@ export default class AuthStore {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                credentials: 'include', // Включаем cookies
+                credentials: 'include',
                 body: JSON.stringify({
                     email: credentials.email,
                     password: credentials.password,
                 }),
             });
-
             const data = await response.json();
+
+            console.log('USER',data);
 
             if (!response.ok) {
                 throw new Error(data.error || 'Ошибка входа');
+            }
+
+            if (data.forcePasswordChange) {
+                this.setIsModalChangePassword(true);
+                return;
             }
 
             await this.fetchUserProfile();
@@ -207,6 +218,10 @@ export default class AuthStore {
 
     setIsModalRegister(flag) {
         this.isModalRegister = flag;
+    }
+
+    setIsModalChangePassword(flag) {
+        this.isModalChangePassword = flag;
     }
 
     resetFormStates() {
@@ -428,6 +443,38 @@ export default class AuthStore {
         } catch (error) {
             console.error('Error toggling user block:', error);
             throw error;
+        }
+    }
+
+    // Добавляем метод для смены пароля
+    async changePassword(currentPassword, newPassword) {
+        this.isLoading = true;
+        try {
+            const response = await fetch('http://localhost:4000/change-password', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include',
+                body: JSON.stringify({
+                    currentPassword,
+                    newPassword,
+                }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || 'Ошибка при смене пароля');
+            }
+
+            this.setIsModalChangePassword(false);
+            await this.fetchUserProfile();
+            return data;
+        } catch (error) {
+            throw error;
+        } finally {
+            this.isLoading = false;
         }
     }
 }

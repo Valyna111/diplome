@@ -3,7 +3,7 @@ import {Route, Routes} from 'react-router-dom';
 import CatalogCategories from "@/views/Catalog/CatalogCategories";
 import Bouquet from "@/views/Bouquet/Bouquet";
 import ArticleList from '@/views/Article/List/Articles';
-import ArticleItem from '@/views/Article/Item/Article';
+import ArticleItem from '@/views/Article/Item/ArticlePage';
 
 import React from "react";
 

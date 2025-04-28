@@ -734,36 +734,18 @@ export const DELETE_EVENT = gql`
     }
 `;
 
-// Мутации для таблицы articles
-export const CREATE_ARTICLE = gql`
-    mutation CreateArticle($header: String!, $image1: String, $image2: String, $image3: String, $description1: String, $description2: String, $description3: String) {
-        createArticle(input: { article: { header: $header, image1: $image1, image2: $image2, image3: $image3, description1: $description1, description2: $description2, description3: $description3 } }) {
-            article {
-                id
-                header
-                image1
-                image2
-                image3
-                description1
-                description2
-                description3
-            }
-        }
-    }
-`;
-
 export const UPDATE_ARTICLE = gql`
-    mutation UpdateArticle($id: Int!, $header: String!, $image1: String, $image2: String, $image3: String, $description1: String, $description2: String, $description3: String) {
-        updateArticleById(input: { id: $id, articlePatch: { header: $header, image1: $image1, image2: $image2, image3: $image3, description1: $description1, description2: $description2, description3: $description3 } }) {
+    mutation UpdateArticle($id: Int!, $header: String!) {
+        updateArticleById(input: { 
+            id: $id, 
+            articlePatch: { 
+                header: $header
+            } 
+        }) {
             article {
                 id
                 header
-                image1
-                image2
-                image3
-                description1
-                description2
-                description3
+                createdAt
             }
         }
     }
@@ -1015,6 +997,73 @@ export const GET_DELIVERYMAN_ORDERS = gql`
                         }
                     }
                 }
+            }
+        }
+    }
+`;
+export const CREATE_ARTICLE = gql`
+    mutation CreateArticle($header: String!) {
+        createArticle(input: {
+            article: {
+                header: $header
+            }
+        }) {
+            article {
+                id
+                header
+                createdAt
+            }
+        }
+    }
+`;
+
+export const CREATE_ARTICLE_BLOCK = gql`
+    mutation CreateArticleBlock($articleId: Int!, $orderNum: Int!, $image: String, $text: String) {
+        createArticleBlock(input: {
+            articleBlock: {
+                articleId: $articleId
+                orderNum: $orderNum
+                image: $image
+                text: $text
+            }
+        }) {
+            articleBlock {
+                id
+                articleId
+                orderNum
+                image
+                text
+            }
+        }
+    }
+`;
+
+export const UPDATE_ARTICLE_BLOCK = gql`
+    mutation UpdateArticleBlock($id: Int!, $orderNum: Int!, $image: String, $text: String) {
+        updateArticleBlockById(input: {
+            id: $id,
+            articleBlockPatch: {
+                orderNum: $orderNum
+                image: $image
+                text: $text
+            }
+        }) {
+            articleBlock {
+                id
+                articleId
+                orderNum
+                image
+                text
+            }
+        }
+    }
+`;
+
+export const DELETE_ARTICLE_BLOCK = gql`
+    mutation DeleteArticleBlock($id: Int!) {
+        deleteArticleBlockById(input: { id: $id }) {
+            articleBlock {
+                id
             }
         }
     }

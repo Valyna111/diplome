@@ -66,7 +66,7 @@ app.use('/uploads', express.static('uploads'));
 
 // Кастомные маршруты
 app.post('/register', async (req, res) => {
-    const {username, email, password, phone, surname, role} = req.body;
+    const {username, email, password, phone, surname, role, force_password_change} = req.body;
 
     try {
         const {rows} = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
@@ -75,8 +75,8 @@ app.post('/register', async (req, res) => {
         }
         const hashedPassword = await bcrypt.hash(password, 10);
         const newUser = await pool.query(
-            'INSERT INTO users (username, email, passhash, phone, surname, role_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
-            [username, email, hashedPassword, phone, surname, role || 1]
+            'INSERT INTO users (username, email, passhash, phone, surname, role_id, force_password_change) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
+            [username, email, hashedPassword, phone, surname, role || 1, force_password_change || false]
         );
 
         res.status(201).json({user: newUser.rows[0]});
@@ -116,7 +116,11 @@ app.post('/login', async (req, res) => {
             maxAge: 36000000,
         });
 
-        res.json({message: 'Login successful', user});
+        res.json({
+            message: 'Login successful', 
+            user,
+            forcePasswordChange: user.force_password_change
+        });
     } catch (error) {
         res.status(500).json({error: error.message});
     }
@@ -308,6 +312,34 @@ app.get('/category-sales', async (req, res) => {
     }
 });
 
+// Добавляем новый маршрут для смены пароля
+app.post('/change-password', authenticateToken, async (req, res) => {
+    const {currentPassword, newPassword} = req.body;
+
+    try {
+        const {rows} = await pool.query('SELECT * FROM users WHERE id = $1', [req.user.id]);
+        const user = rows[0];
+
+        if (!user) {
+            return res.status(404).json({error: 'Пользователь не найден'});
+        }
+
+        const validPassword = await bcrypt.compare(currentPassword, user.passhash);
+        if (!validPassword) {
+            return res.status(400).json({error: 'Неверный текущий пароль'});
+        }
+
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        await pool.query(
+            'UPDATE users SET passhash = $1, force_password_change = false WHERE id = $2',
+            [hashedPassword, req.user.id]
+        );
+
+        res.json({message: 'Пароль успешно изменен'});
+    } catch (error) {
+        res.status(500).json({error: error.message});
+    }
+});
 
 app.listen(4000, () => {
     console.log('🚀 Server ready at http://localhost:4000/graphql');

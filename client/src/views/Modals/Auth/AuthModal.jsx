@@ -1,9 +1,11 @@
+import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { observer } from 'mobx-react-lite';
-import { useContext, useEffect } from 'react'; // Добавляем useEffect
+import { useContext, useEffect } from 'react';
 import StoreContext from '@/store/StoreContext';
 import ModalLogin from './ModalLogin';
 import ModalRegister from './ModalRegister';
+import ModalChangePassword from './ModalChangePassword';
 import s from './Auth.module.css';
 
 const AuthModal = observer(() => {
@@ -13,13 +15,13 @@ const AuthModal = observer(() => {
   // Сбрасываем состояния при каждом открытии модального окна
   useEffect(() => {
     if (authStore.isModalLogin || authStore.isModalRegister) {
-      authStore.resetFormStates(); // Вызываем метод сброса состояний
+      authStore.resetFormStates();
     }
   }, [authStore.isModalLogin, authStore.isModalRegister]);
 
   return (
     <AnimatePresence>
-      {(authStore.isModalLogin || authStore.isModalRegister) && (
+      {(authStore.isModalLogin || authStore.isModalRegister || authStore.isModalChangePassword) && (
         <motion.div
           className={s.overlay}
           initial={{ opacity: 0 }}
@@ -28,6 +30,17 @@ const AuthModal = observer(() => {
           transition={{ duration: 0.2 }}
         >
           <AnimatePresence mode="wait">
+            {authStore.isModalChangePassword && (
+              <motion.div
+                key="changePassword"
+                initial={{ x: -100, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                exit={{ x: 100, opacity: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <ModalChangePassword />
+              </motion.div>
+            )}
             {authStore.isModalLogin && (
               <motion.div
                 key="login"

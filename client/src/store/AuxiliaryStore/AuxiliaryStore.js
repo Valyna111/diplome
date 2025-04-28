@@ -15,8 +15,11 @@ import {
     UPDATE_EVENT,
     UPDATE_ITEM,
     UPDATE_TYPE,
+    CREATE_ARTICLE_BLOCK,
+    DELETE_ARTICLE_BLOCK,
+    UPDATE_ARTICLE_BLOCK,
 } from '@/graphql/mutations';
-import {GET_ALL_ARTICLES, GET_ALL_CATEGORIES, GET_ALL_EVENTS, GET_ALL_ITEMS, GET_ALL_TYPES} from '@/graphql/queries'; // Импортируем запросы для items
+import {GET_ALL_ARTICLES, GET_ALL_CATEGORIES, GET_ALL_EVENTS, GET_ALL_ITEMS, GET_ALL_TYPES, GET_ARTICLE_BY_ID} from '@/graphql/queries'; // Импортируем запросы для items
 
 export default class AuxiliaryStore {
     items = []; // Добавляем массив для items
@@ -24,6 +27,7 @@ export default class AuxiliaryStore {
     categories = [];
     events = [];
     articles = [];
+    currentArticle = null; // Добавляем поле для текущей статьи
     isLoading = false; // Состояние загрузки
     error = null; // Состояние ошибки
 
@@ -88,6 +92,7 @@ export default class AuxiliaryStore {
             categories: observable,
             articles: observable,
             events: observable,
+            currentArticle: observable,
             isLoading: observable,
             error: observable,
             ModalItemCategory: observable,
@@ -109,6 +114,8 @@ export default class AuxiliaryStore {
             loadTypes: action,
             loadCategories: action,
             loadItems: action,
+            loadArticles: action,
+            loadArticleById: action,
             initializeData: action,
         });
 
@@ -307,51 +314,173 @@ export default class AuxiliaryStore {
         }
     }
 
-    // Метод для создания типа
-    async createArticle(input) {
+    // Метод для создания статьи
+    async createArticle({ header, blocks }) {
         try {
-            const {data} = await this.client.mutate({
+            // Создаем статью
+            const { data: articleData } = await this.client.mutate({
                 mutation: CREATE_ARTICLE,
-                variables: input,
+                variables: {
+                    header
+                },
             });
+
+            const articleId = articleData?.createArticle?.article?.id;
+
+            if (!articleId) {
+                throw new Error('Failed to create article');
+            }
+
+            // Создаем блоки для статьи
+            const blocksPromises = blocks.map((block, index) => 
+                this.client.mutate({
+                    mutation: CREATE_ARTICLE_BLOCK,
+                    variables: {
+                        articleId,
+                        orderNum: index + 1,
+                        image: block.image,
+                        text: block.text
+                    }
+                })
+            );
+
+            await Promise.all(blocksPromises);
+
+            // Обновляем список статей
             runInAction(() => {
-                const article = data?.createArticle.article;
-                this.articles = [...this.articles, article];
+                this.articles = [...this.articles, {
+                    ...articleData.createArticle.article,
+                    articleBlocksByArticleId: {
+                        nodes: blocks
+                    }
+                }];
             });
         } catch (error) {
-            console.error('Error creating articles:', error);
+            console.error('Error creating article:', error);
+            throw error;
         }
     }
 
-    // Метод для обновления типа
-    async updateArticle(input) {
+    // Метод для обновления статьи
+    async updateArticle({ id, header, blocks }) {
         try {
-            const {data} = await this.client.mutate({
+            // Обновляем статью
+            const { data: articleData } = await this.client.mutate({
                 mutation: UPDATE_ARTICLE,
-                variables: input,
+                variables: {
+                    id,
+                    header
+                },
             });
+
+            const oldArticle = this.articles.find(art => art.id === id);
+            const oldBlocks = oldArticle?.articleBlocksByArticleId?.nodes || [];
+            
+            // Обрабатываем блоки
+            const blockPromises = blocks.map((newBlock, index) => {
+                const oldBlock = oldBlocks[index];
+                
+                // Если блок существует, обновляем его
+                if (oldBlock) {
+                    return this.client.mutate({
+                        mutation: UPDATE_ARTICLE_BLOCK,
+                        variables: {
+                            id: oldBlock.id,
+                            orderNum: index + 1,
+                            image: newBlock.image,
+                            text: newBlock.text
+                        }
+                    });
+                }
+                // Если блока нет, создаем новый
+                else {
+                    return this.client.mutate({
+                        mutation: CREATE_ARTICLE_BLOCK,
+                        variables: {
+                            articleId: id,
+                            orderNum: index + 1,
+                            image: newBlock.image,
+                            text: newBlock.text
+                        }
+                    });
+                }
+            });
+
+            // Удаляем лишние блоки, если новые блоки меньше старых
+            if (blocks.length < oldBlocks.length) {
+                const deletePromises = oldBlocks
+                    .slice(blocks.length)
+                    .map(block => 
+                        this.client.mutate({
+                            mutation: DELETE_ARTICLE_BLOCK,
+                            variables: { id: block.id }
+                        })
+                    );
+                await Promise.all(deletePromises);
+            }
+
+            await Promise.all(blockPromises);
+
+            // Обновляем список статей
             runInAction(() => {
-                const updatedArticle = data?.updateArticleById?.article;
-                const index = this.articles.findIndex(art => art.id === input.id);
+                const updatedArticle = {
+                    ...articleData.updateArticleById.article,
+                    articleBlocksByArticleId: {
+                        nodes: blocks.map((block, index) => ({
+                            ...block,
+                            id: oldBlocks[index]?.id || null,
+                            orderNum: index + 1
+                        }))
+                    }
+                };
+                const index = this.articles.findIndex(art => art.id === id);
                 if (index !== -1) {
                     this.articles = [...this.articles.slice(0, index), updatedArticle, ...this.articles.slice(index + 1)];
                 }
             });
+
+            // Перезагружаем статьи для получения актуальных данных
+            await this.loadArticles();
         } catch (error) {
-            console.error('Error updating articles:', error);
+            console.error('Error updating article:', error);
+            throw error;
         }
     }
 
-    // Метод для удаления типа
+    // Метод для удаления статьи
     async deleteArticle(id) {
         try {
+            // Получаем статью для удаления
+            const article = this.articles.find(art => art.id === id);
+            if (!article) {
+                throw new Error('Article not found');
+            }
+
+            // Удаляем все блоки статьи
+            const deleteBlockPromises = article.articleBlocksByArticleId.nodes.map(block =>
+                this.client.mutate({
+                    mutation: DELETE_ARTICLE_BLOCK,
+                    variables: { id: block.id }
+                })
+            );
+            await Promise.all(deleteBlockPromises);
+
+            // Удаляем саму статью
             await this.client.mutate({
                 mutation: DELETE_ARTICLE,
-                variables: {id},
+                variables: { id },
             });
-            runInAction(() => (this.articles = this.articles.filter(art => art.id !== id)));
+
+            // Обновляем список статей
+            runInAction(() => {
+                this.articles = this.articles.filter(art => art.id !== id);
+            });
+
+            // Перезагружаем статьи для получения актуальных данных
+            await this.loadArticles();
         } catch (error) {
-            console.error('Error deleting articles:', error);
+            console.error('Error deleting article:', error);
+            throw error;
         }
     }
 
@@ -449,6 +578,30 @@ export default class AuxiliaryStore {
             runInAction(() => (this.items = this.items.filter(item => item.id !== id)));
         } catch (error) {
             console.error('Error deleting item:', error);
+        }
+    }
+
+    async loadArticleById(id) {
+        this.isLoading = true;
+        this.error = null;
+        try {
+            const { data } = await this.client.query({
+                query: GET_ARTICLE_BY_ID,
+                variables: { id },
+                fetchPolicy: 'network-only',
+            });
+            runInAction(() => {
+                this.currentArticle = data?.articleById || null;
+            });
+        } catch (error) {
+            runInAction(() => {
+                this.error = error;
+                console.error('Error loading article:', error);
+            });
+        } finally {
+            runInAction(() => {
+                this.isLoading = false;
+            });
         }
     }
 }

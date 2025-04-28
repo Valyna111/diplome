@@ -591,19 +591,21 @@ export const GET_EVENT_BY_ID = gql`
     }
 `;
 
-// Запросы для таблицы articles
 export const GET_ALL_ARTICLES = gql`
-    query allArticles {
+    query GetAllArticles {
         allArticles {
             nodes {
                 id
                 header
-                image1
-                image2
-                image3
-                description1
-                description2
-                description3
+                createdAt
+                articleBlocksByArticleId {
+                    nodes {
+                        id
+                        image
+                        text
+                        orderNum
+                    }
+                }
             }
         }
     }
@@ -614,12 +616,15 @@ export const GET_ARTICLE_BY_ID = gql`
         articleById(id: $id) {
             id
             header
-            image1
-            image2
-            image3
-            description1
-            description2
-            description3
+            createdAt
+            articleBlocksByArticleId {
+                nodes {
+                    id
+                    image
+                    text
+                    orderNum
+                }
+            }
         }
     }
 `;

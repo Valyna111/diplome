@@ -7,13 +7,17 @@ import {observer} from "mobx-react-lite";
 import {IoMdTrash} from "react-icons/io";
 import {IoAdd} from "react-icons/io5";
 import {MdOutlineEdit} from "react-icons/md";
+import {BiImageAdd} from "react-icons/bi";
+import {FiSave} from "react-icons/fi";
 
 const ArticleConstructor = observer(() => {
     const {auxiliaryStore} = useContext(StoreContext);
     const [selectedArticle, setSelectedArticle] = useState(null);
+    const [isUploading, setIsUploading] = useState(false);
 
     // Загрузка изображения на сервер
     const uploadImage = async (file) => {
+        setIsUploading(true);
         const formData = new FormData();
         formData.append('image', file);
 
@@ -28,18 +32,27 @@ const ArticleConstructor = observer(() => {
         } catch (error) {
             console.error('Error uploading image:', error);
             return null;
+        } finally {
+            setIsUploading(false);
         }
     };
 
     // Обработчик изменения изображения
-    const handleImageChange = async (e, imageField) => {
+    const handleImageChange = async (e, blockIndex) => {
         const file = e.target.files[0];
         if (file) {
             const imageUrl = await uploadImage(file);
             if (imageUrl) {
+                const newBlocks = [...selectedArticle.articleBlocksByArticleId.nodes];
+                newBlocks[blockIndex] = {
+                    ...newBlocks[blockIndex],
+                    image: imageUrl
+                };
                 setSelectedArticle({
                     ...selectedArticle,
-                    [imageField]: imageUrl
+                    articleBlocksByArticleId: {
+                        nodes: newBlocks
+                    }
                 });
             }
         }
@@ -50,22 +63,56 @@ const ArticleConstructor = observer(() => {
         setSelectedArticle({
             id: null,
             header: "",
-            image1: "",
-            image2: "",
-            image3: "",
-            description1: "",
-            description2: "",
-            description3: ""
+            articleBlocksByArticleId: {
+                nodes: [{ image: "", text: "", orderNum: 1 }]
+            }
         });
+    };
+
+    // Добавление нового блока
+    const handleAddBlock = () => {
+        setSelectedArticle({
+            ...selectedArticle,
+            articleBlocksByArticleId: {
+                nodes: [
+                    ...selectedArticle.articleBlocksByArticleId.nodes,
+                    { 
+                        image: "", 
+                        text: "", 
+                        orderNum: selectedArticle.articleBlocksByArticleId.nodes.length + 1 
+                    }
+                ]
+            }
+        });
+    };
+
+    // Удаление блока
+    const handleRemoveBlock = (index) => {
+        if (selectedArticle.articleBlocksByArticleId.nodes.length > 1) {
+            const newBlocks = selectedArticle.articleBlocksByArticleId.nodes
+                .filter((_, i) => i !== index)
+                .map((block, i) => ({
+                    ...block,
+                    orderNum: i + 1
+                }));
+            setSelectedArticle({
+                ...selectedArticle,
+                articleBlocksByArticleId: {
+                    nodes: newBlocks
+                }
+            });
+        }
     };
 
     // Удаление статьи
     const handleDeleteArticle = async (id) => {
-        try {
-            await auxiliaryStore.deleteArticle(id);
-            setSelectedArticle(null);
-        } catch (error) {
-            console.error("Error deleting article:", error);
+        if (window.confirm("Вы уверены, что хотите удалить эту статью?")) {
+            try {
+                await auxiliaryStore.deleteArticle(id);
+                setSelectedArticle(null);
+            } catch (error) {
+                console.error("Error deleting article:", error);
+            }
         }
     };
 
@@ -77,12 +124,7 @@ const ArticleConstructor = observer(() => {
             const input = {
                 id: selectedArticle.id,
                 header: selectedArticle.header,
-                image1: selectedArticle.image1,
-                image2: selectedArticle.image2,
-                image3: selectedArticle.image3,
-                description1: selectedArticle.description1,
-                description2: selectedArticle.description2,
-                description3: selectedArticle.description3
+                blocks: selectedArticle.articleBlocksByArticleId.nodes
             };
 
             if (selectedArticle.id) {
@@ -104,11 +146,11 @@ const ArticleConstructor = observer(() => {
                     className={styles.addButton}
                     onClick={handleAddArticle}
                     placeholder="Добавить статью"
-                    icon={<IoAdd/>}
+                    icon={<IoAdd size={20}/>}
                 />
 
                 {auxiliaryStore.isLoading ? (
-                    <div>Загрузка...</div>
+                    <div className={styles.loading}>Загрузка...</div>
                 ) : (
                     <div className={styles.articlesList}>
                         {auxiliaryStore.articles.map(article => (
@@ -118,8 +160,8 @@ const ArticleConstructor = observer(() => {
                                 onClick={() => setSelectedArticle(article)}
                             >
                                 <img
-                                    src={article.image1
-                                        ? `http://localhost:4000${article.image1}`
+                                    src={article.articleBlocksByArticleId.nodes[0]?.image
+                                        ? `http://localhost:4000${article.articleBlocksByArticleId.nodes[0].image}`
                                         : "/placeholder.jpg"}
                                     alt={article.header}
                                     className={styles.articleImage}
@@ -148,60 +190,95 @@ const ArticleConstructor = observer(() => {
                         />
                     </div>
 
-                    {/* Загрузка изображений */}
-                    <div className={styles.imageUploadContainer}>
-                        {[1, 2, 3].map((num) => (
-                            <div key={`image${num}`} className={styles.imageUploadSection}>
-                                <h4>Изображение {num}</h4>
-                                <input
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={(e) => handleImageChange(e, `image${num}`)}
-                                    style={{display: 'none'}}
-                                    id={`article-image-upload-${num}`}
-                                />
-                                <Button
-                                    className={styles.uploadButton}
-                                    onClick={() => document.getElementById(`article-image-upload-${num}`).click()}
-                                    placeholder={`Загрузить изображение ${num}`}
-                                />
-                                {selectedArticle[`image${num}`] && (
-                                    <img
-                                        src={
-                                            selectedArticle[`image${num}`].startsWith('http')
-                                                ? selectedArticle[`image${num}`]
-                                                : `http://localhost:4000${selectedArticle[`image${num}`]}`
-                                        }
-                                        alt={`Preview ${num}`}
-                                        className={styles.previewImage}
+                    {/* Блоки статьи */}
+                    <div className={styles.blocksContainer}>
+                        {selectedArticle.articleBlocksByArticleId.nodes.map((block, index) => (
+                            <div key={index} className={styles.block}>
+                                <div className={styles.blockHeader}>
+                                    <h4>Блок {block.orderNum}</h4>
+                                    {selectedArticle.articleBlocksByArticleId.nodes.length > 1 && (
+                                        <Button
+                                            className={styles.removeBlockButton}
+                                            onClick={() => handleRemoveBlock(index)}
+                                            placeholder="Удалить блок"
+                                            type="second"
+                                            icon={<IoMdTrash size={18}/>}
+                                        />
+                                    )}
+                                </div>
+                                
+                                <div className={styles.imageUploadSection}>
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={(e) => handleImageChange(e, index)}
+                                        style={{display: 'none'}}
+                                        id={`article-image-upload-${index}`}
                                     />
-                                )}
+                                    <Button
+                                        className={styles.uploadButton}
+                                        onClick={() => document.getElementById(`article-image-upload-${index}`).click()}
+                                        placeholder={isUploading ? "Загрузка..." : "Загрузить изображение"}
+                                        icon={<BiImageAdd size={18}/>}
+                                        disabled={isUploading}
+                                    />
+                                    {block.image && (
+                                        <img
+                                            src={
+                                                block.image.startsWith('http')
+                                                    ? block.image
+                                                    : `http://localhost:4000${block.image}`
+                                            }
+                                            alt={`Preview ${index + 1}`}
+                                            className={styles.previewImage}
+                                        />
+                                    )}
+                                </div>
+
                                 <Input
-                                    value={selectedArticle[`description${num}`] || ''}
-                                    onChange={e => setSelectedArticle({
-                                        ...selectedArticle,
-                                        [`description${num}`]: e.target.value
-                                    })}
-                                    placeholder={`Описание для изображения ${num}`}
+                                    value={block.text || ''}
+                                    onChange={e => {
+                                        const newBlocks = [...selectedArticle.articleBlocksByArticleId.nodes];
+                                        newBlocks[index] = {
+                                            ...newBlocks[index],
+                                            text: e.target.value
+                                        };
+                                        setSelectedArticle({
+                                            ...selectedArticle,
+                                            articleBlocksByArticleId: {
+                                                nodes: newBlocks
+                                            }
+                                        });
+                                    }}
+                                    placeholder="Текст блока"
+                                    multiline
+                                    rows={4}
                                 />
                             </div>
                         ))}
+
+                        <Button
+                            className={styles.addBlockButton}
+                            onClick={handleAddBlock}
+                            placeholder="Добавить блок"
+                            icon={<IoAdd size={20}/>}
+                        />
                     </div>
 
                     <div className={styles.buttonGroup}>
                         <Button
                             className={styles.publishButton}
                             onClick={handlePublishArticle}
-                            placeholder={selectedArticle.id ? "Обновить" : "Опубликовать"}
-                            icon={selectedArticle.id ? <MdOutlineEdit/> : <IoAdd/>}
+                            placeholder={selectedArticle.id ? "Сохранить изменения" : "Опубликовать статью"}
+                            icon={<FiSave size={18}/>}
                         />
                         {selectedArticle.id && (
                             <Button
                                 className={styles.deleteButton}
                                 onClick={() => handleDeleteArticle(selectedArticle.id)}
-                                placeholder="Удалить"
+                                placeholder="Удалить статью"
                                 type="second"
-                                icon={<IoMdTrash/>}
+                                icon={<IoMdTrash size={18}/>}
                             />
                         )}
                     </div>

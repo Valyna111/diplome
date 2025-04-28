@@ -119,6 +119,7 @@ const ModalCreateUser = observer(({isOpen, onClose, onSubmit}) => {
                 phone: state.phone,
                 password: state.password,
                 role: state.role.value,
+                force_password_change: true,
             });
             onSubmit();
         } catch (error) {

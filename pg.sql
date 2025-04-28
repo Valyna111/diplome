@@ -226,10 +226,20 @@ CREATE TABLE public.users
     surname       VARCHAR(50)         NOT NULL,
     is_blocked    BOOLEAN   DEFAULT FALSE,
     address       VARCHAR(250),
+    force_password_change BOOLEAN DEFAULT FALSE,
     created_at    TIMESTAMP DEFAULT NOW()
 );
 ALTER TABLE public.users
     OWNER TO postgres;
+
+-- Добавляем новое поле force_password_change в таблицу users
+ALTER TABLE public.users
+ADD COLUMN force_password_change BOOLEAN DEFAULT FALSE;
+
+-- Обновляем существующие записи, устанавливая значение по умолчанию
+UPDATE public.users
+SET force_password_change = FALSE
+WHERE force_password_change IS NULL;
 
 -- Таблица wishlist
 CREATE TABLE public.wishlist
@@ -251,18 +261,23 @@ CREATE TABLE IF NOT EXISTS public.events
     created_at  TIMESTAMP DEFAULT NOW()
 );
 
--- Таблица articles
+-- Создаем новую таблицу articles
 CREATE TABLE IF NOT EXISTS public.articles
 (
-    id           SERIAL PRIMARY KEY,
-    header       TEXT NOT NULL,
-    image1       TEXT,
-    image2       TEXT,
-    image3       TEXT,
-    description1 TEXT,
-    description2 TEXT,
-    description3 TEXT,
-    created_at   TIMESTAMP DEFAULT NOW()
+    id         SERIAL PRIMARY KEY,
+    header     TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Создаем таблицу для блоков статей
+CREATE TABLE IF NOT EXISTS public.article_blocks
+(
+    id         SERIAL PRIMARY KEY,
+    article_id INT  NOT NULL REFERENCES public.articles(id) ON DELETE CASCADE,
+    image      TEXT,
+    text       TEXT,
+    order_num  INT  NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW()
 );
 
 -- Таблица user_sessions (уже имеет created_at)
