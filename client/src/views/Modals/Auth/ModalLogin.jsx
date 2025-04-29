@@ -2,7 +2,7 @@ import Input from '@/components/Form/Input/Input';
 import Modal from '@/components/Modal/Modal';
 import StoreContext from '@/store/StoreContext';
 import { observer } from 'mobx-react-lite';
-import { useContext, useState, useEffect } from 'react'; // Добавляем useEffect
+import { useContext, useState, useEffect } from 'react';
 import s from './Auth.module.css';
 
 const ModalLogin = observer(() => {
@@ -15,7 +15,7 @@ const ModalLogin = observer(() => {
     errors: {
       email: '',
       password: '',
-      general: '', // Общая ошибка (например, "Неверный пароль")
+      general: '',
     },
   });
 
@@ -45,6 +45,9 @@ const ModalLogin = observer(() => {
 
     if (!email) {
       errors.email = 'Поле обязательно для заполнения';
+      isValid = false;
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      errors.email = 'Введите корректный email';
       isValid = false;
     }
 
@@ -86,6 +89,7 @@ const ModalLogin = observer(() => {
       errors: {
         ...prev.errors,
         [name]: '',
+        general: '',
       },
     }));
   };
@@ -125,6 +129,18 @@ const ModalLogin = observer(() => {
       {state.errors.general && (
         <div className={s.errorMessage}>{state.errors.general}</div>
       )}
+      <div className={s.forgotPassword}>
+        <button
+          type="button"
+          onClick={() => {
+            authStore.setIsModalLogin(false);
+            authStore.setIsModalForgotPassword(true);
+          }}
+          className={s.forgotPasswordLink}
+        >
+          Забыли пароль?
+        </button>
+      </div>
       <span
         className="link"
         onClick={() => {

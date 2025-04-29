@@ -7,6 +7,7 @@ import ModalLogin from './ModalLogin';
 import ModalRegister from './ModalRegister';
 import ModalChangePassword from './ModalChangePassword';
 import s from './Auth.module.css';
+import ModalForgotPassword from './ModalForgotPassword';
 
 const AuthModal = observer(() => {
   const rootStore = useContext(StoreContext);
@@ -21,7 +22,7 @@ const AuthModal = observer(() => {
 
   return (
     <AnimatePresence>
-      {(authStore.isModalLogin || authStore.isModalRegister || authStore.isModalChangePassword) && (
+      {(authStore.isModalLogin || authStore.isModalRegister || authStore.isModalChangePassword || authStore.isModalForgotPassword) && (
         <motion.div
           className={s.overlay}
           initial={{ opacity: 0 }}
@@ -39,6 +40,17 @@ const AuthModal = observer(() => {
                 transition={{ duration: 0.3 }}
               >
                 <ModalChangePassword />
+              </motion.div>
+            )}
+            {authStore.isModalForgotPassword && (
+              <motion.div
+                key="forgotPassword"
+                initial={{ x: -100, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                exit={{ x: 100, opacity: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <ModalForgotPassword />
               </motion.div>
             )}
             {authStore.isModalLogin && (

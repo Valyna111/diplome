@@ -1,4 +1,4 @@
-const {makeExtendSchemaPlugin, gql} = require('graphile-utils');
+const {makeExtendSchemaPlugin, gql, extend} = require('graphile-utils');
 
 const UserDataPlugin = makeExtendSchemaPlugin(build => {
     return {
@@ -687,6 +687,7 @@ const OrderPlugin = makeExtendSchemaPlugin(build => {
                 items: [OrderItem!]!
                 ocp: Ocp,
                 deliveryInfo: DeliveryInfo
+                customer: User!
             }
 
             type UserOrderConnection {
@@ -724,6 +725,32 @@ const OrderPlugin = makeExtendSchemaPlugin(build => {
                 assignedAt: String
             }
 
+            type AllOrdersConnection {
+                nodes: [UserOrder!]!
+                totalCount: Int!
+            }
+
+            type MonthlySales {
+                month: String!
+                total: Float!
+            }
+
+            type BouquetSales {
+                name: String!
+                count: Int!
+            }
+
+            type CategorySales {
+                name: String!
+                total: Float!
+            }
+
+            type SalesReport {
+                monthlySales: [MonthlySales!]!
+                bouquetSales: [BouquetSales!]!
+                categorySales: [CategorySales!]!
+            }
+
             # Запросы
             extend type Query {
                 # Для пользователя
@@ -751,6 +778,13 @@ const OrderPlugin = makeExtendSchemaPlugin(build => {
                     limit: Int = 10
                     offset: Int = 0
                 ): AvailableOrderConnection!
+
+                allOrders(limit: Int, offset: Int): AllOrdersConnection!
+
+                # Отчеты по продажам
+                getSalesByMonth(startDate: String!, endDate: String!, statuses: [String!]!): [MonthlySales!]!
+                getSalesByBouquet(startDate: String!, endDate: String!, statuses: [String!]!): [BouquetSales!]!
+                getSalesByCategory(startDate: String!, endDate: String!, statuses: [String!]!): [CategorySales!]!
             }
 
             # Мутации
@@ -985,6 +1019,106 @@ const OrderPlugin = makeExtendSchemaPlugin(build => {
                         nodes: orders.map(formatDeliveryOrder),
                         totalCount: parseInt(count, 10)
                     };
+                },
+                allOrders: async (_, {limit, offset}, {pgClient}) => {
+                    const query = {
+                        text: `
+                            SELECT o.*,
+                                   json_agg(
+                                           json_build_object(
+                                                   'id', oi.id,
+                                                   'quantity', oi.quantity,
+                                                   'price', oi.price,
+                                                   'addons', oi.addons,
+                                                   'bouquet', json_build_object(
+                                                           'id', b.id,
+                                                           'name', b.name,
+                                                           'price', b.price,
+                                                           'image', b.image,
+                                                           'description', b.description
+                                                              )
+                                           )
+                                   )                                                              AS items,
+                                   (SELECT row_to_json(u) FROM users u WHERE u.id = o.user_id)    AS customer,
+                                   (SELECT row_to_json(s) FROM status s WHERE s.id = o.status_id) AS status,
+                                   (SELECT row_to_json(d)
+                                    FROM deliveryman_info d
+                                    WHERE d.id = o.delivery_id)                                   AS delivery_info,
+                                   (SELECT row_to_json(ocp) FROM ocp WHERE ocp.id = o.ocp_id)     AS ocp
+                            FROM orders o
+                                     JOIN order_items oi ON oi.order_id = o.id
+                                     JOIN bouquets b ON b.id = oi.bouquet_id
+                            GROUP BY o.id
+                            ORDER BY o.order_date DESC
+                            LIMIT $1 OFFSET $2
+                        `,
+                        values: [limit, offset]
+                    };
+
+                    const {rows: orders} = await pgClient.query(query);
+                    const {rows: [{count}]} = await pgClient.query(
+                        `SELECT COUNT(*)
+                         FROM orders`
+                    );
+
+                    return {
+                        nodes: orders.map(formatUserOrder),
+                        totalCount: parseInt(count, 10)
+                    };
+                },
+                getSalesByMonth: async (_, { startDate, endDate, statuses }, { pgClient }) => {
+                    const query = `
+                        SELECT 
+                            TO_CHAR(o.order_date, 'YYYY-MM') as month,
+                            SUM(o.price) as total
+                        FROM orders o
+                        WHERE o.order_date BETWEEN $1 AND $2
+                        AND o.status_id IN (SELECT id FROM status WHERE name = ANY($3))
+                        GROUP BY TO_CHAR(o.order_date, 'YYYY-MM')
+                        ORDER BY month
+                    `;
+                    console.log('getSalesByMonth params:', { startDate, endDate, statuses });
+                    const result = await pgClient.query(query, [startDate, endDate, statuses]);
+                    console.log('getSalesByMonth result:', result.rows);
+                    return result.rows;
+                },
+                getSalesByBouquet: async (_, { startDate, endDate, statuses }, { pgClient }) => {
+                    const query = `
+                        SELECT 
+                            b.name,
+                            COUNT(oi.id) as count
+                        FROM order_items oi
+                        JOIN bouquets b ON oi.bouquet_id = b.id
+                        JOIN orders o ON oi.order_id = o.id
+                        WHERE o.order_date BETWEEN $1 AND $2
+                        AND o.status_id IN (SELECT id FROM status WHERE name = ANY($3))
+                        GROUP BY b.name
+                        ORDER BY count DESC
+                        LIMIT 10
+                    `;
+                    console.log('getSalesByBouquet params:', { startDate, endDate, statuses });
+                    const result = await pgClient.query(query, [startDate, endDate, statuses]);
+                    console.log('getSalesByBouquet result:', result.rows);
+                    return result.rows;
+                },
+                getSalesByCategory: async (_, { startDate, endDate, statuses }, { pgClient }) => {
+                    const query = `
+                        SELECT 
+                            c.name,
+                            SUM(oi.price * oi.quantity) as total
+                        FROM order_items oi
+                        JOIN bouquets b ON oi.bouquet_id = b.id
+                        JOIN category c ON b.category_id = c.id
+                        JOIN orders o ON oi.order_id = o.id
+                        WHERE o.order_date BETWEEN $1 AND $2
+                        AND o.status_id IN (SELECT id FROM status WHERE name = ANY($3))
+                        GROUP BY c.name
+                        ORDER BY total DESC
+                    `;
+                    console.log('getSalesByCategory params:', { startDate, endDate, statuses });
+                    const result = await pgClient.query(query, [startDate, endDate, statuses]);
+                    console.log('getSalesByCategory result:', result.rows);
+                    return result.rows;
                 }
             },
             Mutation: {
@@ -1292,93 +1426,6 @@ const OrderPlugin = makeExtendSchemaPlugin(build => {
                             order: null
                         };
                     }
-                },
-                Query: {
-                    availableOrders: async (_, args, {pgClient}) => {
-                        const {rows: orders} = await pgClient.query(`
-                            SELECT o.*,
-                                   json_agg(
-                                           json_build_object(
-                                                   'id', oi.id,
-                                                   'quantity', oi.quantity,
-                                                   'price', oi.price,
-                                                   'addons', oi.addons,
-                                                   'bouquet', json_build_object(
-                                                           'id', b.id,
-                                                           'name', b.name,
-                                                           'image', b.image,
-                                                           'description', b.description
-                                                              )
-                                           )
-                                   )                                                              as items,
-                                   (SELECT row_to_json(s) FROM status s WHERE s.id = o.status_id) as status
-                            FROM orders o
-                                     JOIN order_items oi ON oi.order_id = o.id
-                                     JOIN bouquets b ON b.id = oi.bouquet_id
-                            WHERE o.order_type = 'delivery'
-                              AND o.status_id = 1
-                              AND o.delivery_id IS NULL
-                            GROUP BY o.id
-                        `);
-
-                        return {
-                            nodes: orders.map(order => ({
-                                ...order,
-                                items: order.items,
-                                delivery: null,
-                                ocp: null
-                            }))
-                        };
-                    },
-
-                    deliverymanOrders: async (_, {deliverymanId}, {pgClient}) => {
-                        const {rows: [deliveryman]} = await pgClient.query(
-                            `SELECT id
-                             FROM deliveryman_info
-                             WHERE user_id = $1`,
-                            [deliverymanId]
-                        );
-
-                        if (!deliveryman) {
-                            return {nodes: []};
-                        }
-
-                        const {rows: orders} = await pgClient.query(`
-                            SELECT o.*,
-                                   json_agg(
-                                           json_build_object(
-                                                   'id', oi.id,
-                                                   'quantity', oi.quantity,
-                                                   'price', oi.price,
-                                                   'addons', oi.addons,
-                                                   'bouquet', json_build_object(
-                                                           'id', b.id,
-                                                           'name', b.name,
-                                                           'image', b.image,
-                                                           'description', b.description
-                                                              )
-                                           )
-                                   )                                                              as items,
-                                   (SELECT row_to_json(s) FROM status s WHERE s.id = o.status_id) as status,
-                                   (SELECT row_to_json(d)
-                                    FROM deliveryman_info d
-                                    WHERE d.id = o.delivery_id)                                   as delivery
-                            FROM orders o
-                                     JOIN order_items oi ON oi.order_id = o.id
-                                     JOIN bouquets b ON b.id = oi.bouquet_id
-                            WHERE o.delivery_id = $1
-                            GROUP BY o.id
-                            ORDER BY o.status_id ASC, o.order_date ASC
-                        `, [deliveryman.id]);
-
-                        return {
-                            nodes: orders.map(order => ({
-                                ...order,
-                                items: order.items,
-                                ocp: null
-                            }))
-                        };
-                    }
                 }
             }
         }
@@ -1393,6 +1440,7 @@ function formatUserOrder(order) {
         paymentType: order.payment_type,
         ocp: order.ocp,
         orderType: order.order_type,
+        customer: order.customer,
         deliveryInfo: order.delivery_info ? {
             deliveryman: order.delivery_info.user,
             assignedAt: order.delivery_info.created_at

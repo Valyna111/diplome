@@ -8,6 +8,7 @@ export default class AuthStore {
     isModalLogin = false;
     isModalRegister = false;
     isModalChangePassword = false;
+    isModalForgotPassword = false;
     cart = [];
     wishlist = [];
     bonuses = [];
@@ -54,12 +55,14 @@ export default class AuthStore {
             isModalLogin: observable,
             isModalRegister: observable,
             isModalChangePassword: observable,
+            isModalForgotPassword: observable,
             cart: observable,
             wishlist: observable,
             bonuses: observable,
             setIsModalRegister: action,
             setIsModalLogin: action,
             setIsModalChangePassword: action,
+            setIsModalForgotPassword: action,
             setCurrentUser: action,
             resetFormStates: action,
             resetReleativeData: action,
@@ -222,6 +225,10 @@ export default class AuthStore {
 
     setIsModalChangePassword(flag) {
         this.isModalChangePassword = flag;
+    }
+
+    setIsModalForgotPassword(flag) {
+        this.isModalForgotPassword = flag;
     }
 
     resetFormStates() {
@@ -470,6 +477,59 @@ export default class AuthStore {
 
             this.setIsModalChangePassword(false);
             await this.fetchUserProfile();
+            return data;
+        } catch (error) {
+            throw error;
+        } finally {
+            this.isLoading = false;
+        }
+    }
+
+    async forgotPassword(email) {
+        this.isLoading = true;
+        try {
+            const response = await fetch('http://localhost:4000/forgot-password', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || 'Ошибка при отправке запроса');
+            }
+
+            return data;
+        } catch (error) {
+            throw error;
+        } finally {
+            this.isLoading = false;
+        }
+    }
+
+    async resetPassword(token, newPassword) {
+        this.isLoading = true;
+        try {
+            const response = await fetch('http://localhost:4000/reset-password', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    token,
+                    newPassword,
+                }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || 'Ошибка при сбросе пароля');
+            }
+
             return data;
         } catch (error) {
             throw error;

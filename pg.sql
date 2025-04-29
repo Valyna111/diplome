@@ -227,19 +227,12 @@ CREATE TABLE public.users
     is_blocked    BOOLEAN   DEFAULT FALSE,
     address       VARCHAR(250),
     force_password_change BOOLEAN DEFAULT FALSE,
-    created_at    TIMESTAMP DEFAULT NOW()
+    created_at    TIMESTAMP DEFAULT NOW(),
+    reset_token VARCHAR(64),
+    reset_token_expires TIMESTAMP
 );
 ALTER TABLE public.users
     OWNER TO postgres;
-
--- Добавляем новое поле force_password_change в таблицу users
-ALTER TABLE public.users
-ADD COLUMN force_password_change BOOLEAN DEFAULT FALSE;
-
--- Обновляем существующие записи, устанавливая значение по умолчанию
-UPDATE public.users
-SET force_password_change = FALSE
-WHERE force_password_change IS NULL;
 
 -- Таблица wishlist
 CREATE TABLE public.wishlist

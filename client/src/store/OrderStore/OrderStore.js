@@ -4,6 +4,7 @@ import {
     GET_AVAILABLE_ORDERS,
     GET_DELIVERYMAN_ORDERS,
     GET_USER_ORDERS,
+    GET_ALL_ORDERS,
 } from "@/graphql/queries";
 import {CREATE_ORDER, TAKE_ORDER, UPDATE_ORDER_STATUS} from "@/graphql/mutations";
 
@@ -11,13 +12,15 @@ class OrderStore {
     userOrders = [];
     deliverymanOrders = [];
     availableOrders = [];
+    allOrders = [];
     currentOrder = null;
     isLoading = false;
     error = null;
     pagination = {
         userOrders: {current: 1, pageSize: 10, total: 0},
         deliverymanOrders: {current: 1, pageSize: 10, total: 0},
-        availableOrders: {current: 1, pageSize: 10, total: 0}
+        availableOrders: {current: 1, pageSize: 10, total: 0},
+        allOrders: {current: 1, pageSize: 10, total: 0}
     };
 
     constructor(rootStore) {
@@ -263,8 +266,33 @@ class OrderStore {
         }
     }
 
+    async fetchAllOrders(pagination = {}) {
+        this.setLoading(true);
+        try {
+            const {current = 1, pageSize = 10} = pagination;
+            const offset = (current - 1) * pageSize;
 
-    
+            const {data} = await this.rootStore.client.query({
+                query: GET_ALL_ORDERS,
+                variables: {limit: pageSize, offset},
+                fetchPolicy: "network-only"
+            });
+
+            runInAction(() => {
+                this.allOrders = data.allOrders.nodes || [];
+                this.pagination.allOrders = {
+                    current,
+                    pageSize,
+                    total: data.allOrders.totalCount
+                };
+            });
+        } catch (error) {
+            this.setError(error.message);
+            throw error;
+        } finally {
+            this.setLoading(false);
+        }
+    }
 }
 
 export default OrderStore;

@@ -11,6 +11,7 @@
     "graphile-utils": "^4.14.0",
     "jsonwebtoken": "^9.0.2",
     "multer": "^1.4.5-lts.1",
+    "nodemailer": "^6.10.1",
     "pg": "^8.13.3",
     "postgraphile": "^4.14.0",
     "typescript": "^5.8.2"

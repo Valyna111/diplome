@@ -9,6 +9,8 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const {UserDataPlugin, StoreMutationsPlugin, BlockUserPlugin, OCPSchemaPlugin, OrderPlugin} = require("./plugins");
+const nodemailer = require('nodemailer');
+const crypto = require('crypto');
 
 if (!fs.existsSync('uploads')) {
     fs.mkdirSync('uploads');
@@ -338,6 +340,90 @@ app.post('/change-password', authenticateToken, async (req, res) => {
         res.json({message: 'Пароль успешно изменен'});
     } catch (error) {
         res.status(500).json({error: error.message});
+    }
+});
+
+// Настройка nodemailer для отправки писем
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: 'maskabedwars@gmail.com',
+        pass: 'baer uuzl glsp jqbg ', // Замените на пароль приложения из Google
+    },
+});
+
+// Генерация токена сброса пароля
+const generateResetToken = () => {
+    return crypto.randomBytes(32).toString('hex');
+};
+
+// Маршрут для запроса сброса пароля
+app.post('/forgot-password', async (req, res) => {
+    const { email } = req.body;
+
+    try {
+        const { rows } = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+        const user = rows[0];
+
+        if (!user) {
+            return res.status(404).json({ error: 'Пользователь с таким email не найден' });
+        }
+
+        const resetToken = generateResetToken();
+        const expiresAt = new Date(Date.now() + 3600000); // Токен действителен 1 час
+
+        await pool.query(
+            'UPDATE users SET reset_token = $1, reset_token_expires = $2 WHERE id = $3',
+            [resetToken, expiresAt, user.id]
+        );
+
+        const resetLink = `http://localhost:5173/reset-password?token=${resetToken}`;
+
+        const mailOptions = {
+            from: 'your-email@gmail.com',
+            to: email,
+            subject: 'Сброс пароля',
+            html: `
+                <h2>Сброс пароля</h2>
+                <p>Для сброса пароля перейдите по ссылке:</p>
+                <a href="${resetLink}">${resetLink}</a>
+                <p>Ссылка действительна в течение 1 часа.</p>
+            `,
+        };
+
+        await transporter.sendMail(mailOptions);
+        res.json({ message: 'Инструкции по сбросу пароля отправлены на email' });
+    } catch (error) {
+        console.error('Error in forgot-password:', error);
+        res.status(500).json({ error: 'Ошибка при обработке запроса' });
+    }
+});
+
+// Маршрут для сброса пароля
+app.post('/reset-password', async (req, res) => {
+    const { token, newPassword } = req.body;
+
+    try {
+        const { rows } = await pool.query(
+            'SELECT * FROM users WHERE reset_token = $1 AND reset_token_expires > NOW()',
+            [token]
+        );
+        const user = rows[0];
+
+        if (!user) {
+            return res.status(400).json({ error: 'Недействительный или просроченный токен' });
+        }
+
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        await pool.query(
+            'UPDATE users SET passhash = $1, reset_token = NULL, reset_token_expires = NULL WHERE id = $2',
+            [hashedPassword, user.id]
+        );
+
+        res.json({ message: 'Пароль успешно изменен' });
+    } catch (error) {
+        console.error('Error in reset-password:', error);
+        res.status(500).json({ error: 'Ошибка при сбросе пароля' });
     }
 });
 

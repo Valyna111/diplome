@@ -17,6 +17,7 @@ import Stock from "./routs/Stock";
 import Delivery from "./routs/Delivery";
 import {ToastContainer} from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
+import ResetPassword from './views/ResetPassword/ResetPassword';
 
 let rootStore;
 
@@ -62,6 +63,7 @@ const App = () => {
                             <Route path="/stock/*" element={<Stock/>}/>
                             <Route path="/delivery/*" element={<Delivery/>}/>
                             <Route path="/test" element={<AuthTestButtons/>}/>
+                            <Route path="/reset-password" element={<ResetPassword />} />
                             {/*<Route path="/promotion-page" element={<PromotionPage/>}/>*/}
                             <Route path="*" element={<Navigate to="/main" replace={true}/>}/>
                         </Routes>
