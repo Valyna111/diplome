@@ -389,11 +389,19 @@ export const DELETE_FLOWERS_IN_BOUQUET = gql`
 
 // Мутации для таблицы ocp
 export const CREATE_OCP = gql`
-    mutation CreateOcp($address: String!) {
-        createOcp(input: { ocp: { address: $address } }) {
+    mutation CreateOcp($address: String!, $latitude: Float, $longitude: Float) {
+        createOcp(input: { 
+            ocp: { 
+                address: $address,
+                latitude: $latitude,
+                longitude: $longitude
+            } 
+        }) {
             ocp {
                 id
                 address
+                latitude
+                longitude
             }
         }
     }
@@ -633,10 +641,21 @@ export const CREATE_USER = gql`
 `;
 
 export const UPDATE_USER = gql`
-    mutation UpdateUser($id: Int!, $username: String!, $passhash: String!, $email: String, $phone: String, $dateOfBirth: Date, $surname: String!, $address: String) {
-        updateUserById(input: { id: $id, userPatch: { username: $username, passhash: $passhash, email: $email, phone: $phone,  dateOfBirth: $dateOfBirth, surname: $surname, address: $address} }) {
+    mutation UpdateUser($id: Int!, $username: String, $passhash: String, $email: String, $phone: String, $dateOfBirth: Date, $surname: String, $address: String, $ocp_id: Int) {
+        updateUserById(input: { id: $id, userPatch: { username: $username, passhash: $passhash, email: $email, phone: $phone, dateOfBirth: $dateOfBirth, surname: $surname, address: $address, ocp_id: $ocp_id } }) {
             user {
                 id
+                username
+                email
+                phone
+                role {
+                    id
+                    name
+                }
+                address
+                ocp_id
+                dateOfBirth
+                surname
             }
         }
     }
@@ -1064,6 +1083,18 @@ export const DELETE_ARTICLE_BLOCK = gql`
         deleteArticleBlockById(input: { id: $id }) {
             articleBlock {
                 id
+            }
+        }
+    }
+`;
+
+export const UPDATE_USER_ADDRESS = gql`
+    mutation UpdateUserAddress($id: Int!, $address: String!, $ocpId: Int!) {
+        updateUserById(input: { id: $id, userPatch: { address: $address, ocpId: $ocpId } }) {
+            user {
+                id
+                address
+                ocpId
             }
         }
     }

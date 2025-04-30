@@ -1,6 +1,8 @@
-import {BLOCK_USER, CLEAR_WISHLIST, SYNC_CART, TOGGLE_WISHLIST, UPDATE_USER} from '@/graphql/mutations';
+import {BLOCK_USER, CLEAR_WISHLIST, SYNC_CART, TOGGLE_WISHLIST, UPDATE_USER, UPDATE_USER_ADDRESS} from '@/graphql/mutations';
 import {action, computed, makeObservable, observable, runInAction} from 'mobx';
 import {GET_ALL_USERS, GET_USER_RELATIVE_DATA} from "@/graphql/queries";
+import { findNearestOCP, searchAddress } from '@/lib/api';
+const BASE_URL = 'http://localhost:4000'; 
 
 export default class AuthStore {
     currentUser = null;
@@ -12,6 +14,7 @@ export default class AuthStore {
     cart = [];
     wishlist = [];
     bonuses = [];
+    isAddressModalOpen = false;
     users = []; // Добавляем список всех пользователей
     // Состояния для формы входа
     loginForm = {
@@ -47,6 +50,7 @@ export default class AuthStore {
         this.rootStore = rootStore;
 
         makeObservable(this, {
+            isAddressModalOpen: observable,
             currentUser: observable,
             users: observable,
             loginForm: observable,
@@ -79,6 +83,7 @@ export default class AuthStore {
             clearWishlist: action,
             changePassword: action,
             isInWishlist: computed,
+            setAddressModalOpen: action,
         });
 
         this.fetchUserProfile().then(r => {
@@ -172,21 +177,36 @@ export default class AuthStore {
 
     // Получение профиля пользователя
     async fetchUserProfile() {
-        this.isLoading = true;
         try {
+            this.isLoading = true;
             const response = await fetch('http://localhost:4000/profile', {
-                credentials: 'include', // Включаем cookies
+                credentials: 'include',
             });
 
-            const data = await response.json();
-
             if (!response.ok) {
-                throw new Error(data.error || 'Ошибка получения профиля');
+                throw new Error('Failed to fetch user profile');
             }
-            await this.getAllReleativeData(data.user.id);
+
+            const data = await response.json();
+            const prevOcpId = this.currentUser?.ocp_id;
             this.setCurrentUser(data.user);
+
+            // Проверяем наличие адреса для пользователя с ролью customer
+            if (data.user.role_name === 'customer') {
+                if (!data.user.ocp_id) {
+                    console.log('Opening address modal for user without address');
+                    this.setAddressModalOpen(true);
+                } else if (prevOcpId !== data.user.ocp_id) {
+                    // Если OCP изменился, обновляем доступные количества
+                    console.log('OCP changed, updating available quantities');
+                    await this.rootStore.bouquetStore.updateAvailableQuantities(data.user.ocp_id);
+                }
+            }
+
+            return data.user;
         } catch (error) {
-            this.currentUser = null;
+            console.error('Error fetching user profile:', error);
+            throw error;
         } finally {
             this.isLoading = false;
         }
@@ -536,5 +556,56 @@ export default class AuthStore {
         } finally {
             this.isLoading = false;
         }
+    }
+
+    async updateUserAddress(address) {
+        try {
+            this.isLoading = true;
+            this.error = null;
+
+            // Поиск адреса и получение координат
+            const addressResults = await searchAddress(address);
+            if (!addressResults || addressResults.length === 0) {
+                throw new Error('Адрес не найден');
+            }
+
+            const { coordinates } = addressResults[0];
+
+            // Поиск ближайшего ОЦП
+            const nearestOCP = await findNearestOCP(coordinates.lat, coordinates.lon);
+            if (!nearestOCP) {
+                throw new Error('Не удалось найти ближайший ОЦП');
+            }
+
+            // Обновление данных пользователя через GraphQL
+            const { data } = await this.rootStore.client.mutate({
+                mutation: UPDATE_USER_ADDRESS,
+                variables: {
+                    id: this.currentUser.id,
+                    address: address,
+                    ocpId: nearestOCP.id
+                }
+            });
+
+            if (!data.updateUserById.user) {
+                throw new Error('Ошибка обновления адреса');
+            }
+
+            await this.fetchUserProfile();
+            
+            // Обновляем доступные количества букетов для нового OCP
+            await this.rootStore.bouquetStore.updateAvailableQuantities(nearestOCP.id);
+            
+            this.setAddressModalOpen(false);
+            return true;
+        } catch (error) {
+            this.error = error.message;
+            return false;
+        } finally {
+            this.isLoading = false;
+        }
+    }
+    setAddressModalOpen(flag) {
+        this.isAddressModalOpen = flag;
     }
 }

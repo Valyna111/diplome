@@ -256,7 +256,7 @@ class OrderStore {
                 operation: "delete"
             }));
             await this.rootStore.authStore.syncCart(updates);
-
+            this.rootStore.bouquetStore.updateAvailableQuantities(this.rootStore.authStore.currentUser.ocp_id);
             return data.createOrder;
         } catch (error) {
             this.setError(error.message);

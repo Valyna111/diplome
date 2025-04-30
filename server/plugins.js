@@ -459,6 +459,8 @@ const OCPSchemaPlugin = makeExtendSchemaPlugin(build => {
             type Ocp {
                 id: Int!
                 address: String!
+                latitude: Float
+                longitude: Float
                 createdAt: String!
                 ocpItems: [OcpItem!]!
                 deliverymen: [DeliverymanInfo!]!
@@ -487,7 +489,7 @@ const OCPSchemaPlugin = makeExtendSchemaPlugin(build => {
             }
 
             extend type Mutation {
-                createOcp(address: String!): Ocp
+                createOcp(address: String!, latitude: Float, longitude: Float): Ocp
                 createOcpItem(ocpId: Int!, itemId: Int!, amount: Int!): OcpItem
                 assignDeliveryman(ocpId: Int!, userId: Int!): DeliverymanInfo
             }
@@ -547,7 +549,7 @@ const OCPSchemaPlugin = makeExtendSchemaPlugin(build => {
             Query: {
                 allOcp: async (_, __, {pgClient}) => {
                     const {rows} = await pgClient.query(
-                        `SELECT id, address, created_at
+                        `SELECT id, address, latitude, longitude, created_at
                          FROM ocp
                          ORDER BY created_at DESC`
                     );
@@ -558,7 +560,7 @@ const OCPSchemaPlugin = makeExtendSchemaPlugin(build => {
                 },
                 ocpById: async (_, {id}, {pgClient}) => {
                     const {rows} = await pgClient.query(
-                        `SELECT id, address, created_at
+                        `SELECT id, address, latitude, longitude, created_at
                          FROM ocp
                          WHERE id = $1`,
                         [id]
@@ -570,12 +572,12 @@ const OCPSchemaPlugin = makeExtendSchemaPlugin(build => {
                 }
             },
             Mutation: {
-                createOcp: async (_, {address}, {pgClient}) => {
+                createOcp: async (_, {address, latitude, longitude}, {pgClient}) => {
                     const {rows} = await pgClient.query(
-                        `INSERT INTO ocp (address)
-                         VALUES ($1)
-                         RETURNING id, address, created_at`,
-                        [address]
+                        `INSERT INTO ocp (address, latitude, longitude)
+                         VALUES ($1, $2, $3)
+                         RETURNING id, address, latitude, longitude, created_at`,
+                        [address, latitude, longitude]
                     );
                     return {
                         ...rows[0],
@@ -1126,18 +1128,67 @@ const OrderPlugin = makeExtendSchemaPlugin(build => {
                     await pgClient.query('BEGIN');
 
                     try {
+                        // 1. Проверяем наличие всех необходимых товаров
+                        // Получаем список всех букетов в заказе
+                        const bouquetIds = input.items.map(item => item.bouquetId);
+                        const bouquetQuantities = input.items.reduce((acc, item) => {
+                            acc[item.bouquetId] = item.quantity;
+                            return acc;
+                        }, {});
+
+                        // Получаем состав всех букетов
+                        const {rows: bouquetsComponents} = await pgClient.query(`
+                            SELECT 
+                                b.id as bouquet_id,
+                                ib.item_id,
+                                ib.amount as required_amount
+                            FROM bouquets b
+                            JOIN items_in_bouquets ib ON b.id = ib.bouquet_id
+                            WHERE b.id = ANY($1)
+                        `, [bouquetIds]);
+
+                        // Получаем текущие остатки в OCP
+                        const {rows: ocpItems} = await pgClient.query(`
+                            SELECT item_id, amount
+                            FROM ocp_item
+                            WHERE ocp_id = $1
+                        `, [input.ocpId]);
+
+                        // Проверяем достаточность товаров и собираем данные для обновления
+                        const itemsToUpdate = new Map(); // item_id -> total amount needed
+                        
+                        for (const component of bouquetsComponents) {
+                            const orderQuantity = bouquetQuantities[component.bouquet_id];
+                            const totalNeeded = component.required_amount * orderQuantity;
+                            
+                            const currentAmount = ocpItems.find(item => 
+                                item.item_id === component.item_id
+                            )?.amount || 0;
+
+                            if (currentAmount < totalNeeded) {
+                                throw new Error(`Недостаточно компонента ${component.item_id} для создания букета`);
+                            }
+
+                            // Добавляем или обновляем количество для обновления
+                            const currentTotal = itemsToUpdate.get(component.item_id) || 0;
+                            itemsToUpdate.set(component.item_id, currentTotal + totalNeeded);
+                        }
+
+                        // 2. Создаем заказ
                         const {rows: [order]} = await pgClient.query(
-                            `INSERT INTO orders (user_id,
-                                                 price,
-                                                 status_id,
-                                                 address,
-                                                 payment_type,
-                                                 order_type,
-                                                 ocp_id,
-                                                 order_date,
-                                                 order_time)
-                             VALUES ($1, $2, 1, $3, $4, $5, $6, $7, $8)
-                             RETURNING *`,
+                            `INSERT INTO orders (
+                                user_id,
+                                price,
+                                status_id,
+                                address,
+                                payment_type,
+                                order_type,
+                                ocp_id,
+                                order_date,
+                                order_time
+                            )
+                            VALUES ($1, $2, 1, $3, $4, $5, $6, $7, $8)
+                            RETURNING *`,
                             [
                                 input.userId,
                                 input.items.reduce((sum, item) => sum + (item.price * item.quantity), 0),
@@ -1150,44 +1201,61 @@ const OrderPlugin = makeExtendSchemaPlugin(build => {
                             ]
                         );
 
-                        // 3. Добавляем товары и уменьшаем количество на складе
-                        const items = [];
+                        // 3. Добавляем товары в заказ
+                        const orderItems = [];
                         for (const item of input.items) {
-                            // Добавляем товар в заказ
                             const {rows: [orderItem]} = await pgClient.query(
-                                `INSERT INTO order_items (order_id, bouquet_id, quantity, price, addons)
-                                 VALUES ($1, $2, $3, $4, $5)
-                                 RETURNING *`,
-                                [order.id, item.bouquetId, item.quantity, item.price, JSON.stringify(item.addons || [])]
+                                `INSERT INTO order_items (
+                                    order_id,
+                                    bouquet_id,
+                                    quantity,
+                                    price,
+                                    addons
+                                )
+                                VALUES ($1, $2, $3, $4, $5)
+                                RETURNING id, quantity, price, addons`,
+                                [
+                                    order.id,
+                                    item.bouquetId,
+                                    item.quantity,
+                                    item.price,
+                                    JSON.stringify(item.addons || [])
+                                ]
                             );
 
-                            // Получаем полную информацию о букете
+                            // Получаем информацию о букете
                             const {rows: [bouquet]} = await pgClient.query(
-                                `SELECT *
+                                `SELECT id, name, image, description
                                  FROM bouquets
                                  WHERE id = $1`,
                                 [item.bouquetId]
                             );
 
-                            items.push({
+                            orderItems.push({
                                 ...orderItem,
                                 bouquet
                             });
                         }
 
-                        // Получаем полную информацию о заказе
+                        // 4. Обновляем количество товаров на складе
+                        for (const [itemId, amountToDecrease] of itemsToUpdate.entries()) {
+                            await pgClient.query(`
+                                UPDATE ocp_item
+                                SET amount = amount - $1
+                                WHERE ocp_id = $2 AND item_id = $3
+                            `, [amountToDecrease, input.ocpId, itemId]);
+                        }
+
+                        // Получаем статус
                         const {rows: [status]} = await pgClient.query(
-                            `SELECT *
-                             FROM status
-                             WHERE id = 1`
+                            `SELECT * FROM status WHERE id = 1`
                         );
 
+                        // Получаем информацию об OCP
                         let ocp = null;
                         if (order.ocp_id) {
                             const {rows: [ocpData]} = await pgClient.query(
-                                `SELECT *
-                                 FROM ocp
-                                 WHERE id = $1`,
+                                `SELECT * FROM ocp WHERE id = $1`,
                                 [order.ocp_id]
                             );
                             ocp = ocpData;
@@ -1196,14 +1264,16 @@ const OrderPlugin = makeExtendSchemaPlugin(build => {
                         await pgClient.query('COMMIT');
 
                         return {
-                            ...order,
-                            status,
-                            items,
+                            id: order.id,
                             orderDate: order.order_date,
                             orderTime: order.order_time,
+                            price: order.price,
+                            status,
+                            address: order.address,
                             paymentType: order.payment_type,
                             orderType: order.order_type,
                             ocp,
+                            items: orderItems,
                             delivery: null,
                         };
                     } catch (error) {
@@ -1216,8 +1286,52 @@ const OrderPlugin = makeExtendSchemaPlugin(build => {
                     await pgClient.query('BEGIN');
 
                     try {
-                        // Update the status
-                        const {rows: [order]} = await pgClient.query(
+                        // Получаем текущий заказ и его статус
+                        const {rows: [currentOrder]} = await pgClient.query(
+                            `SELECT * FROM orders WHERE id = $1`,
+                            [orderId]
+                        );
+
+                        if (!currentOrder) {
+                            throw new Error('Заказ не найден');
+                        }
+
+                        // Если статус меняется на "Отменён" (statusId = 5), возвращаем товары на склад
+                        if (statusId === 5) {
+                            // 1. Получаем все букеты из заказа и их компоненты
+                            const {rows: orderItems} = await pgClient.query(`
+                                SELECT 
+                                    oi.bouquet_id,
+                                    oi.quantity,
+                                    b.id as bouquet_id,
+                                    ib.item_id,
+                                    ib.amount as required_amount
+                                FROM order_items oi
+                                JOIN bouquets b ON oi.bouquet_id = b.id
+                                JOIN items_in_bouquets ib ON b.id = ib.bouquet_id
+                                WHERE oi.order_id = $1
+                            `, [orderId]);
+
+                            // 2. Рассчитываем количество компонентов для возврата
+                            const itemsToReturn = new Map();
+                            for (const item of orderItems) {
+                                const totalToReturn = item.required_amount * item.quantity;
+                                const currentAmount = itemsToReturn.get(item.item_id) || 0;
+                                itemsToReturn.set(item.item_id, currentAmount + totalToReturn);
+                            }
+
+                            // 3. Возвращаем компоненты на склад
+                            for (const [itemId, amountToReturn] of itemsToReturn.entries()) {
+                                await pgClient.query(`
+                                    UPDATE ocp_item
+                                    SET amount = amount + $1
+                                    WHERE ocp_id = $2 AND item_id = $3
+                                `, [amountToReturn, currentOrder.ocp_id, itemId]);
+                            }
+                        }
+
+                        // Обновляем статус заказа
+                        const {rows: [updatedOrder]} = await pgClient.query(
                             `UPDATE orders
                              SET status_id = $1
                              WHERE id = $2
@@ -1225,82 +1339,57 @@ const OrderPlugin = makeExtendSchemaPlugin(build => {
                             [statusId, orderId]
                         );
 
-                        // Get the updated status
+                        // Получаем обновленный статус
                         const {rows: [status]} = await pgClient.query(
-                            `SELECT *
-                             FROM status
-                             WHERE id = $1`,
+                            `SELECT * FROM status WHERE id = $1`,
                             [statusId]
                         );
 
-                        // Get order items
-                        const {rows: items} = await pgClient.query(
-                            `SELECT oi.*, b.*
-                             FROM order_items oi
-                                      JOIN bouquets b ON oi.bouquet_id = b.id
-                             WHERE oi.order_id = $1`,
-                            [orderId]
-                        );
+                        // Получаем элементы заказа
+                        const {rows: items} = await pgClient.query(`
+                            SELECT oi.*, 
+                                   json_build_object(
+                                       'id', b.id,
+                                       'name', b.name,
+                                       'price', b.price,
+                                       'image', b.image,
+                                       'description', b.description
+                                   ) as bouquet
+                            FROM order_items oi
+                            JOIN bouquets b ON oi.bouquet_id = b.id
+                            WHERE oi.order_id = $1
+                        `, [orderId]);
 
-                        // Get customer info
+                        // Получаем информацию о клиенте
                         const {rows: [customer]} = await pgClient.query(
-                            `SELECT *
-                             FROM users
-                             WHERE id = $1`,
-                            [order.user_id]
+                            `SELECT * FROM users WHERE id = $1`,
+                            [updatedOrder.user_id]
                         );
 
-                        // Get pickup point if exists
+                        // Получаем информацию о пункте выдачи
                         let pickupPoint = null;
-                        if (order.ocp_id) {
+                        if (updatedOrder.ocp_id) {
                             const {rows: [ocp]} = await pgClient.query(
-                                `SELECT *
-                                 FROM ocp
-                                 WHERE id = $1`,
-                                [order.ocp_id]
+                                `SELECT * FROM ocp WHERE id = $1`,
+                                [updatedOrder.ocp_id]
                             );
                             pickupPoint = ocp;
-                        }
-
-                        // Get delivery info if exists
-                        let delivery = null;
-                        if (order.delivery_id) {
-                            const {rows: [deliveryInfo]} = await pgClient.query(
-                                `SELECT di.*
-                                 FROM deliveryman_info di
-                                 WHERE di.id = $1`,
-                                [order.delivery_id]
-                            );
-                            delivery = deliveryInfo;
                         }
 
                         await pgClient.query('COMMIT');
 
                         return {
-                            id: order.id,
-                            orderDate: order.order_date,
-                            orderTime: order.order_time,
-                            price: order.price,
-                            status: status,
-                            address: order.address,
-                            paymentType: order.payment_type,
-                            orderType: order.order_type,
-                            items: items.map(item => ({
-                                id: item.id,
-                                quantity: item.quantity,
-                                price: item.price,
-                                addons: item.addons,
-                                bouquet: {
-                                    id: item.bouquet_id,
-                                    name: item.name,
-                                    price: item.price,
-                                    image: item.image,
-                                    description: item.description
-                                }
-                            })),
-                            customer: customer,
-                            pickupPoint: pickupPoint,
-                            delivery: delivery
+                            id: updatedOrder.id,
+                            orderDate: updatedOrder.order_date,
+                            orderTime: updatedOrder.order_time,
+                            price: updatedOrder.price,
+                            status,
+                            address: updatedOrder.address,
+                            paymentType: updatedOrder.payment_type,
+                            orderType: updatedOrder.order_type,
+                            items,
+                            customer,
+                            pickupPoint
                         };
                     } catch (error) {
                         await pgClient.query('ROLLBACK');
@@ -1483,7 +1572,13 @@ const StockSchemaPlugin = makeExtendSchemaPlugin(build => {
                 ocpId: Int!
             }
 
+            type BouquetQuantity {
+                bouquetId: Int!
+                maxQuantity: Int!
+            }
+
             extend type Query {
+                getAvailableBouquetQuantities(ocpId: Int!): [BouquetQuantity!]!
                 getStockItems(ocpId: Int!): [StockItem!]!
                 getAllTypes: [Type!]!
             }
@@ -1507,6 +1602,58 @@ const StockSchemaPlugin = makeExtendSchemaPlugin(build => {
         `,
         resolvers: {
             Query: {
+                getAvailableBouquetQuantities: async (_, { ocpId }, { pgClient }) => {
+                    try {
+                        // 1. Получаем все букеты и их составляющие
+                        const { rows: bouquetsWithItems } = await pgClient.query(`
+                            SELECT 
+                                b.id as bouquet_id,
+                                json_agg(
+                                    json_build_object(
+                                        'item_id', ib.item_id,
+                                        'required_amount', ib.amount
+                                    )
+                                ) as items
+                            FROM bouquets b
+                            JOIN items_in_bouquets ib ON b.id = ib.bouquet_id
+                            GROUP BY b.id
+                        `);
+
+                        // 2. Получаем доступные товары в OCP
+                        const { rows: ocpItems } = await pgClient.query(`
+                            SELECT item_id, amount
+                            FROM ocp_item
+                            WHERE ocp_id = $1
+                        `, [ocpId]);
+
+                        // 3. Вычисляем максимальное количество для каждого букета
+                        const result = bouquetsWithItems.map(bouquet => {
+                            const items = bouquet.items;
+                            let maxQuantity = Infinity;
+
+                            items.forEach(item => {
+                                const ocpItem = ocpItems.find(oi => oi.item_id === item.item_id);
+                                if (!ocpItem) {
+                                    maxQuantity = 0;
+                                    return;
+                                }
+
+                                const possibleQuantity = Math.floor(ocpItem.amount / item.required_amount);
+                                maxQuantity = Math.min(maxQuantity, possibleQuantity);
+                            });
+
+                            return {
+                                bouquetId: bouquet.bouquet_id,
+                                maxQuantity: maxQuantity === Infinity ? 0 : maxQuantity
+                            };
+                        });
+
+                        return result;
+                    } catch (error) {
+                        console.error('Error calculating available quantities:', error);
+                        throw error;
+                    }
+                },
                 getStockItems: async (_, { ocpId }, { pgClient }) => {
                     const { rows } = await pgClient.query(`
                         SELECT i.id, i.name, t.name as type, i.cost, oi.amount, oi.ocp_id as "ocpId"

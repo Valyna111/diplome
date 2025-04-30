@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useContext } from "react";
 import {BrowserRouter as Router, Navigate, Route, Routes} from "react-router-dom";
 import s from './App.module.css'
 import RootStore from "@/store/RootStore";
@@ -18,13 +18,22 @@ import Delivery from "./routs/Delivery";
 import {ToastContainer} from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import ResetPassword from './views/ResetPassword/ResetPassword';
+import AddressModal from "./views/Modals/AddressModal/AddressModal";
 
 let rootStore;
 
 const App = () => {
     if (!rootStore) rootStore = new RootStore();
-    return (
+    const authStore = rootStore.authStore;
 
+    useEffect(() => {
+        // Проверяем наличие адреса при загрузке приложения
+        if (authStore.currentUser?.role_name === 'customer' && !authStore.currentUser?.ocp_id) {
+            authStore.setAddressModalOpen(true);
+        }
+    }, [authStore.currentUser, authStore.setAddressModalOpen]);
+
+    return (
         <StoreContext.Provider value={rootStore}>
             <div className={s.conteiner}>
                 <ToastContainer
@@ -53,6 +62,7 @@ const App = () => {
                 />
                 <Router>
                     <AuthModal/>
+                    <AddressModal />
                     <Navbar/>
                     <main className={s.main}>
                         <Routes>

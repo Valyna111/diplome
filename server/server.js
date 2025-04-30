@@ -11,6 +11,7 @@ const fs = require('fs');
 const {UserDataPlugin, StoreMutationsPlugin, BlockUserPlugin, OCPSchemaPlugin, OrderPlugin, StockSchemaPlugin} = require("./plugins");
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
+const fetch = require('node-fetch');
 
 if (!fs.existsSync('uploads')) {
     fs.mkdirSync('uploads');
@@ -353,6 +354,167 @@ app.post('/reset-password', async (req, res) => {
     } catch (error) {
         console.error('Error in reset-password:', error);
         res.status(500).json({ error: 'Ошибка при сбросе пароля' });
+    }
+});
+
+// Эндпоинт для подсказок адресов
+app.get('/api/geocode/suggest', async (req, res) => {
+    try {
+        const { query } = req.query;
+        const response = await fetch(
+            `https://suggest-maps.yandex.ru/v1/suggest?apikey=4f077bcb-a707-4aca-8995-ce4bce271eb5&text=${encodeURIComponent(query)}&lang=ru_RU&type=address&results=5&bbox=23.5,51.5~32.5,56.5`,
+            {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'Origin': 'http://localhost:5173'
+                }
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const text = await response.text();
+        let data;
+        try {
+            data = JSON.parse(text);
+        } catch (e) {
+            console.error('Error parsing JSON:', text);
+            throw new Error('Invalid JSON response from Yandex API');
+        }
+
+        if (!data.results) {
+            return res.json({ results: [] });
+        }
+
+        res.json(data);
+    } catch (error) {
+        console.error('Error in geocode suggest:', error);
+        res.status(500).json({ 
+            error: 'Ошибка при поиске адреса',
+            details: error.message 
+        });
+    }
+});
+
+// Эндпоинт для получения координат
+app.get('/api/geocode/coordinates', async (req, res) => {
+    try {
+        const { address } = req.query;
+        const response = await fetch(
+            `https://geocode-maps.yandex.ru/1.x/?apikey=6471aef4-7562-4730-87e3-60a918596904&geocode=${encodeURIComponent(address)}&format=json&lang=ru_RU&results=1`,
+            {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'Origin': 'http://localhost:5173'
+                }
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const text = await response.text();
+        let data;
+        try {
+            data = JSON.parse(text);
+        } catch (e) {
+            console.error('Error parsing JSON:', text);
+            throw new Error('Invalid JSON response from Yandex API');
+        }
+
+        const featureMember = data.response?.GeoObjectCollection?.featureMember;
+        if (!featureMember || featureMember.length === 0) {
+            return res.status(404).json({ 
+                error: 'Адрес не найден',
+                details: 'Не удалось определить координаты для указанного адреса'
+            });
+        }
+
+        const geoObject = featureMember[0].GeoObject;
+        const [lon, lat] = geoObject.Point.pos.split(' ').map(Number);
+
+        res.json({
+            lat,
+            lon,
+            address: geoObject.metaDataProperty.GeocoderMetaData.text,
+            fullAddress: geoObject.metaDataProperty.GeocoderMetaData.Address.formatted
+        });
+    } catch (error) {
+        console.error('Error in geocode coordinates:', error);
+        res.status(500).json({ 
+            error: 'Ошибка при определении координат',
+            details: error.message 
+        });
+    }
+});
+
+// Эндпоинт для поиска ближайшего ОЦП
+app.get('/api/ocp/nearest', async (req, res) => {
+    try {
+        const { lat, lon } = req.query;
+
+        if (!lat || !lon) {
+            return res.status(400).json({
+                error: 'Необходимо указать координаты',
+                details: 'Требуются параметры lat и lon'
+            });
+        }
+
+        // Получаем все ОЦП из базы данных
+        const { rows: ocps } = await pool.query(
+            `SELECT id, address, latitude, longitude
+             FROM ocp
+             WHERE latitude IS NOT NULL AND longitude IS NOT NULL`
+        );
+
+        if (ocps.length === 0) {
+            return res.status(404).json({
+                error: 'ОЦП не найдены',
+                details: 'В базе данных нет ОЦП с координатами'
+            });
+        }
+
+        // Функция для расчета расстояния между двумя точками (формула гаверсинусов)
+        const calculateDistance = (lat1, lon1, lat2, lon2) => {
+            const R = 6371; // Радиус Земли в километрах
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a = 
+                Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+                Math.sin(dLon/2) * Math.sin(dLon/2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            return R * c;
+        };
+
+        // Находим ближайший ОЦП
+        let nearestOCP = ocps[0];
+        let minDistance = calculateDistance(lat, lon, nearestOCP.latitude, nearestOCP.longitude);
+
+        for (const ocp of ocps) {
+            const distance = calculateDistance(lat, lon, ocp.latitude, ocp.longitude);
+            if (distance < minDistance) {
+                minDistance = distance;
+                nearestOCP = ocp;
+            }
+        }
+
+        res.json({
+            id: nearestOCP.id,
+            address: nearestOCP.address,
+            distance: minDistance.toFixed(2) // Расстояние в километрах
+        });
+    } catch (error) {
+        console.error('Error finding nearest OCP:', error);
+        res.status(500).json({
+            error: 'Ошибка при поиске ближайшего ОЦП',
+            details: error.message
+        });
     }
 });
 

@@ -880,3 +880,12 @@ export const GET_SALES_REPORT = gql`
         }
     }
 `;
+
+export const GET_AVAILABLE_BOUQUET_QUANTITIES = gql`
+    query GetAvailableBouquetQuantities($ocpId: Int!) {
+        getAvailableBouquetQuantities(ocpId: $ocpId) {
+            bouquetId
+            maxQuantity
+        }
+    }
+`;

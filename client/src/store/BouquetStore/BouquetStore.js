@@ -6,10 +6,11 @@ import {
     DELETE_FLOWERS_IN_BOUQUET,
     UPDATE_BOUQUET
 } from '@/graphql/mutations';
-import {GET_ALL_BOUQUETS, GET_BOUQUET_BY_ID} from '@/graphql/queries';
+import {GET_ALL_BOUQUETS, GET_BOUQUET_BY_ID, GET_AVAILABLE_BOUQUET_QUANTITIES} from '@/graphql/queries';
 
 export default class BouquetStore {
     bouquets = [];
+    availableQuantities = {}; // Меняем Map на обычный объект
     isLoading = false;
     error = null;
 
@@ -17,6 +18,7 @@ export default class BouquetStore {
         this.rootStore = rootStore;
         makeObservable(this, {
             bouquets: observable,
+            availableQuantities: observable,
             isLoading: observable,
             error: observable,
             createBouquet: action,
@@ -25,6 +27,8 @@ export default class BouquetStore {
             loadBouquets: action,
             getBouquet: action,
             searchBouquets: action,
+            updateAvailableQuantities: action,
+            getAvailableQuantity: action,
         });
         this.loadBouquets().then().catch(e => console.error(e));
     }
@@ -51,17 +55,57 @@ export default class BouquetStore {
         }
     }
 
+    // Новый метод для обновления доступных количеств
+    async updateAvailableQuantities(ocpId) {
+        try {
+            const {data} = await this.rootStore.client.query({
+                query: GET_AVAILABLE_BOUQUET_QUANTITIES,
+                variables: { ocpId },
+                fetchPolicy: 'network-only'
+            });
+
+            runInAction(() => {
+                this.availableQuantities = {}; // Очищаем старые значения
+                data.getAvailableBouquetQuantities.forEach(({bouquetId, maxQuantity}) => {
+                    this.availableQuantities[bouquetId] = maxQuantity;
+                });
+            });
+
+            console.log('Updated quantities:', this.availableQuantities);
+        } catch (error) {
+            console.error('Error updating available quantities:', error);
+        }
+    }
+
+    // Метод для получения доступного количества для конкретного букета
+    getAvailableQuantity(bouquetId) {
+        return this.availableQuantities[bouquetId] || 0;
+    }
+
     // Метод для загрузки букетов
     async loadBouquets() {
         this.isLoading = true;
         try {
+            console.log('Loading bouquets...');
             const {data} = await this.rootStore.client.query({
                 query: GET_ALL_BOUQUETS,
-                fetchPolicy: 'network-only', // Чтобы всегда запрашивать свежие данные
+                fetchPolicy: 'network-only',
             });
+
             runInAction(() => {
                 this.bouquets = data?.allBouquets?.nodes || [];
             });
+
+            // Если у пользователя есть привязанный OCP, загружаем доступные количества
+            const currentUser = this.rootStore.authStore.currentUser;
+            console.log('Current user:', currentUser);
+            
+            if (currentUser?.ocp_id) {
+                console.log('Updating quantities for OCP:', currentUser.ocp_id);
+                await this.updateAvailableQuantities(currentUser.ocp_id);
+            } else {
+                console.log('No OCP assigned to user, skipping quantity update');
+            }
         } catch (error) {
             runInAction(() => {
                 this.error = error;

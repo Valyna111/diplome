@@ -61,3 +61,116 @@
 .itemTag {
     transition: all 0.2s ease;
 }
+
+.geocodingHint {
+    margin-top: 8px;
+    color: #666;
+    font-size: 12px;
+    text-align: center;
+}
+
+.geocodedAddress {
+    margin: 8px 0;
+    padding: 8px;
+    background: #f5f5f5;
+    border-radius: 4px;
+}
+
+.geocodedAddressLabel {
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 4px;
+}
+
+.geocodedAddressValue {
+    font-size: 14px;
+    color: #333;
+    word-break: break-word;
+}
+
+.selectedAddress {
+    margin: 12px 0;
+    padding: 12px;
+    background: #f5f5f5;
+    border-radius: 4px;
+    border: 1px solid #e8e8e8;
+}
+
+.selectedAddressLabel {
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 4px;
+}
+
+.selectedAddressValue {
+    font-size: 14px;
+    color: #333;
+    word-break: break-word;
+    margin-bottom: 8px;
+}
+
+.selectedAddressCoords {
+    font-size: 12px;
+    color: #666;
+    font-family: monospace;
+}
+
+.addressInput {
+    position: relative;
+    width: 100%;
+}
+
+.input {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #d9d9d9;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: all 0.3s;
+}
+
+.input:focus {
+    border-color: #40a9ff;
+    box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+    outline: none;
+}
+
+.suggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #d9d9d9;
+    border-radius: 4px;
+    margin-top: 4px;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.suggestion {
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.suggestion:hover {
+    background-color: #f5f5f5;
+}
+
+.loading {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #999;
+    font-size: 12px;
+}
+
+.error {
+    color: #ff4d4f;
+    font-size: 12px;
+    margin-top: 4px;
+}

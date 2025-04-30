@@ -1,6 +1,6 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {observer} from 'mobx-react-lite';
-import {Button, Input, message, Modal, Select, Table} from 'antd';
+import {Button, Input, message, Modal, Select, Table, Spin} from 'antd';
 import {PlusOutlined, ShoppingCartOutlined, UserAddOutlined} from '@ant-design/icons';
 import {motion} from 'framer-motion';
 import StoreContext from '@/store/StoreContext';
@@ -12,10 +12,11 @@ const OCPInput = observer(() => {
     const [isAssignModalVisible, setIsAssignModalVisible] = useState(false);
     const [isAddItemModalVisible, setIsAddItemModalVisible] = useState(false);
     const [selectedOCP, setSelectedOCP] = useState(null);
-    const [newAddress, setNewAddress] = useState('');
+    const [address, setAddress] = useState('');
     const [selectedDeliveryman, setSelectedDeliveryman] = useState(null);
     const [selectedItem, setSelectedItem] = useState(null);
     const [itemAmount, setItemAmount] = useState(1);
+    const [isGeocoding, setIsGeocoding] = useState(false);
 
     useEffect(() => {
         ocpStore.fetchAllOCPs();
@@ -24,13 +25,25 @@ const OCPInput = observer(() => {
     }, []);
 
     const handleCreateOCP = async () => {
+        if (!address.trim()) {
+            message.error('Пожалуйста, введите адрес');
+            return;
+        }
+
+        setIsGeocoding(true);
         try {
-            await ocpStore.createOCP(newAddress);
+            await ocpStore.createOCP(address);
             message.success('Пункт выдачи успешно создан');
             setIsCreateModalVisible(false);
-            setNewAddress('');
+            setAddress('');
         } catch (error) {
-            message.error('Ошибка при создании пункта выдачи');
+            if (error.message.includes('координаты')) {
+                message.error('Не удалось определить координаты для указанного адреса. Пожалуйста, проверьте правильность адреса.');
+            } else {
+                message.error('Ошибка при создании пункта выдачи');
+            }
+        } finally {
+            setIsGeocoding(false);
         }
     };
 
@@ -57,7 +70,7 @@ const OCPInput = observer(() => {
         }
     };
 
-    // Filter users with deliveryman role (assuming role_id 3 is for deliverymen)
+    // Filter users with deliveryman role
     const deliverymanOptions = authStore.users
         .filter(user => user.roleByRoleId.id === 6)
         .map(user => ({
@@ -172,16 +185,22 @@ const OCPInput = observer(() => {
                 title="Создать новый пункт выдачи"
                 visible={isCreateModalVisible}
                 onOk={handleCreateOCP}
-                onCancel={() => setIsCreateModalVisible(false)}
+                onCancel={() => {
+                    setIsCreateModalVisible(false);
+                    setAddress('');
+                }}
                 okText="Создать"
                 cancelText="Отмена"
+                confirmLoading={isGeocoding}
             >
-                <Input
-                    placeholder="Адрес пункта выдачи"
-                    value={newAddress}
-                    onChange={(e) => setNewAddress(e.target.value)}
-                    className={s.modalInput}
-                />
+                <Spin spinning={isGeocoding}>
+                    <Input
+                        placeholder="Введите адрес"
+                        value={address}
+                        onChange={(e) => setAddress(e.target.value)}
+                        className={s.input}
+                    />
+                </Spin>
             </Modal>
 
             {/* Модалка назначения доставщика */}

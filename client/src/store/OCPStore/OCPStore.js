@@ -1,5 +1,6 @@
 import {action, makeObservable, observable} from 'mobx';
 import {gql} from '@apollo/client';
+import {searchAddress} from '../../lib/api';
 
 class OCPStore {
     ocpList = [];
@@ -62,19 +63,39 @@ class OCPStore {
     // Создание OCP
     async createOCP(address) {
         try {
+            // Получаем координаты адреса
+            const results = await searchAddress(address);
+            
+            if (!results || results.length === 0) {
+                throw new Error('Не удалось определить координаты для указанного адреса');
+            }
+
+            const coordinates = results[0].coordinates;
+            const formattedAddress = results[0].displayName;
+
             const {data} = await this.rootStore.client.mutate({
                 mutation: gql`
-                    mutation CreateOCP($address: String!) {
-                        createOcp(address: $address) {
+                    mutation CreateOCP($address: String!, $latitude: Float, $longitude: Float) {
+                        createOcp(
+                            address: $address,
+                            latitude: $latitude,
+                            longitude: $longitude
+                        ) {
                             id
                             address
+                            latitude
+                            longitude
                         }
                     }
                 `,
-                variables: {address}
+                variables: {
+                    address: formattedAddress,
+                    latitude: coordinates.lat,
+                    longitude: coordinates.lon
+                }
             });
             await this.fetchAllOCPs();
-            return data.createOcp.ocp;
+            return data.createOcp;
         } catch (error) {
             console.error('Error creating OCP:', error);
             throw error;

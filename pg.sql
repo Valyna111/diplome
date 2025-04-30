@@ -131,6 +131,8 @@ CREATE TABLE public.ocp
 (
     id         SERIAL PRIMARY KEY,
     address    VARCHAR(100) NOT NULL,
+    latitude FLOAT,
+    longitude FLOAT,
     created_at TIMESTAMP DEFAULT NOW()
 );
 ALTER TABLE public.ocp
@@ -226,6 +228,7 @@ CREATE TABLE public.users
     surname       VARCHAR(50)         NOT NULL,
     is_blocked    BOOLEAN   DEFAULT FALSE,
     address       VARCHAR(250),
+    ocp_id INT REFERENCES public.ocp(id),
     force_password_change BOOLEAN DEFAULT FALSE,
     created_at    TIMESTAMP DEFAULT NOW(),
     reset_token VARCHAR(64),

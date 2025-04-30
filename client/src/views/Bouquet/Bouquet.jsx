@@ -24,6 +24,9 @@ const Bouquet = observer(() => {
     const [isAddingToCart, setIsAddingToCart] = useState(false);
     const [cartQuantity, setCartQuantity] = useState(0);
 
+    // Получаем максимально доступное количество из BouquetStore
+    const availableAmount = rootStore.bouquetStore.getAvailableQuantity(parseInt(id));
+    console.log(availableAmount);
     // Дополнения к букету (можно получать из API)
     const availableAddons = [
         {id: 1, name: "Воздушные шары (+500 руб.)", price: 500},
@@ -73,8 +76,8 @@ const Bouquet = observer(() => {
         if (!bouquet) return;
 
         const totalInCart = cartQuantity + quantity;
-        if (totalInCart >= bouquet.amount) {
-            toast.error(`Доступно только ${bouquet.amount - cartQuantity} шт. для добавления`);
+        if (totalInCart >= availableAmount) {
+            toast.error(`Доступно только ${availableAmount - cartQuantity} шт. для добавления`);
             return;
         }
 
@@ -97,8 +100,8 @@ const Bouquet = observer(() => {
         if (!bouquet) return;
 
         const totalQuantity = cartQuantity + quantity;
-        if (totalQuantity > bouquet.amount) {
-            toast.error(`Максимально доступное количество: ${bouquet.amount} шт. (уже в корзине: ${cartQuantity} шт.)`);
+        if (totalQuantity > availableAmount) {
+            toast.error(`Максимально доступное количество: ${availableAmount} шт. (уже в корзине: ${cartQuantity} шт.)`);
             return;
         }
 
@@ -162,8 +165,8 @@ const Bouquet = observer(() => {
     }
 
     const totalPrice = bouquet.price + selectedAddons.reduce((sum, addon) => sum + addon.price, 0);
-    const availableToAdd = bouquet.amount - cartQuantity;
-    const maxQuantity = Math.min(availableToAdd, bouquet.amount);
+    const availableToAdd = availableAmount - cartQuantity;
+    const maxQuantity = Math.min(availableToAdd, availableAmount);
 
     return (
         <div className={s.page}>
@@ -210,13 +213,12 @@ const Bouquet = observer(() => {
                     </div>
 
                     <div className={s.availability}>
-                        {bouquet.amount > 0 ? (
+                        {availableAmount > 0 ? (
                             <>
-                                <span className={s.inStock}>В наличии: {bouquet.amount} шт.</span>
+                                <span className={s.inStock}>В наличии: {availableAmount} шт.</span><br></br>
                                 {cartQuantity > 0 && (
                                     <span className={s.inCart}>Уже в корзине: {cartQuantity} шт.</span>
                                 )}
-                                <span className={s.availableToAdd}>Можно добавить: {availableToAdd} шт.</span>
                             </>
                         ) : (
                             <span className={s.outOfStock}>Нет в наличии</span>
@@ -322,7 +324,7 @@ const Bouquet = observer(() => {
                         <button
                             className={s.addToCartButton}
                             onClick={addToCart}
-                            disabled={isAddingToCart || bouquet.amount <= 0 || availableToAdd <= 0}
+                            disabled={isAddingToCart || availableAmount <= 0 || availableToAdd <= 0}
                         >
                             <FaShoppingCart className={s.cartIcon}/>
                             {isAddingToCart

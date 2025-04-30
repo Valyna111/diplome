@@ -159,3 +159,153 @@
 .icon:hover {
     transform: scale(1.1);
 }
+
+.addressWrapper {
+    display: flex;
+    align-items: center;
+    margin-right: 20px;
+    max-width: 100%;
+}
+
+.addressContainer {
+    display: flex;
+    align-items: center;
+    background: #f5f5f5;
+    border-radius: 8px;
+    padding: 8px 12px;
+    transition: all 0.3s ease;
+    max-width: 100%;
+}
+
+.addressContainer:hover {
+    background: #e8e8e8;
+}
+
+.addressContent {
+    display: flex;
+    align-items: center;
+    margin-right: 12px;
+    max-width: calc(100% - 100px);
+}
+
+.addressIcon {
+    color: #e91e63;
+    font-size: 16px;
+    margin-right: 8px;
+    flex-shrink: 0;
+}
+
+.addressText {
+    font-size: 14px;
+    color: #333;
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.changeAddressButton {
+    background: none;
+    border: none;
+    color: #e91e63;
+    font-size: 14px;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.changeAddressButton:hover {
+    background: rgba(233, 30, 99, 0.1);
+}
+
+.setAddressButton {
+    display: flex;
+    align-items: center;
+    background: #f5f5f5;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 12px;
+    color: #e91e63;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.setAddressButton:hover {
+    background: #e8e8e8;
+}
+
+/* Медиа-запросы для адаптивности */
+@media screen and (max-width: 1200px) {
+    .addressWrapper {
+        margin-right: 15px;
+    }
+    
+    .addressText {
+        max-width: 150px;
+    }
+}
+
+@media screen and (max-width: 992px) {
+    .addressWrapper {
+        margin-right: 10px;
+    }
+    
+    .addressText {
+        max-width: 120px;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .addressWrapper {
+        margin-right: 0;
+        margin-bottom: 10px;
+        width: 100%;
+    }
+    
+    .addressContainer {
+        width: 100%;
+        justify-content: space-between;
+    }
+    
+    .addressContent {
+        max-width: calc(100% - 80px);
+    }
+    
+    .addressText {
+        max-width: 100%;
+    }
+    
+    .changeAddressButton {
+        padding: 4px 6px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .addressContainer {
+        padding: 6px 10px;
+    }
+    
+    .addressIcon {
+        font-size: 14px;
+        margin-right: 6px;
+    }
+    
+    .addressText {
+        font-size: 13px;
+    }
+    
+    .changeAddressButton {
+        font-size: 13px;
+        padding: 3px 5px;
+    }
+    
+    .setAddressButton {
+        padding: 6px 10px;
+        font-size: 13px;
+    }
+}
