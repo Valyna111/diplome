@@ -24,6 +24,7 @@ export default class BouquetStore {
             deleteBouquet: action,
             loadBouquets: action,
             getBouquet: action,
+            searchBouquets: action,
         });
         this.loadBouquets().then().catch(e => console.error(e));
     }
@@ -215,5 +216,17 @@ export default class BouquetStore {
             console.error('Error updating bouquet items:', error);
             throw error;
         }
+    }
+
+    searchBouquets(query) {
+        if (!query || query.length < 2) {
+            return [];
+        }
+
+        const searchTerm = query.toLowerCase();
+        return this.bouquets.filter(bouquet => 
+            bouquet.name.toLowerCase().includes(searchTerm) ||
+            bouquet.description?.toLowerCase().includes(searchTerm)
+        ).slice(0, 5); // Ограничиваем количество результатов
     }
 }

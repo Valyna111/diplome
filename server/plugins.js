@@ -1126,7 +1126,6 @@ const OrderPlugin = makeExtendSchemaPlugin(build => {
                     await pgClient.query('BEGIN');
 
                     try {
-                        // 1. Создаем заказ
                         const {rows: [order]} = await pgClient.query(
                             `INSERT INTO orders (user_id,
                                                  price,
@@ -1151,9 +1150,10 @@ const OrderPlugin = makeExtendSchemaPlugin(build => {
                             ]
                         );
 
-                        // 2. Добавляем товары
+                        // 3. Добавляем товары и уменьшаем количество на складе
                         const items = [];
                         for (const item of input.items) {
+                            // Добавляем товар в заказ
                             const {rows: [orderItem]} = await pgClient.query(
                                 `INSERT INTO order_items (order_id, bouquet_id, quantity, price, addons)
                                  VALUES ($1, $2, $3, $4, $5)
@@ -1199,13 +1199,12 @@ const OrderPlugin = makeExtendSchemaPlugin(build => {
                             ...order,
                             status,
                             items,
-                            orderDate: order.order_date, // Format as 'YYYY-MM-DD'
-                            orderTime: order.order_time, // Already a string in 'HH:MM:SS' format
+                            orderDate: order.order_date,
+                            orderTime: order.order_time,
                             paymentType: order.payment_type,
                             orderType: order.order_type,
                             ocp,
                             delivery: null,
-
                         };
                     } catch (error) {
                         await pgClient.query('ROLLBACK');
@@ -1458,4 +1457,208 @@ function formatDeliveryOrder(order) {
     };
 }
 
-module.exports = {UserDataPlugin, StoreMutationsPlugin, BlockUserPlugin, OCPSchemaPlugin, OrderPlugin};
+const StockSchemaPlugin = makeExtendSchemaPlugin(build => {
+    return {
+        typeDefs: gql`
+            type StockItem {
+                id: Int!
+                name: String!
+                type: String!
+                cost: Float!
+                amount: Int!
+                ocpId: Int!
+            }
+
+            type StockUpdateResult {
+                success: Boolean!
+                message: String
+                stockItem: StockItem
+            }
+
+            input CreateStockItemInput {
+                name: String!
+                typeId: Int!
+                cost: Float!
+                amount: Int!
+                ocpId: Int!
+            }
+
+            extend type Query {
+                getStockItems(ocpId: Int!): [StockItem!]!
+                getAllTypes: [Type!]!
+            }
+
+            extend type Mutation {
+                updateStockItem(
+                    id: Int!
+                    amount: Int!
+                    ocpId: Int!
+                ): StockUpdateResult!
+
+                createStockItem(
+                    input: CreateStockItemInput!
+                ): StockUpdateResult!
+
+                deleteStockItem(
+                    id: Int!
+                    ocpId: Int!
+                ): StockUpdateResult!
+            }
+        `,
+        resolvers: {
+            Query: {
+                getStockItems: async (_, { ocpId }, { pgClient }) => {
+                    const { rows } = await pgClient.query(`
+                        SELECT i.id, i.name, t.name as type, i.cost, oi.amount, oi.ocp_id as "ocpId"
+                        FROM item i
+                        JOIN type t ON i.type_id = t.id
+                        JOIN ocp_item oi ON oi.item_id = i.id
+                        WHERE oi.ocp_id = $1
+                        ORDER BY i.name
+                    `, [ocpId]);
+                    return rows;
+                },
+                getAllTypes: async (_, __, { pgClient }) => {
+                    const { rows } = await pgClient.query(`
+                        SELECT id, name
+                        FROM type
+                        ORDER BY name
+                    `);
+                    return rows;
+                }
+            },
+            Mutation: {
+                updateStockItem: async (_, { id, amount, ocpId }, { pgClient }) => {
+                    try {
+                        await pgClient.query('BEGIN');
+
+                        // Проверяем существование записи
+                        const { rows: [existing] } = await pgClient.query(`
+                            SELECT * FROM ocp_item 
+                            WHERE item_id = $1 AND ocp_id = $2
+                        `, [id, ocpId]);
+
+                        if (!existing) {
+                            throw new Error('Товар не найден в выбранном пункте сбора');
+                        }
+
+                        // Обновляем количество товара
+                        const { rows: [updatedItem] } = await pgClient.query(`
+                            UPDATE ocp_item
+                            SET amount = $1
+                            WHERE item_id = $2 AND ocp_id = $3
+                            RETURNING *
+                        `, [amount, id, ocpId]);
+
+                        // Получаем полную информацию о товаре
+                        const { rows: [item] } = await pgClient.query(`
+                            SELECT i.id, i.name, t.name as type, i.cost, oi.amount, oi.ocp_id as "ocpId"
+                            FROM item i
+                            JOIN type t ON i.type_id = t.id
+                            JOIN ocp_item oi ON oi.item_id = i.id
+                            WHERE i.id = $1 AND oi.ocp_id = $2
+                        `, [id, ocpId]);
+
+                        await pgClient.query('COMMIT');
+
+                        return {
+                            success: true,
+                            message: 'Количество товара успешно обновлено',
+                            stockItem: item
+                        };
+                    } catch (error) {
+                        await pgClient.query('ROLLBACK');
+                        return {
+                            success: false,
+                            message: error.message
+                        };
+                    }
+                },
+
+                createStockItem: async (_, { input }, { pgClient }) => {
+                    try {
+                        await pgClient.query('BEGIN');
+
+                        // Создаем новый товар
+                        const { rows: [newItem] } = await pgClient.query(`
+                            INSERT INTO item (name, type_id, cost)
+                            VALUES ($1, $2, $3)
+                            RETURNING id
+                        `, [input.name, input.typeId, input.cost]);
+
+                        // Добавляем товар в пункт сбора
+                        await pgClient.query(`
+                            INSERT INTO ocp_item (item_id, ocp_id, amount)
+                            VALUES ($1, $2, $3)
+                        `, [newItem.id, input.ocpId, input.amount]);
+
+                        // Получаем полную информацию о товаре
+                        const { rows: [item] } = await pgClient.query(`
+                            SELECT i.id, i.name, t.name as type, i.cost, oi.amount, oi.ocp_id as "ocpId"
+                            FROM item i
+                            JOIN type t ON i.type_id = t.id
+                            JOIN ocp_item oi ON oi.item_id = i.id
+                            WHERE i.id = $1 AND oi.ocp_id = $2
+                        `, [newItem.id, input.ocpId]);
+
+                        await pgClient.query('COMMIT');
+
+                        return {
+                            success: true,
+                            message: 'Товар успешно создан',
+                            stockItem: item
+                        };
+                    } catch (error) {
+                        await pgClient.query('ROLLBACK');
+                        return {
+                            success: false,
+                            message: error.message
+                        };
+                    }
+                },
+
+                deleteStockItem: async (_, { id, ocpId }, { pgClient }) => {
+                    try {
+                        await pgClient.query('BEGIN');
+
+                        // Удаляем связь с пунктом сбора
+                        await pgClient.query(`
+                            DELETE FROM ocp_item
+                            WHERE item_id = $1 AND ocp_id = $2
+                        `, [id, ocpId]);
+
+                        // Проверяем, есть ли товар в других пунктах сбора
+                        const { rows: [{ count }] } = await pgClient.query(`
+                            SELECT COUNT(*) as count
+                            FROM ocp_item
+                            WHERE item_id = $1
+                        `, [id]);
+
+                        // Если товара больше нет ни в одном пункте сбора, удаляем его полностью
+                        if (parseInt(count) === 0) {
+                            await pgClient.query(`
+                                DELETE FROM item
+                                WHERE id = $1
+                            `, [id]);
+                        }
+
+                        await pgClient.query('COMMIT');
+
+                        return {
+                            success: true,
+                            message: 'Товар успешно удален'
+                        };
+                    } catch (error) {
+                        await pgClient.query('ROLLBACK');
+                        return {
+                            success: false,
+                            message: error.message
+                        };
+                    }
+                }
+            }
+        }
+    };
+});
+
+module.exports = {UserDataPlugin, StoreMutationsPlugin, BlockUserPlugin, OCPSchemaPlugin, OrderPlugin, StockSchemaPlugin};

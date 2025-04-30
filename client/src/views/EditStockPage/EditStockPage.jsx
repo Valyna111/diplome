@@ -1,133 +1,281 @@
-import React, { useState } from "react";
-import styles from "./EditStockPage.module.css";
+import React, { useContext, useEffect, useState } from 'react';
+import { Table, Input, Button, message, Spin, Select, Modal, Form, InputNumber, Popconfirm } from 'antd';
+import { observer } from 'mobx-react-lite';
+import StoreContext from '@/store/StoreContext';
+import styles from './EditStockPage.module.css';
+import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 
-// Пример данных товаров с учетом адресов
-const initialProducts = [
-  { id: 1, name: "Букет роз", quantity: 10, address: "ул. Пушкина, д. 10" },
-  { id: 2, name: "Букет тюльпанов", quantity: 5, address: "ул. Лермонтова, д. 5" },
-  { id: 3, name: "Букет лилий", quantity: 8, address: "ул. Пушкина, д. 10" },
-  { id: 4, name: "Букет ромашек", quantity: 3, address: "ул. Гоголя, д. 15" },
-];
+const { Option } = Select;
 
-// Список адресов пунктов сбора
-const addresses = [
-  "ул. Пушкина, д. 10",
-  "ул. Лермонтова, д. 5",
-  "ул. Гоголя, д. 15",
-];
+const EditStockPage = observer(() => {
+    const { stockStore, ocpStore } = useContext(StoreContext);
+    const [editingId, setEditingId] = useState(null);
+    const [editingAmount, setEditingAmount] = useState('');
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [form] = Form.useForm();
 
-const EditStockPage = () => {
-  const [products, setProducts] = useState(initialProducts);
-  const [selectedProduct, setSelectedProduct] = useState(null);
-  const [spoiledQuantity, setSpoiledQuantity] = useState(0);
-  const [showModal, setShowModal] = useState(false);
-  const [selectedAddress, setSelectedAddress] = useState("");
+    useEffect(() => {
+        ocpStore.fetchAllOCPs();
+        return () => stockStore.setSelectedOcpId(null);
+    }, []);
 
-  // Открыть модальное окно для выбранного товара
-  const handleProductClick = (product) => {
-    setSelectedProduct(product);
-    setSpoiledQuantity(0);
-    setShowModal(true);
-  };
+    const handleOcpChange = (ocpId) => {
+        setEditingId(null);
+        stockStore.setSelectedOcpId(ocpId);
+    };
 
-  // Удалить испорченные единицы товара
-  const handleDeleteSpoiled = () => {
-    if (spoiledQuantity > 0 && spoiledQuantity <= selectedProduct.quantity) {
-      setProducts(
-        products.map((product) =>
-          product.id === selectedProduct.id
-            ? { ...product, quantity: product.quantity - spoiledQuantity }
-            : product
-        )
-      );
-      setShowModal(false);
-    } else {
-      alert("Введите корректное количество!");
+    const handleEdit = (id, amount) => {
+        setEditingId(id);
+        setEditingAmount(amount.toString());
+    };
+
+    const handleSave = async (id) => {
+        if (!editingAmount || isNaN(editingAmount) || editingAmount < 0) {
+            message.error('Пожалуйста, введите корректное количество');
+            return;
+        }
+
+        try {
+            const result = await stockStore.updateStockItem(id, parseInt(editingAmount));
+            if (result.success) {
+                message.success('Количество успешно обновлено');
+                setEditingId(null);
+                setEditingAmount('');
+            } else {
+                message.error(result.message || 'Ошибка при обновлении количества');
+            }
+        } catch (error) {
+            message.error(error.message);
+        }
+    };
+
+    const handleDelete = async (id) => {
+        try {
+            const result = await stockStore.deleteStockItem(id);
+            if (result.success) {
+                message.success('Товар успешно удален');
+            } else {
+                message.error(result.message || 'Ошибка при удалении товара');
+            }
+        } catch (error) {
+            message.error(error.message);
+        }
+    };
+
+    const showModal = () => {
+        setIsModalVisible(true);
+    };
+
+    const handleModalCancel = () => {
+        setIsModalVisible(false);
+        form.resetFields();
+    };
+
+    const handleModalOk = async () => {
+        try {
+            const values = await form.validateFields();
+            const result = await stockStore.createStockItem(values);
+            if (result.success) {
+                message.success('Товар успешно добавлен');
+                setIsModalVisible(false);
+                form.resetFields();
+            } else {
+                message.error(result.message || 'Ошибка при добавлении товара');
+            }
+        } catch (error) {
+            message.error(error.message);
+        }
+    };
+
+    const columns = [
+        {
+            title: 'Название',
+            dataIndex: 'name',
+            key: 'name',
+        },
+        {
+            title: 'Тип',
+            dataIndex: 'type',
+            key: 'type',
+        },
+        {
+            title: 'Стоимость',
+            dataIndex: 'cost',
+            key: 'cost',
+            render: (cost) => `${cost.toLocaleString()} ₽`,
+        },
+        {
+            title: 'Количество',
+            dataIndex: 'amount',
+            key: 'amount',
+            render: (amount, record) => (
+                editingId === record.id ? (
+                    <Input
+                        type="number"
+                        value={editingAmount}
+                        onChange={(e) => setEditingAmount(e.target.value)}
+                        min={0}
+                        style={{ width: 100 }}
+                    />
+                ) : (
+                    amount
+                )
+            ),
+        },
+        {
+            title: 'Действия',
+            key: 'actions',
+            render: (_, record) => (
+                <div className={styles.actionButtons}>
+                    {editingId === record.id ? (
+                        <Button
+                            type="primary"
+                            onClick={() => handleSave(record.id)}
+                            loading={stockStore.isLoading}
+                        >
+                            Сохранить
+                        </Button>
+                    ) : (
+                        <>
+                            <Button
+                                onClick={() => handleEdit(record.id, record.amount)}
+                                disabled={stockStore.isLoading}
+                            >
+                                Изменить
+                            </Button>
+                            <Popconfirm
+                                title="Вы уверены, что хотите удалить этот товар?"
+                                onConfirm={() => handleDelete(record.id)}
+                                okText="Да"
+                                cancelText="Нет"
+                            >
+                                <Button
+                                    type="text"
+                                    danger
+                                    icon={<DeleteOutlined />}
+                                    disabled={stockStore.isLoading}
+                                />
+                            </Popconfirm>
+                        </>
+                    )}
+                </div>
+            ),
+        },
+    ];
+
+    if (ocpStore.isLoading) {
+        return (
+            <div className={styles.spinnerContainer}>
+                <Spin size="large" />
+            </div>
+        );
     }
-  };
 
-  // Закрыть модальное окно
-  const handleCloseModal = () => {
-    setShowModal(false);
-  };
+    const filteredItems = stockStore.selectedOcpId 
+        ? stockStore.stockItems.filter(item => item.ocpId === stockStore.selectedOcpId)
+        : [];
 
-  // Фильтровать товары по выбранному адресу
-  const filteredProducts = selectedAddress
-    ? products.filter((product) => product.address === selectedAddress)
-    : products;
-
-  return (
-    <div className={styles.container}>
-      <h2>Редактирование списка наличия товаров</h2>
-
-      {/* Выбор адреса */}
-      <div className={styles.addressSelector}>
-        <label htmlFor="address">Выберите пункт сбора: </label>
-        <select
-          id="address"
-          value={selectedAddress}
-          onChange={(e) => setSelectedAddress(e.target.value)}
-          className={styles.addressSelect}
-        >
-          <option value="">Все адреса</option>
-          {addresses.map((address, index) => (
-            <option key={index} value={address}>
-              {address}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      {/* Список товаров */}
-      <div className={styles.productsList}>
-        {filteredProducts.map((product) => (
-          <div
-            key={product.id}
-            className={styles.productCard}
-            onClick={() => handleProductClick(product)}
-          >
-            <div className={styles.productInfo}>
-              <h3>{product.name}</h3>
-              <p>Количество: {product.quantity}</p>
-              <p>Адрес: {product.address}</p>
+    return (
+        <div className={styles.container}>
+            <div className={styles.header}>
+                <h1>Управление складом</h1>
+                {stockStore.selectedOcpId && (
+                    <Button
+                        type="primary"
+                        icon={<PlusOutlined />}
+                        onClick={showModal}
+                    >
+                        Добавить товар
+                    </Button>
+                )}
             </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Модальное окно */}
-      {showModal && (
-        <div className={styles.modalOverlay}>
-          <div className={styles.modal}>
-            <h3>Удаление испорченных единиц</h3>
-            <p>Товар: {selectedProduct.name}</p>
-            <p>Доступное количество: {selectedProduct.quantity}</p>
-
-            {/* Поле для ввода количества */}
-            <input
-              type="number"
-              value={spoiledQuantity}
-              onChange={(e) => setSpoiledQuantity(Number(e.target.value))}
-              min="0"
-              max={selectedProduct.quantity}
-              className={styles.quantityInput}
-              placeholder="Введите количество"
-            />
-
-            {/* Кнопки */}
-            <div className={styles.modalButtons}>
-              <button className={styles.deleteButton} onClick={handleDeleteSpoiled}>
-                Удалить
-              </button>
-              <button className={styles.cancelButton} onClick={handleCloseModal}>
-                Отмена
-              </button>
+            
+            <div className={styles.ocpSelector}>
+                <Select
+                    placeholder="Выберите пункт сбора"
+                    onChange={handleOcpChange}
+                    style={{ width: 300, marginBottom: 20 }}
+                    loading={ocpStore.isLoading}
+                    value={stockStore.selectedOcpId}
+                >
+                    {ocpStore.ocpList.map(ocp => (
+                        <Option key={ocp.id} value={ocp.id}>
+                            {ocp.address}
+                        </Option>
+                    ))}
+                </Select>
             </div>
-          </div>
+
+            {stockStore.selectedOcpId ? (
+                <Table
+                    dataSource={filteredItems}
+                    columns={columns}
+                    rowKey="id"
+                    pagination={false}
+                    loading={stockStore.isLoading}
+                />
+            ) : (
+                <div className={styles.noOcpSelected}>
+                    Выберите пункт сбора для просмотра товаров
+                </div>
+            )}
+
+            <Modal
+                title="Добавить новый товар"
+                open={isModalVisible}
+                onOk={handleModalOk}
+                onCancel={handleModalCancel}
+                confirmLoading={stockStore.isLoading}
+            >
+                <Form
+                    form={form}
+                    layout="vertical"
+                >
+                    <Form.Item
+                        name="name"
+                        label="Название"
+                        rules={[{ required: true, message: 'Введите название товара' }]}
+                    >
+                        <Input />
+                    </Form.Item>
+                    <Form.Item
+                        name="typeId"
+                        label="Тип"
+                        rules={[{ required: true, message: 'Выберите тип товара' }]}
+                    >
+                        <Select>
+                            {stockStore.itemTypes.map(type => (
+                                <Option key={type.id} value={type.id}>
+                                    {type.name}
+                                </Option>
+                            ))}
+                        </Select>
+                    </Form.Item>
+                    <Form.Item
+                        name="cost"
+                        label="Стоимость"
+                        rules={[{ required: true, message: 'Введите стоимость товара' }]}
+                    >
+                        <InputNumber
+                            min={0}
+                            step={0.01}
+                            style={{ width: '100%' }}
+                        />
+                    </Form.Item>
+                    <Form.Item
+                        name="amount"
+                        label="Количество"
+                        rules={[{ required: true, message: 'Введите количество товара' }]}
+                    >
+                        <InputNumber
+                            min={0}
+                            style={{ width: '100%' }}
+                        />
+                    </Form.Item>
+                </Form>
+            </Modal>
         </div>
-      )}
-    </div>
-  );
-};
+    );
+});
 
 export default EditStockPage;

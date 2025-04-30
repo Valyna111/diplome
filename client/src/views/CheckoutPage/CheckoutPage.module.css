@@ -1,5 +1,5 @@
 .container {
-    max-width: 800px;
+    max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
     min-height: 100vh;
@@ -301,4 +301,25 @@
     font-size: 18px;
     color: #e91e63;
     font-weight: 500;
+}
+
+.paymentForm {
+    margin-top: 20px;
+    padding: 20px;
+    border: 1px solid #f0f0f0;
+    border-radius: 8px;
+    background-color: #fff;
+}
+
+.error {
+    color: #ff4d4f;
+    margin-top: 8px;
+    font-size: 14px;
+}
+
+.payButton {
+    margin-top: 16px;
+    width: 100%;
+    height: 40px;
+    font-size: 16px;
 }

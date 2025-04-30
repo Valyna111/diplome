@@ -192,11 +192,23 @@ const CheckoutPage = observer(() => {
             };
 
             const order = await orderStore.createOrder(orderData);
+            
+            // Очищаем корзину после успешного создания заказа
+            await authStore.clearCart();
+            
             message.success("Заказ успешно создан!");
             navigate("/user/order-confirmation", {state: {order}});
         } catch (error) {
             console.error("Order creation error:", error);
-            message.error(`Ошибка: ${error.message}`);
+            
+            // Обработка специфических ошибок
+            if (error.message.includes("Недостаточное количество букета")) {
+                message.error("Извините, один или несколько букетов закончились на складе");
+            } else if (error.message.includes("Недостаточно компонента")) {
+                message.error("Извините, недостаточно материалов для создания букета");
+            } else {
+                message.error(`Ошибка при создании заказа: ${error.message}`);
+            }
         } finally {
             setIsSubmitting(false);
         }
