@@ -1,4 +1,14 @@
 const {makeExtendSchemaPlugin, gql, extend} = require('graphile-utils');
+const crypto = require('crypto');
+const nodemailer = require('nodemailer');
+
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: 'maskabedwars@gmail.com',
+        pass: 'baer uuzl glsp jqbg ', // Замените на пароль приложения из Google
+    },
+});
 
 const UserDataPlugin = makeExtendSchemaPlugin(build => {
     return {
@@ -607,6 +617,163 @@ const OCPSchemaPlugin = makeExtendSchemaPlugin(build => {
                         ...rows[0],
                         createdAt: rows[0].created_at
                     };
+                }
+            }
+        }
+    };
+});
+
+const FeedbackPlugin = makeExtendSchemaPlugin(build => {
+    return {
+        typeDefs: gql`
+            input NewFeedbackInput {
+                orderId: Int!
+                bouquetId: Int
+                userId: Int!
+                text: String!
+                score: Int!
+            }
+
+            type FeedbackResponse {
+                success: Boolean!
+                message: String
+                feedback: Feedback
+            }
+
+            extend type Mutation {
+                addFeedback(input: NewFeedbackInput!): FeedbackResponse!
+                replyToFeedback(feedbackId: Int!, text: String!, userId: Int!): FeedbackResponse!
+            }
+        `,
+        resolvers: {
+            Mutation: {
+                addFeedback: async (_, { input }, { pgClient }) => {
+                    try {
+                        await pgClient.query('BEGIN');
+
+                        // Проверяем, не оставлял ли пользователь уже отзыв
+                        const { rows: existingFeedback } = await pgClient.query(
+                            `SELECT id FROM feedback 
+                             WHERE user_id = $1 AND order_id = $2 
+                             AND COALESCE(bouquet_id, 0) = COALESCE($3, 0)`,
+                            [input.userId, input.orderId, input.bouquetId]
+                        );
+
+                        if (existingFeedback.length > 0) {
+                            throw new Error(input.bouquetId 
+                                ? 'Вы уже оставляли отзыв на этот букет' 
+                                : 'Вы уже оставляли отзыв на этот заказ');
+                        }
+
+                        // Создаем отзыв
+                        const { rows: [feedback] } = await pgClient.query(
+                            `INSERT INTO feedback (order_id, bouquet_id, user_id, text, score)
+                             VALUES ($1, $2, $3, $4, $5)
+                             RETURNING *`,
+                            [input.orderId, input.bouquetId, input.userId, input.text, input.score]
+                        );
+
+                        await pgClient.query('COMMIT');
+
+                        return {
+                            success: true,
+                            message: 'Отзыв успешно создан',
+                            feedback
+                        };
+                    } catch (error) {
+                        await pgClient.query('ROLLBACK');
+                        return {
+                            success: false,
+                            message: error.message
+                        };
+                    }
+                },
+
+                replyToFeedback: async (_, { feedbackId, text, userId }, { pgClient }) => {
+                    try {
+                        await pgClient.query('BEGIN');
+
+                        // Проверяем существование отзыва
+                        const { rows: [originalFeedback] } = await pgClient.query(
+                            `SELECT f.*, u.email, b.id as bouquet_id, o.id as order_id 
+                             FROM feedback f 
+                             JOIN users u ON f.user_id = u.id
+                             LEFT JOIN bouquets b ON f.bouquet_id = b.id
+                             LEFT JOIN orders o ON f.order_id = o.id
+                             WHERE f.id = $1`,
+                            [feedbackId]
+                        );
+
+                        if (!originalFeedback) {
+                            throw new Error('Отзыв не найден');
+                        }
+
+                        // Создаем ответный комментарий
+                        const { rows: [reply] } = await pgClient.query(
+                            `INSERT INTO feedback (
+                                order_id,
+                                bouquet_id,
+                                user_id,
+                                text,
+                                score,
+                                ref_id
+                            )
+                            VALUES ($1, $2, $3, $4, $5, $6)
+                            RETURNING *`,
+                            [
+                                originalFeedback.order_id,
+                                originalFeedback.bouquet_id,
+                                userId,
+                                text,
+                                5, // Для ответов всегда ставим максимальную оценку
+                                feedbackId
+                            ]
+                        );
+
+                        // Если это отзыв на заказ (не на букет), отправляем email
+                        if (!originalFeedback.bouquet_id) {
+                            const mailOptions = {
+                                from: 'maskabedwars@gmail.com',
+                                to: originalFeedback.email,
+                                subject: 'Ответ на ваш отзыв',
+                                html: `
+                                    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+                                        <h2 style="color: #2c3e50; margin-bottom: 20px;">Здравствуйте!</h2>
+                                        <p style="color: #34495e; font-size: 16px; line-height: 1.5; margin-bottom: 15px;">
+                                            Мы получили ваш отзыв и хотели бы ответить:
+                                        </p>
+                                        <div style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin-bottom: 20px;">
+                                            <p style="color: #666; font-style: italic; margin-bottom: 10px;">
+                                                Ваш отзыв: "${originalFeedback.text}"
+                                            </p>
+                                            <p style="color: #2c3e50; margin-bottom: 0;">
+                                                Наш ответ: "${text}"
+                                            </p>
+                                        </div>
+                                        <p style="color: #7f8c8d; font-size: 14px; margin-top: 20px;">
+                                            Спасибо, что помогаете нам становиться лучше!
+                                        </p>
+                                    </div>
+                                `
+                            };
+
+                            await transporter.sendMail(mailOptions);
+                        }
+
+                        await pgClient.query('COMMIT');
+
+                        return {
+                            success: true,
+                            message: 'Ответ успешно добавлен',
+                            feedback: reply
+                        };
+                    } catch (error) {
+                        await pgClient.query('ROLLBACK');
+                        return {
+                            success: false,
+                            message: error.message
+                        };
+                    }
                 }
             }
         }
@@ -1330,6 +1497,89 @@ const OrderPlugin = makeExtendSchemaPlugin(build => {
                             }
                         }
 
+                        // Если статус изменен на "Доставлен" (statusId = 4), отправляем ссылку для отзыва
+                        if (statusId === 4) {
+                            // Получаем информацию о пользователе
+                            const {rows: [user]} = await pgClient.query(
+                                `SELECT email FROM users WHERE id = $1`,
+                                [currentOrder.user_id]
+                            );
+
+                            // Получаем информацию о букетах в заказе
+                            const {rows: orderItems} = await pgClient.query(
+                                `SELECT oi.*, b.name as bouquet_name, b.id as bouquet_id, b.image
+                                 FROM order_items oi
+                                 JOIN bouquets b ON oi.bouquet_id = b.id
+                                 WHERE oi.order_id = $1`,
+                                [orderId]
+                            );
+
+                            // Создаем объект с данными для шифрования
+                            const feedbackData = {
+                                orderId,
+                                userId: currentOrder.user_id,
+                                items: orderItems.map(item => ({
+                                    bouquetId: item.bouquet_id,
+                                    name: item.bouquet_name,
+                                    image: item.image
+                                }))
+                            };
+
+                            // Генерируем ключ и вектор инициализации
+                            const key = crypto.scryptSync('your-secret-password', 'salt', 32);
+                            const iv = crypto.randomBytes(16);
+
+                            // Шифруем данные
+                            const cipher = crypto.createCipheriv('aes-256-cbc', key, iv);
+                            let encryptedData = cipher.update(JSON.stringify(feedbackData), 'utf8', 'hex');
+                            encryptedData += cipher.final('hex');
+
+                            // Добавляем IV к зашифрованным данным (он нужен для расшифровки)
+                            const combined = iv.toString('hex') + ':' + encryptedData;
+
+                            // Формируем ссылку для отзыва с зашифрованными данными
+                            const feedbackLink = `http://localhost:5173/review?data=${combined}`;
+
+                            // Формируем HTML для письма с информацией о букетах
+                            let bouquetsHtml = orderItems.map(item => `
+                                <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #ddd; border-radius: 8px;">
+                                    <h3 style="color: #333; margin-bottom: 10px;">Букет: ${item.bouquet_name}</h3>
+                                    <p style="color: #666;">Количество: ${item.quantity}</p>
+                                </div>
+                            `).join('');
+
+                            // Отправляем email с ссылкой для отзыва
+                            const mailOptions = {
+                                from: 'maskabedwars@gmail.com',
+                                to: user.email,
+                                subject: 'Спасибо за заказ! Оставьте отзыв о букетах',
+                                html: `
+                                    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                                        <h2 style="color: #2c3e50; text-align: center; margin-bottom: 30px;">Спасибо за ваш заказ!</h2>
+                                        <p style="color: #34495e; font-size: 16px; line-height: 1.5;">Мы очень ценим ваше мнение и будем благодарны, если вы поделитесь своими впечатлениями о приобретенных букетах:</p>
+                                        ${bouquetsHtml}
+                                        <div style="text-align: center; margin-top: 30px;">
+                                            <a href="${feedbackLink}" 
+                                               style="display: inline-block; 
+                                                      background-color: #3498db; 
+                                                      color: white; 
+                                                      padding: 12px 25px; 
+                                                      text-decoration: none; 
+                                                      border-radius: 5px;
+                                                      font-size: 16px;">
+                                                Оставить отзыв
+                                            </a>
+                                        </div>
+                                        <p style="color: #7f8c8d; font-size: 14px; margin-top: 30px; text-align: center;">
+                                            Ваше мнение поможет нам стать лучше!
+                                        </p>
+                                    </div>
+                                `
+                            };
+
+                            await transporter.sendMail(mailOptions);
+                        }
+
                         // Обновляем статус заказа
                         const {rows: [updatedOrder]} = await pgClient.query(
                             `UPDATE orders
@@ -1362,7 +1612,9 @@ const OrderPlugin = makeExtendSchemaPlugin(build => {
 
                         // Получаем информацию о клиенте
                         const {rows: [customer]} = await pgClient.query(
-                            `SELECT * FROM users WHERE id = $1`,
+                            `SELECT id, username, email, phone, surname
+                             FROM users
+                             WHERE id = $1`,
                             [updatedOrder.user_id]
                         );
 
@@ -1370,7 +1622,9 @@ const OrderPlugin = makeExtendSchemaPlugin(build => {
                         let pickupPoint = null;
                         if (updatedOrder.ocp_id) {
                             const {rows: [ocp]} = await pgClient.query(
-                                `SELECT * FROM ocp WHERE id = $1`,
+                                `SELECT id, address, latitude, longitude
+                                 FROM ocp
+                                 WHERE id = $1`,
                                 [updatedOrder.ocp_id]
                             );
                             pickupPoint = ocp;
@@ -1441,7 +1695,7 @@ const OrderPlugin = makeExtendSchemaPlugin(build => {
                             `SELECT *
                              FROM status
                              WHERE id = $1`,
-                            [updatedOrder.statusId]
+                            [updatedOrder.status_id]
                         );
 
                         const {rows: items} = await pgClient.query(
@@ -1458,7 +1712,7 @@ const OrderPlugin = makeExtendSchemaPlugin(build => {
                             orderDate: updatedOrder.order_date,
                             orderTime: updatedOrder.order_time,
                             price: updatedOrder.price,
-                            status: status,
+                            status,
                             address: updatedOrder.address,
                             paymentType: updatedOrder.payment_type,
                             orderType: updatedOrder.order_type,
@@ -1474,24 +1728,22 @@ const OrderPlugin = makeExtendSchemaPlugin(build => {
                                     image: item.image,
                                     description: item.description
                                 }
-                            })),
-                            customer: null, // Будет заполнено ниже
-                            pickupPoint: null // Будет заполнено ниже
+                            }))
                         };
 
                         // Получаем информацию о клиенте
                         const {rows: [customer]} = await pgClient.query(
-                            `SELECT *
+                            `SELECT id, username, email, phone, surname
                              FROM users
                              WHERE id = $1`,
                             [updatedOrder.user_id]
                         );
                         formattedOrder.customer = customer;
 
-                        // Получаем информацию о пункте выдачи, если есть
+                        // Получаем информацию о пункте выдачи
                         if (updatedOrder.ocp_id) {
                             const {rows: [ocp]} = await pgClient.query(
-                                `SELECT *
+                                `SELECT id, address, latitude, longitude
                                  FROM ocp
                                  WHERE id = $1`,
                                 [updatedOrder.ocp_id]
@@ -1808,4 +2060,4 @@ const StockSchemaPlugin = makeExtendSchemaPlugin(build => {
     };
 });
 
-module.exports = {UserDataPlugin, StoreMutationsPlugin, BlockUserPlugin, OCPSchemaPlugin, OrderPlugin, StockSchemaPlugin};
+module.exports = {UserDataPlugin, StoreMutationsPlugin, BlockUserPlugin, OCPSchemaPlugin, OrderPlugin, StockSchemaPlugin, FeedbackPlugin};

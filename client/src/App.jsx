@@ -19,6 +19,7 @@ import {ToastContainer} from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import ResetPassword from './views/ResetPassword/ResetPassword';
 import AddressModal from "./views/Modals/AddressModal/AddressModal";
+import Review from "./views/Review/Review";
 
 let rootStore;
 
@@ -74,6 +75,7 @@ const App = () => {
                             <Route path="/delivery/*" element={<Delivery/>}/>
                             <Route path="/test" element={<AuthTestButtons/>}/>
                             <Route path="/reset-password" element={<ResetPassword />} />
+                            <Route path="/review" element={<Review />} />
                             {/*<Route path="/promotion-page" element={<PromotionPage/>}/>*/}
                             <Route path="*" element={<Navigate to="/main" replace={true}/>}/>
                         </Routes>

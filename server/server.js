@@ -8,7 +8,7 @@ const jwt = require('jsonwebtoken');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
-const {UserDataPlugin, StoreMutationsPlugin, BlockUserPlugin, OCPSchemaPlugin, OrderPlugin, StockSchemaPlugin} = require("./plugins");
+const {UserDataPlugin, StoreMutationsPlugin, BlockUserPlugin, OCPSchemaPlugin, OrderPlugin, StockSchemaPlugin, FeedbackPlugin} = require("./plugins");
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
 const fetch = require('node-fetch');
@@ -241,7 +241,15 @@ app.use(
         watchPg: true,
         graphiql: true,
         enhanceGraphiql: true,
-        appendPlugins: [UserDataPlugin, StoreMutationsPlugin, BlockUserPlugin, OCPSchemaPlugin, OrderPlugin, StockSchemaPlugin]
+        appendPlugins: [
+            UserDataPlugin, 
+            StoreMutationsPlugin, 
+            BlockUserPlugin, 
+            OCPSchemaPlugin, 
+            OrderPlugin, 
+            StockSchemaPlugin,
+            FeedbackPlugin
+        ]
     })
 );
 // Добавляем новый маршрут для смены пароля
@@ -513,6 +521,153 @@ app.get('/api/ocp/nearest', async (req, res) => {
         console.error('Error finding nearest OCP:', error);
         res.status(500).json({
             error: 'Ошибка при поиске ближайшего ОЦП',
+            details: error.message
+        });
+    }
+});
+
+// Добавляем таблицу для хранения токенов отзывов
+app.post('/api/feedback/verify-order', async (req, res) => {
+    const { encryptedOrderId } = req.body;
+
+    try {
+        // Расшифровываем ID заказа
+        const decipher = crypto.createDecipher('aes-256-cbc', 'your-secret-key');
+        let orderId = decipher.update(encryptedOrderId, 'hex', 'utf8');
+        orderId += decipher.final('utf8');
+        orderId = parseInt(orderId);
+
+        // Проверяем существование заказа и его статус
+        const { rows: [order] } = await pool.query(
+            `SELECT o.*, u.email 
+             FROM orders o
+             JOIN users u ON o.user_id = u.id
+             WHERE o.id = $1 AND o.status_id = 4`,
+            [orderId]
+        );
+
+        if (!order) {
+            return res.status(404).json({ 
+                error: 'Заказ не найден или не доставлен'
+            });
+        }
+
+        // Получаем информацию о букетах в заказе
+        const { rows: orderItems } = await pool.query(
+            `SELECT oi.*, b.name, b.image
+             FROM order_items oi
+             JOIN bouquets b ON oi.bouquet_id = b.id
+             WHERE oi.order_id = $1`,
+            [orderId]
+        );
+
+        // Получаем существующие отзывы пользователя на букеты из этого заказа
+        const { rows: existingFeedback } = await pool.query(
+            `SELECT bouquet_id
+             FROM feedback
+             WHERE user_id = $1 AND order_id = $2`,
+            [order.user_id, orderId]
+        );
+
+        // Фильтруем букеты, на которые еще нет отзывов
+        const availableBouquets = orderItems.filter(item => 
+            !existingFeedback.some(feedback => feedback.bouquet_id === item.bouquet_id)
+        );
+
+        if (availableBouquets.length === 0) {
+            return res.status(400).json({
+                error: 'Вы уже оставили отзывы на все букеты из этого заказа'
+            });
+        }
+
+        res.json({
+            orderId,
+            userId: order.user_id,
+            bouquets: availableBouquets
+        });
+    } catch (error) {
+        console.error('Error verifying order:', error);
+        res.status(500).json({
+            error: 'Ошибка при проверке заказа',
+            details: error.message
+        });
+    }
+});
+
+// Эндпоинт для проверки данных отзыва
+app.post('/api/feedback/verify-data', async (req, res) => {
+    const { encryptedData } = req.body;
+
+    try {
+        // Разделяем IV и зашифрованные данные
+        const [ivHex, encryptedHex] = encryptedData.split(':');
+        
+        // Преобразуем hex строки обратно в буферы
+        const iv = Buffer.from(ivHex, 'hex');
+        const key = crypto.scryptSync('your-secret-password', 'salt', 32);
+
+        // Расшифровываем данные
+        const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
+        let decryptedData = decipher.update(encryptedHex, 'hex', 'utf8');
+        decryptedData += decipher.final('utf8');
+        
+        const feedbackData = JSON.parse(decryptedData);
+        const { orderId, userId, items } = feedbackData;
+
+        // Проверяем существование заказа и его статус
+        const { rows: [order] } = await pool.query(
+            `SELECT o.*, u.email 
+             FROM orders o
+             JOIN users u ON o.user_id = u.id
+             WHERE o.id = $1 AND o.status_id = 4 AND o.user_id = $2`,
+            [orderId, userId]
+        );
+
+        if (!order) {
+            return res.status(404).json({ 
+                error: 'Заказ не найден или не доставлен'
+            });
+        }
+
+        // Проверяем, оставлял ли пользователь общий отзыв о заказе
+        const { rows: orderFeedback } = await pool.query(
+            `SELECT id
+             FROM feedback
+             WHERE user_id = $1 AND order_id = $2 AND bouquet_id IS NULL`,
+            [userId, orderId]
+        );
+
+        const hasOrderFeedback = orderFeedback.length > 0;
+
+        // Получаем существующие отзывы пользователя на букеты из этого заказа
+        const { rows: existingFeedback } = await pool.query(
+            `SELECT bouquet_id
+             FROM feedback
+             WHERE user_id = $1 AND order_id = $2 AND bouquet_id IS NOT NULL`,
+            [userId, orderId]
+        );
+
+        // Фильтруем букеты, на которые еще нет отзывов
+        const availableBouquets = items.filter(item => 
+            !existingFeedback.some(feedback => feedback.bouquet_id === item.bouquetId)
+        );
+
+        if (availableBouquets.length === 0 && hasOrderFeedback) {
+            return res.status(400).json({
+                error: 'Вы уже оставили все отзывы для этого заказа'
+            });
+        }
+
+        res.json({
+            orderId,
+            userId,
+            bouquets: availableBouquets,
+            hasOrderFeedback
+        });
+    } catch (error) {
+        console.error('Error verifying feedback data:', error);
+        res.status(500).json({
+            error: 'Ошибка при проверке данных отзыва',
             details: error.message
         });
     }

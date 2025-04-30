@@ -196,10 +196,10 @@ const OCPInput = observer(() => {
                 <Spin spinning={isGeocoding}>
                     <Input
                         placeholder="Введите адрес"
-                        value={address}
+                            value={address}
                         onChange={(e) => setAddress(e.target.value)}
-                        className={s.input}
-                    />
+                            className={s.input}
+                        />
                 </Spin>
             </Modal>
 

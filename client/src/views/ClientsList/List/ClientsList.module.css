@@ -1,198 +1,172 @@
 .container {
-  max-width: 1200px;
-  margin: 20px auto;
-  padding: 0 10px; /* Добавим отступы по бокам */
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
-h2 {
+.container h2 {
+  font-size: 2rem;
+  color: #333;
+  margin-bottom: 2rem;
   text-align: center;
-  margin-bottom: 20px;
-  font-size: 24px;
 }
 
-.usersGrid {
+.feedbacksGrid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
 }
 
-.userCard {
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  padding: 15px;
-  background-color: #f9f9f9;
-  max-width: 100%; /* Убираем фиксированную ширину */
+.feedbackCard {
+  border: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease;
+}
 
+.feedbackCard:hover {
+  transform: translateY(-4px);
 }
 
 .userInfo {
-  margin-bottom: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
 }
 
 .userInfo h3 {
-  font-size: 20px;
-  margin-bottom: 5px;
+  margin: 0;
+  font-size: 1.1rem;
+  color: #333;
 }
 
-.userInfo p {
-  font-size: 16px;
-  color: #555;
+.feedbackContent {
+  margin-bottom: 1rem;
 }
 
-.commentsSection {
-  border-top: 1px solid #eee;
-  padding-top: 10px;
+.feedbackText {
+  font-size: 1rem;
+  color: #444;
+  line-height: 1.5;
+  margin-bottom: 0.75rem;
 }
 
-.commentsSection h4 {
-  font-size: 18px;
-  margin-bottom: 10px;
+.feedbackDate {
+  color: #666;
+  font-size: 0.85rem;
 }
 
-.comment {
-  margin-bottom: 10px;
-  padding: 10px;
-  border: 1px solid #eee;
-  border-radius: 4px;
-  background-color: #fff;
+.feedbackType {
+  display: inline-block;
+  background-color: #e91e63;
+  color: white;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
 }
 
-.commentText {
-  font-size: 14px;
-  margin-bottom: 5px;
+.replyContainer {
+  background-color: #f8f9fa;
+  padding: 0.75rem;
+  border-radius: 8px;
+  margin: 0.75rem 0;
 }
 
-.commentDate {
-  font-size: 12px;
-  color: #888;
+.replyHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.replyAuthor {
+  font-weight: 500;
+  color: #333;
+  font-size: 0.9rem;
+}
+
+.replyDate {
+  font-size: 0.8rem;
+  color: #666;
 }
 
 .replyText {
-  font-size: 14px;
-  color: #555;
-  margin-top: 5px;
+  color: #444;
+  margin: 0;
+  font-size: 0.9rem;
 }
 
-.replySection {
-  display: flex;
-  gap: 10px;
-  margin-top: 10px;
+.replyForm {
+  margin-top: 1rem;
 }
 
 .replyInput {
-  flex: 1;
-  padding: 8px;
-  font-size: 14px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  margin-bottom: 0.75rem;
+  resize: vertical;
+  min-height: 60px;
 }
 
 .replyButton {
-  padding: 8px 12px;
-  font-size: 14px;
-  border: none;
-  border-radius: 4px;
   background-color: #e91e63;
-  color: white;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
+  border-color: #e91e63;
 }
 
 .replyButton:hover {
-  background-color: #aa1748;
+  background-color: #d81b60;
+  border-color: #d81b60;
 }
 
-/* Адаптивность для планшетов */
-@media (max-width: 1024px) {
-  .usersGrid {
+.spinner {
+  display: flex;
+  justify-content: center;
+  margin: 2rem 0;
+}
+
+.error {
+  text-align: center;
+  color: #e91e63;
+  margin: 2rem 0;
+  font-size: 1.2rem;
+}
+
+/* Стили для разных размеров экрана */
+@media (min-width: 1200px) {
+  .feedbacksGrid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (min-width: 992px) and (max-width: 1199px) {
+  .feedbacksGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  .feedbacksGrid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
-/* Адаптивность для мобильных устройств */
-@media (max-width: 768px) {
-  .usersGrid {
+@media (max-width: 767px) {
+  .container {
+    padding: 1rem;
+  }
+
+  .feedbacksGrid {
     grid-template-columns: 1fr;
   }
 
-  .userCard {
-    padding: 10px;
+  .userInfo {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
   }
 
-  .userInfo h3 {
-    font-size: 18px;
-  }
-
-  .userInfo p {
-    font-size: 14px;
-  }
-
-  .commentsSection h4 {
-    font-size: 16px;
-  }
-
-  .commentText {
-    font-size: 13px;
-  }
-
-  .commentDate {
-    font-size: 11px;
-  }
-
-  .replyInput {
-    font-size: 13px;
-  }
-
-  .replyButton {
-    font-size: 13px;
-  }
-}
-
-/* Адаптивность для экранов 320px */
-@media (max-width: 480px) {
-  .container {
-    padding: 0 5px; /* Уменьшаем отступы по бокам */
-  }
-
-  h2 {
-    font-size: 20px; /* Уменьшаем размер заголовка */
-  }
-
-  .userCard {
-    padding: 8px; /* Уменьшаем отступы внутри карточки */
-  }
-
-  .userInfo h3 {
-    font-size: 16px; /* Уменьшаем размер заголовка карточки */
-  }
-
-  .userInfo p {
-    font-size: 12px; /* Уменьшаем размер текста */
-  }
-
-  .commentsSection h4 {
-    font-size: 14px; /* Уменьшаем размер заголовка секции комментариев */
-  }
-
-  .commentText {
-    font-size: 12px; /* Уменьшаем размер текста комментария */
-  }
-
-  .commentDate {
-    font-size: 10px; /* Уменьшаем размер даты */
-  }
-
-  .replyInput {
-    font-size: 12px; /* Уменьшаем размер текста в инпуте */
-    padding: 6px; /* Уменьшаем отступы внутри инпута */
-  }
-
-  .replyButton {
-    font-size: 12px; /* Уменьшаем размер текста кнопки */
-    padding: 6px 10px; /* Уменьшаем отступы внутри кнопки */
-  }
-
-  .replySection {
-    gap: 5px; /* Уменьшаем отступ между инпутом и кнопкой */
+  .replyHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
   }
 }

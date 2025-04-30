@@ -105,10 +105,12 @@ ALTER TABLE public.deliveryman_info
 CREATE TABLE public.feedback
 (
     id         SERIAL PRIMARY KEY,
-    order_id   INT          NOT NULL,
-    user_id    INT          NOT NULL,
+    order_id   INT          REFERENCES public.orders (id),
+    bouquet_id INT          REFERENCES public.bouquets (id),
+    user_id    INT          REFERENCES public.users (id) NOT NULL,
     text       VARCHAR(300) NOT NULL,
     score      INT          NOT NULL,
+    ref_id     INT          REFERENCES public.feedback (id),
     created_at TIMESTAMP DEFAULT NOW()
 );
 ALTER TABLE public.feedback
@@ -308,9 +310,6 @@ ALTER TABLE ONLY public.ocp_item
 ALTER TABLE ONLY public.ocp_item
     ADD CONSTRAINT fk_ocp FOREIGN KEY (ocp_id) REFERENCES public.ocp (id);
 
-ALTER TABLE ONLY public.feedback
-    ADD CONSTRAINT fk_order FOREIGN KEY (order_id) REFERENCES public.orders (id);
-
 ALTER TABLE ONLY public.users
     ADD CONSTRAINT fk_role FOREIGN KEY (role_id) REFERENCES public.role (id);
 
@@ -333,9 +332,6 @@ ALTER TABLE ONLY public.wishlist
     ADD CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES public.users (id);
 
 ALTER TABLE ONLY public.orders
-    ADD CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES public.users (id);
-
-ALTER TABLE ONLY public.feedback
     ADD CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES public.users (id);
 
 ALTER TABLE ONLY public.deliveryman_info

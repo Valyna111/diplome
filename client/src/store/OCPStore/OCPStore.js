@@ -77,14 +77,14 @@ class OCPStore {
                 mutation: gql`
                     mutation CreateOCP($address: String!, $latitude: Float, $longitude: Float) {
                         createOcp(
-                            address: $address,
-                            latitude: $latitude,
-                            longitude: $longitude
+                                address: $address,
+                                latitude: $latitude,
+                                longitude: $longitude
                         ) {
-                            id
-                            address
-                            latitude
-                            longitude
+                                id
+                                address
+                                latitude
+                                longitude
                         }
                     }
                 `,

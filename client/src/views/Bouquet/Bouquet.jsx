@@ -8,6 +8,40 @@ import {FaChevronDown, FaChevronUp, FaMinus, FaPlus, FaShoppingCart} from "react
 import ArticlesComp from "@/components/ArticlesComp/ArticlesComp";
 import CategoryCard from "@/components/CategoryCard/CategoryCard";
 import {toast} from "react-toastify";
+import { useQuery, gql } from '@apollo/client';
+import { Card, Image, Button, InputNumber, Rate, Divider, Empty, List, Tooltip } from 'antd';
+import { ShoppingCartOutlined, HeartOutlined, HeartFilled, StarFilled } from '@ant-design/icons';
+import { Comment } from '@ant-design/compatible';
+
+const GET_BOUQUET = gql`
+    query GetBouquet($id: Int!) {
+        bouquetById(id: $id) {
+            id
+            name
+            price
+            description
+            image
+            amount
+            sale
+            feedbacksByBouquetId {
+                nodes {
+                    userByUserId {
+                        surname
+                        username
+                        email
+                        roleByRoleId {
+                            name
+                        }
+                    }
+                    score
+                    text
+                    refId
+                    createdAt
+                }
+            }
+        }
+    }
+`;
 
 const Bouquet = observer(() => {
     const rootStore = useContext(StoreContext);
@@ -23,6 +57,9 @@ const Bouquet = observer(() => {
     const [selectedAddons, setSelectedAddons] = useState([]);
     const [isAddingToCart, setIsAddingToCart] = useState(false);
     const [cartQuantity, setCartQuantity] = useState(0);
+    const { data, loading: queryLoading, error: queryError } = useQuery(GET_BOUQUET, {
+        variables: { id: parseInt(id) }
+    });
 
     // Получаем максимально доступное количество из BouquetStore
     const availableAmount = rootStore.bouquetStore.getAvailableQuantity(parseInt(id));
@@ -129,6 +166,16 @@ const Bouquet = observer(() => {
             setIsAddingToCart(false);
         }
     };
+
+    if (queryLoading) return <div className={s.loading}>Загрузка...</div>;
+    if (queryError) return <div className={s.error}>{queryError.message}</div>;
+
+    const { bouquetById: queryBouquet } = data;
+    const feedback = queryBouquet.feedbacksByBouquetId?.nodes || [];
+    const rating = feedback.length > 0 
+        ? feedback.reduce((sum, item) => sum + item.score, 0) / feedback.length 
+        : 0;
+    const feedbackCount = feedback.length;
 
     if (loading) {
         return (
@@ -359,8 +406,100 @@ const Bouquet = observer(() => {
                     </motion.div>
                 )}
             </AnimatePresence>
+            <div className={s.feedbackSection}>
+                <h2>Отзывы {feedbackCount > 0 && <span className={s.ratingInfo}>
+                    <Rate 
+                        disabled 
+                        value={rating} 
+                        character={<StarFilled style={{ color: '#e91e63' }} />}
+                    />
+                    <span className={s.ratingValue}>({rating.toFixed(1)})</span>
+                </span>}</h2>
+                {feedbackCount > 0 ? (
+                    <List
+                        className={s.feedbackList}
+                        itemLayout="horizontal"
+                        dataSource={feedback}
+                        renderItem={item => (
+                            <List.Item>
+                                <Comment
+                                    author={
+                                        <span className={s.author}>
+                                            {item.userByUserId.surname} {item.userByUserId.username}
+                                            {item.userByUserId.roleByRoleId?.name === 'admin' && 
+                                                <span className={s.adminBadge}>Администратор</span>
+                                            }
+                                        </span>
+                                    }
+                                    avatar={
+                                        <div className={s.avatarPlaceholder}>
+                                            {item.userByUserId.username[0].toUpperCase()}
+                                        </div>
+                                    }
+                                    content={
+                                        <div>
+                                            <Rate 
+                                                disabled 
+                                                value={item.score} 
+                                                character={<StarFilled style={{ color: '#e91e63' }} />}
+                                            />
+                                            <p className={s.feedbackText}>{item.text}</p>
+                                        </div>
+                                    }
+                                    datetime={
+                                        <Tooltip title={new Date(item.createdAt).toLocaleString()}>
+                                            <span>{formatDate(item.createdAt)}</span>
+                                        </Tooltip>
+                                    }
+                                />
+                            </List.Item>
+                        )}
+                    />
+                ) : (
+                    <Empty
+                        image={Empty.PRESENTED_IMAGE_SIMPLE}
+                        description="Пока нет отзывов"
+                    />
+                )}
+            </div>
         </div>
     );
 });
+
+// Вспомогательная функция для форматирования даты
+const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diff = now - date;
+    
+    // Меньше 24 часов
+    if (diff < 24 * 60 * 60 * 1000) {
+        if (diff < 60 * 60 * 1000) {
+            const minutes = Math.floor(diff / (60 * 1000));
+            return `${minutes} ${getDeclension(minutes, ['минуту', 'минуты', 'минут'])} назад`;
+        }
+        const hours = Math.floor(diff / (60 * 60 * 1000));
+        return `${hours} ${getDeclension(hours, ['час', 'часа', 'часов'])} назад`;
+    }
+    
+    // Меньше недели
+    if (diff < 7 * 24 * 60 * 60 * 1000) {
+        const days = Math.floor(diff / (24 * 60 * 60 * 1000));
+        return `${days} ${getDeclension(days, ['день', 'дня', 'дней'])} назад`;
+    }
+    
+    // Более недели
+    return date.toLocaleDateString('ru-RU', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+    });
+};
+
+// Вспомогательная функция для склонения слов
+const getDeclension = (number, words) => {
+    const cases = [2, 0, 1, 1, 1, 2];
+    return words[(number % 100 > 4 && number % 100 < 20) ? 2 : cases[(number % 10 < 5) ? number % 10 : 5]];
+};
 
 export default Bouquet;

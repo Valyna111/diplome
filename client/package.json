@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@ant-design/compatible": "^5.1.4",
     "@ant-design/icons": "^5.0.1",
     "@apollo/client": "^3.7.17",
     "@stripe/react-stripe-js": "^2.1.1",
