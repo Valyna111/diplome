@@ -3,9 +3,7 @@
 # dependencies
 /client/node_modules
 /server/node_modules
-/testGraphQL/node_modules
 /server/uploads/*
-/testGraphQL/uploads/*
 /.pnp
 .pnp.js
 /.idea
