@@ -6,13 +6,13 @@ import PromotionConstructor from '@/views/PromotionConstructor/PromotionConstruc
 import ClientsList from '@/views/ClientsList/List/ClientsList';
 import ClientDetails from '@/views/ClientsList/Item/ClientDetails';
 import SalesReport from '@/views/SalesReport/SalesReport';
-import PurchaseHistory from '@/views/PurchaseHistory/PurchaseHistory';
+import ManagerOrdersPage from '@/views/ManagerOrdersPage/ManagerOrdersPage';
 
 const Dashboard = () => (
     <Routes>
           <Route path="/article-constructor" element={<ArticleConstructor />} />
           <Route path="/promotion-constructor" element={<PromotionConstructor/>} />
-          <Route path="/orders" element={<PurchaseHistory/>} />
+          <Route path="/orders" element={<ManagerOrdersPage/>} />
           <Route path="/clientlist" element={<ClientsList />} />
           <Route path="/clientlist/:id" element={<ClientDetails />} />
           <Route path="/sales" element={<SalesReport/>} />

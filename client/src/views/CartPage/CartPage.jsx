@@ -11,7 +11,7 @@ import {IoIosArrowBack} from "react-icons/io";
 import {toast} from "react-toastify";
 
 const CartPage = observer(() => {
-    const {authStore} = useContext(StoreContext);
+    const {authStore, bouquetStore} = useContext(StoreContext);
     const navigate = useNavigate();
     const [isProcessing, setIsProcessing] = React.useState(false);
 
@@ -75,13 +75,14 @@ const CartPage = observer(() => {
         if (!item) return;
 
         const newQuantity = currentQuantity + change;
+        const availableAmount = bouquetStore.getAvailableQuantity(bouquetId);
 
         // Проверка минимального количества
         if (newQuantity < 1) return;
 
         // Проверка доступного количества
-        if (newQuantity > item.bouquet.amount) {
-            toast.error(`Доступно только ${item.bouquet.amount} шт. этого товара`);
+        if (newQuantity > availableAmount) {
+            toast.error(`Доступно только ${availableAmount} шт. этого товара`);
             return;
         }
 
@@ -121,9 +122,10 @@ const CartPage = observer(() => {
 
     const handleCheckout = () => {
         // Проверка наличия товаров перед оформлением
-        const unavailableItems = cartItems.filter(item =>
-            item.quantity > item.bouquet.amount
-        );
+        const unavailableItems = cartItems.filter(item => {
+            const availableAmount = bouquetStore.getAvailableQuantity(item.bouquet.id);
+            return item.quantity > availableAmount;
+        });
 
         if (unavailableItems.length > 0) {
             toast.error("Некоторые товары недоступны в таком количестве");
@@ -224,7 +226,6 @@ const CartPage = observer(() => {
                                 compactView={true}
                                 showRemoveButton={false}
                                 showQuantityControls={false}
-                                availableAmount={item.bouquet.amount}
                                 discountPercentage={item.bouquet.sale}
                             />
                             <motion.div className={styles.controls}>
@@ -255,7 +256,7 @@ const CartPage = observer(() => {
                                     </motion.span>
                                     <motion.button
                                         onClick={() => handleQuantityChange(item.bouquet.id, item.quantity, 1)}
-                                        disabled={isProcessing || item.quantity >= item.bouquet.amount}
+                                        disabled={isProcessing || item.quantity >= bouquetStore.getAvailableQuantity(item.bouquet.id)}
                                         whileHover={{scale: 1.1}}
                                         whileTap={{scale: 0.9}}
                                     >

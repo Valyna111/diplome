@@ -1,53 +1,76 @@
-import React, {useContext} from "react";
-import {Link} from "react-router-dom";
+import React, { useContext, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
 import styles from "./ArticlesComp.module.css";
 
-import Slider1 from '@/assets/images/slider1.jpg';
-import Slider2 from '@/assets/images/slider2.jpg';
-import Slider3 from '@/assets/images/slider3.jpg';
-import {observer} from "mobx-react-lite";
+import { observer } from "mobx-react-lite";
 import StoreContext from "@/store/StoreContext";
 
-const articles = [
-    {
-        id: 1,
-        image: Slider1,
-        title: "Как ухаживать за цветами",
-        description: "Советы по уходу за срезанными цветами, чтобы они дольше радовали глаз.",
-    },
-    {
-        id: 2,
-        image: Slider2,
-        title: "Как выбрать букет",
-        description: "Какие цветы лучше подарить на разные случаи жизни.",
-    },
-    {
-        id: 3,
-        image: Slider3,
-        title: "Значение цветов",
-        description: "Что символизируют разные цветы и их оттенки.",
-    }
-];
-
 const ArticlesComp = observer(() => {
-    const {auxiliaryStore} = useContext(StoreContext);
+    const { auxiliaryStore } = useContext(StoreContext);
+
+    useEffect(() => {
+        auxiliaryStore.loadArticles();
+    }, []);
+
+    const containerVariants = {
+        hidden: { opacity: 0 },
+        visible: {
+            opacity: 1,
+            transition: {
+                staggerChildren: 0.2
+            }
+        }
+    };
+
+    const cardVariants = {
+        hidden: { y: 20, opacity: 0 },
+        visible: {
+            y: 0,
+            opacity: 1,
+            transition: {
+                duration: 0.5,
+                ease: "easeOut"
+            }
+        }
+    };
 
     return (
-        <div className={styles.articlesContainer}>
+        <motion.div 
+            className={styles.articlesContainer}
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+        >
             {auxiliaryStore.articles.slice(0, 3).map((article) => (
-                <div key={article.id} className={styles.articleCard}>
-                    {/* 🔗 Делаем картинку и текст ссылками на страницу статьи */}
+                <motion.div 
+                    key={article.id} 
+                    className={styles.articleCard}
+                    variants={cardVariants}
+                    whileHover={{ scale: 1.03 }}
+                >
                     <Link to={`/main/article/${article.id}`} className={styles.articleLink}>
-                        <img src={`http://localhost:4000${article?.image1}`} alt={article.title}
-                             className={styles.articleImage}/>
+                        {article.articleBlocksByArticleId.nodes[0]?.image && (
+                            <motion.img 
+                                src={`http://localhost:4000${article.articleBlocksByArticleId.nodes[0].image}`} 
+                                alt={article.header}
+                                className={styles.articleImage}
+                                whileHover={{ scale: 1.1 }}
+                                transition={{ duration: 0.3 }}
+                            />
+                        )}
                         <div className={styles.articleContent}>
-                            <h3 className={styles.articleTitle}>{article?.header}</h3>
-                            <p className={styles.articleDescription}>{article?.description1}</p>
+                            <h3 className={styles.articleTitle}>{article.header}</h3>
+                            {article.articleBlocksByArticleId.nodes[0]?.text && (
+                                <p className={styles.articleDescription}>
+                                    {article.articleBlocksByArticleId.nodes[0].text}
+                                </p>
+                            )}
                         </div>
                     </Link>
-                </div>
+                </motion.div>
             ))}
-        </div>
+        </motion.div>
     );
 });
 

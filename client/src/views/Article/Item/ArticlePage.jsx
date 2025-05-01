@@ -1,32 +1,80 @@
-import React from "react";
-import { useParams } from "react-router-dom";
-import styles from "../styles/ArticlePage.module.css";
-import Slider1 from '@/assets/images/slider1.jpg';
-import Slider2 from '@/assets/images/slider2.jpg';
-import Slider3 from '@/assets/images/slider3.jpg';
+import React, { useEffect, useContext } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { observer } from "mobx-react-lite";
+import StoreContext from "@/store/StoreContext";
+import styles from "./ArticlePage.module.css";
+import { ArrowLeft } from "lucide-react";
 
-const articles = [
-  { id: 1, image: Slider1, title: "Как ухаживать за цветами", content: "Полный текст статьи про уход за цветами..." },
-  { id: 2, image: Slider2, title: "Как выбрать букет", content: "Полный текст статьи про выбор букета..." },
-  { id: 3, image: Slider3, title: "Значение цветов", content: "Полный текст статьи про значения цветов..." },
-  { id: 4, image: Slider1, title: "Цветы и их аромат", content: "Полный текст статьи про ароматы цветов..." }
-];
+const ArticlePage = observer(() => {
+    const { id } = useParams();
+    const navigate = useNavigate();
+    const { auxiliaryStore } = useContext(StoreContext);
 
-const ArticlePage = () => {
-  const { id } = useParams();
-  const article = articles.find(a => a.id === Number(id));
+    useEffect(() => {
+        if (id) {
+            auxiliaryStore.loadArticleById(parseInt(id));
+        }
+    }, [id]);
 
-  if (!article) {
-    return <h2>Статья не найдена</h2>;
-  }
+    const handleBackClick = () => {
+        navigate(-1);
+    };
 
-  return (
-    <div className={styles.articlePage}>
-      <h1 className={styles.title}>{article.title}</h1>
-      <img src={article.image} alt={article.title} className={styles.image} />
-      <p className={styles.content}>{article.content}</p>
-    </div>
-  );
-};
+    if (auxiliaryStore.isLoading) {
+        return (
+            <div className={styles.articlePage}>
+                <div className={styles.loading}>Загрузка статьи...</div>
+            </div>
+        );
+    }
+
+    if (auxiliaryStore.error) {
+        return (
+            <div className={styles.articlePage}>
+                <div className={styles.error}>
+                    Ошибка при загрузке статьи: {auxiliaryStore.error.message}
+                </div>
+            </div>
+        );
+    }
+
+    const article = auxiliaryStore.currentArticle;
+
+    if (!article) {
+        return (
+            <div className={styles.articlePage}>
+                <div className={styles.error}>Статья не найдена</div>
+            </div>
+        );
+    }
+
+    return (
+        <div className={styles.articlePage}>
+            <button className={styles.backButton} onClick={handleBackClick}>
+                <ArrowLeft size={20} />
+                Назад к статьям
+            </button>
+
+            <h1 className={styles.title}>{article.header}</h1>
+
+            <div className={styles.articleBlocks}>
+                {article.articleBlocksByArticleId.nodes.map((block, index) => (
+                    <div key={block.id} className={styles.block}>
+                        {block.image && (
+                            <img
+                                src={`http://localhost:4000${block.image}`}
+                                alt={`Изображение ${index + 1}`}
+                                className={styles.blockImage}
+                            />
+                        )}
+                        {block.text && (
+                            <p className={styles.blockText}>{block.text}</p>
+                        )}
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+});
 
 export default ArticlePage;

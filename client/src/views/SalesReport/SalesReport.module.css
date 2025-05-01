@@ -1,66 +1,116 @@
 .reportContainer {
-  padding: 1rem;
-  max-width: 1200px;
-  margin: 0 auto;
-  font-family: Arial, sans-serif;
-}
-
-.reportContainer h1 {
-  text-align: center;
-  margin-bottom: 2rem;
-  color: #333;
-}
-
-.chart {
-  background: white;
-  border-radius: 10px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  padding: 1rem;
-  margin-bottom: 2rem;
-}
-
-.chart h2 {
-  text-align: center;
-  margin-bottom: 1rem;
-  color: #444;
-}
-
-.loading,
-.error {
-  text-align: center;
+  padding: 24px;
   padding: 2rem;
-  font-size: 1.2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  min-height: calc(100vh - 64px);
 }
 
-.loading {
-  color: #666;
+.reportHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.reportHeader h1 {
+  margin: 0;
+  font-size: 24px;
+  color: #1a1a1a;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.controls {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.chartGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.chartSection {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.chartSection:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.chartSection h2 {
+  margin: 0 0 1.5rem 0;
+  font-size: 18px;
+  color: #1a1a1a;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.chartWrapper {
+  height: 300px;
+  position: relative;
+}
+
+.spin {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .error {
-  color: #ff0000;
+  margin-bottom: 1.5rem;
 }
 
 /* Адаптивность */
+@media (max-width: 1200px) {
+  .chartGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 768px) {
-  .chart {
-    padding: 0.5rem;
+  .reportContainer {
+    padding: 1rem;
   }
 
-  .reportContainer h1 {
-    font-size: 1.5rem;
+  .reportHeader {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
   }
 
-  .chart h2 {
-    font-size: 1.2rem;
+  .controls {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .chartSection {
+    padding: 1rem;
   }
 }
 
 @media (max-width: 480px) {
-  .reportContainer {
-    padding: 0.5rem;
+  .reportHeader h1 {
+    font-size: 20px;
   }
 
-  .chart {
-    margin-bottom: 1rem;
+  .chartSection h2 {
+    font-size: 16px;
   }
 }

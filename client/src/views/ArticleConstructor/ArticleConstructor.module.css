@@ -1,204 +1,293 @@
 /* Основные стили контейнера */
 .container {
     display: flex;
-    gap: 20px;
-    padding: 20px;
+    gap: 24px;
+    padding: 24px;
     min-height: 100vh;
+    background-color: #f5f7fa;
 }
 
 /* Левая колонка (список статей) */
 .leftColumn {
     flex: 1;
-    max-width: 300px;
+    max-width: 320px;
     background-color: #ffffff;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 24px;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    height: fit-content;
+    position: sticky;
+    top: 24px;
 }
 
 /* Кнопка добавления статьи */
 .addButton {
     width: 100%;
-    margin-bottom: 20px;
-    background-color: #007bff;
+    margin-bottom: 24px;
+    background-color: #4f46e5;
     color: #ffffff;
     border: none;
-    border-radius: 8px;
-    padding: 10px;
+    border-radius: 12px;
+    padding: 12px 16px;
     font-size: 16px;
+    font-weight: 500;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
 }
 
 .addButton:hover {
-    background-color: #0056b3;
+    background-color: #4338ca;
+    transform: translateY(-1px);
 }
 
 /* Список статей */
 .articlesList {
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 16px;
+    max-height: calc(100vh - 200px);
+    overflow-y: auto;
+    padding-right: 8px;
+}
+
+.articlesList::-webkit-scrollbar {
+    width: 6px;
+}
+
+.articlesList::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.articlesList::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+    border-radius: 4px;
+}
+
+.articlesList::-webkit-scrollbar-thumb:hover {
+    background: #9ca3af;
 }
 
 /* Карточка статьи */
 .articleCard {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 10px;
-    background-color: #f1f1f1;
-    border-radius: 8px;
+    gap: 12px;
+    padding: 12px;
+    background-color: #f9fafb;
+    border-radius: 12px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: all 0.3s ease;
+    border: 1px solid #e5e7eb;
 }
 
 .articleCard:hover {
-    background-color: #e1e1e1;
+    background-color: #f3f4f6;
+    transform: translateX(4px);
+    border-color: #d1d5db;
 }
 
 .articleImage {
-    width: 50px;
-    height: 50px;
+    width: 60px;
+    height: 60px;
     border-radius: 8px;
     object-fit: cover;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .articleCard h3 {
     margin: 0;
     font-size: 14px;
-    color: #333;
+    font-weight: 500;
+    color: #1f2937;
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 /* Правая колонка (форма редактирования) */
 .rightColumn {
     flex: 2;
     background-color: #ffffff;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 24px;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 }
 
 .rightColumn h2 {
-    margin-top: 0;
+    margin: 0 0 24px 0;
     font-size: 24px;
-    color: #333;
+    font-weight: 600;
+    color: #111827;
 }
 
-/* Контейнер для загрузки изображений */
-.imageUploadContainer {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 15px;
-    margin-bottom: 20px;
-}
-
-.imageUpload {
+/* Блоки статьи */
+.blocksContainer {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 10px;
+    gap: 24px;
 }
 
-.imageUpload input[type="file"] {
-    display: none;
+.block {
+    background-color: #f9fafb;
+    border-radius: 12px;
+    padding: 20px;
+    border: 1px solid #e5e7eb;
+}
+
+.blockHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.blockHeader h4 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+/* Секция загрузки изображения */
+.imageUploadSection {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 16px;
 }
 
 .uploadButton {
     width: 100%;
-    background-color: #007bff;
+    background-color: #4f46e5;
     color: #ffffff;
     border: none;
     border-radius: 8px;
-    padding: 8px;
+    padding: 10px 16px;
     font-size: 14px;
+    font-weight: 500;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: all 0.3s ease;
 }
 
 .uploadButton:hover {
-    background-color: #0056b3;
+    background-color: #4338ca;
 }
 
 .previewImage {
     width: 100%;
-    height: 100px;
+    height: 200px;
     border-radius: 8px;
     object-fit: cover;
-}
-
-/* Группа текстовых полей */
-.inputGroup {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-.sectionBlock {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 /* Группа кнопок */
 .buttonGroup {
     display: flex;
-    gap: 10px;
-    margin-top: 20px;
+    gap: 12px;
+    margin-top: 24px;
+    padding-top: 24px;
+    border-top: 1px solid #e5e7eb;
 }
 
 .publishButton {
-    background-color: #28a745;
+    background-color: #10b981;
     color: #ffffff;
     border: none;
     border-radius: 8px;
-    padding: 10px;
+    padding: 12px 20px;
     font-size: 16px;
+    font-weight: 500;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .publishButton:hover {
-    background-color: #218838;
+    background-color: #059669;
+    transform: translateY(-1px);
 }
 
 .deleteButton {
-    background-color: #dc3545;
+    background-color: #ef4444;
     color: #ffffff;
     border: none;
     border-radius: 8px;
-    padding: 10px;
+    padding: 12px 20px;
     font-size: 16px;
+    font-weight: 500;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .deleteButton:hover {
-    background-color: #c82333;
+    background-color: #dc2626;
+    transform: translateY(-1px);
 }
 
 /* Адаптивность */
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
     .container {
         flex-direction: column;
-        padding: 10px;
     }
 
     .leftColumn {
         max-width: 100%;
+        position: static;
     }
 
-    .imageUploadContainer {
-        grid-template-columns: repeat(2, 1fr);
+    .articlesList {
+        max-height: none;
+    }
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 16px;
+    }
+
+    .leftColumn,
+    .rightColumn {
+        padding: 16px;
+    }
+
+    .block {
+        padding: 16px;
+    }
+
+    .previewImage {
+        height: 160px;
     }
 }
 
 @media (max-width: 480px) {
-    .imageUploadContainer {
-        grid-template-columns: 1fr;
-    }
-
     .buttonGroup {
         flex-direction: column;
+    }
+
+    .publishButton,
+    .deleteButton {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .articleCard {
+        padding: 8px;
+    }
+
+    .articleImage {
+        width: 50px;
+        height: 50px;
     }
 }

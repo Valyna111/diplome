@@ -1,12 +1,12 @@
 /* Базовые стили для контейнера статей */
 .articlesContainer {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 25px;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
   width: 100%;
   max-width: 1200px;
-  margin: 30px auto;
-  padding: 0 15px;
+  margin: 40px auto;
+  padding: 0 20px;
   box-sizing: border-box;
 }
 
@@ -14,17 +14,29 @@
 .articleCard {
   display: flex;
   flex-direction: column;
-  border: 2px solid #e91e63;
-  border-radius: 12px;
+  border-radius: 16px;
   overflow: hidden;
   background: white;
-  box-shadow: 0 4px 12px rgba(233, 30, 99, 0.1);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
+  position: relative;
 }
 
-.articleCard:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 20px rgba(233, 30, 99, 0.15);
+.articleCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, #e91e63, #9c27b0);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 1;
+}
+
+.articleCard:hover::before {
+  opacity: 0.1;
 }
 
 /* Ссылка на статью */
@@ -34,45 +46,78 @@
   display: flex;
   flex-direction: column;
   height: 100%;
+  position: relative;
+  z-index: 2;
 }
 
 /* Изображение статьи */
 .articleImage {
   width: 100%;
-  height: 200px;
+  height: 220px;
   object-fit: cover;
   object-position: center;
+  border-radius: 16px 16px 0 0;
 }
 
 /* Контент статьи */
 .articleContent {
-  padding: 18px;
+  padding: 24px;
   flex-grow: 1;
   display: flex;
   flex-direction: column;
+  background: white;
 }
 
 /* Заголовок статьи */
 .articleTitle {
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 600;
   color: #333;
-  margin-bottom: 10px;
-  line-height: 1.3;
+  margin-bottom: 12px;
+  line-height: 1.4;
+  transition: color 0.3s ease;
+}
+
+.articleCard:hover .articleTitle {
+  color: #e91e63;
 }
 
 /* Описание статьи */
 .articleDescription {
-  font-size: 14px;
+  font-size: 15px;
   color: #666;
-  line-height: 1.4;
+  line-height: 1.5;
   margin-top: auto;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
-/* Адаптация для планшетов (вертикальная ориентация) */
+/* Адаптация для планшетов */
 @media (max-width: 900px) {
   .articlesContainer {
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 25px;
+  }
+  
+  .articleImage {
+      height: 200px;
+  }
+  
+  .articleContent {
+      padding: 20px;
+  }
+  
+  .articleTitle {
+      font-size: 18px;
+  }
+}
+
+/* Адаптация для мобильных устройств */
+@media (max-width: 768px) {
+  .articlesContainer {
+      grid-template-columns: repeat(2, 1fr);
       gap: 20px;
   }
   
@@ -80,76 +125,262 @@
       height: 180px;
   }
   
-  .articleContent {
-      padding: 15px;
-  }
-  
   .articleTitle {
       font-size: 17px;
   }
-}
-
-/* Адаптация для небольших планшетов и крупных мобильных */
-@media (max-width: 768px) {
-  .articlesContainer {
-      grid-template-columns: repeat(2, 1fr);
-      gap: 15px;
-  }
-  
-  .articleImage {
-      height: 160px;
-  }
-  
-  .articleTitle {
-      font-size: 16px;
-  }
   
   .articleDescription {
-      font-size: 13px;
+      font-size: 14px;
   }
 }
 
-/* Адаптация для мобильных устройств */
+/* Адаптация для маленьких мобильных устройств */
 @media (max-width: 480px) {
   .articlesContainer {
       grid-template-columns: 1fr;
-      gap: 20px;
-      padding: 0 10px;
-  }
-  
-  .articleCard {
-      border-width: 1px;
+      gap: 25px;
+      padding: 0 15px;
   }
   
   .articleImage {
-      height: 150px;
+      height: 200px;
   }
   
   .articleContent {
-      padding: 12px 15px;
+      padding: 20px;
   }
   
   .articleTitle {
-      font-size: 16px;
-      margin-bottom: 8px;
+      font-size: 18px;
   }
   
   .articleDescription {
-      font-size: 13px;
+      font-size: 15px;
   }
 }
 
-/* Очень маленькие экраны */
-@media (max-width: 360px) {
-  .articleImage {
-      height: 130px;
-  }
-  
-  .articleContent {
-      padding: 10px 12px;
-  }
-  
-  .articleTitle {
-      font-size: 15px;
-  }
+/* Стили для полной статьи */
+.fullArticle {
+    max-width: 900px;
+    margin: 60px auto;
+    padding: 0 30px;
+}
+
+.articleHeader {
+    font-size: 36px;
+    color: #333;
+    margin-bottom: 40px;
+    text-align: center;
+    font-weight: 700;
+}
+
+.articleBlocks {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+}
+
+.articleBlock {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 0.6s ease forwards;
+}
+
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.blockImage {
+    width: 100%;
+    max-height: 500px;
+    object-fit: cover;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.blockImage:hover {
+    transform: scale(1.02);
+}
+
+.blockText {
+    font-size: 18px;
+    line-height: 1.8;
+    color: #444;
+    text-align: justify;
+}
+
+/* Адаптация для мобильных устройств */
+@media (max-width: 768px) {
+    .fullArticle {
+        margin: 30px auto;
+        padding: 0 20px;
+    }
+
+    .articleHeader {
+        font-size: 28px;
+        margin-bottom: 30px;
+    }
+
+    .articleBlocks {
+        gap: 30px;
+    }
+
+    .blockImage {
+        max-height: 350px;
+    }
+
+    .blockText {
+        font-size: 16px;
+        line-height: 1.6;
+    }
+}
+
+/* Стили для формы */
+.formContainer {
+    max-width: 900px;
+    margin: 50px auto;
+    padding: 30px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+.formContainer h2 {
+    color: #333;
+    margin-bottom: 30px;
+    text-align: center;
+    font-size: 28px;
+    font-weight: 600;
+}
+
+.formGroup {
+    margin-bottom: 25px;
+}
+
+.formGroup label {
+    display: block;
+    margin-bottom: 10px;
+    color: #555;
+    font-weight: 500;
+    font-size: 16px;
+}
+
+.formGroup input,
+.formGroup textarea {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: border-color 0.3s ease;
+}
+
+.formGroup input:focus,
+.formGroup textarea:focus {
+    border-color: #e91e63;
+    outline: none;
+}
+
+.formGroup textarea {
+    resize: vertical;
+    min-height: 120px;
+}
+
+.blockContainer {
+    background: #f8f9fa;
+    padding: 25px;
+    border-radius: 12px;
+    margin-bottom: 25px;
+    position: relative;
+    border: 2px solid #e0e0e0;
+    transition: border-color 0.3s ease;
+}
+
+.blockContainer:hover {
+    border-color: #e91e63;
+}
+
+.removeButton {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: #ff4444;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+}
+
+.removeButton:hover {
+    background: #cc0000;
+}
+
+.buttonGroup {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 30px;
+    gap: 20px;
+}
+
+.addButton {
+    background: #4CAF50;
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+.addButton:hover {
+    background: #45a049;
+}
+
+.submitButton {
+    background: #2196F3;
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+.submitButton:hover {
+    background: #0b7dda;
+}
+
+.submitButton:disabled {
+    background: #cccccc;
+    cursor: not-allowed;
+}
+
+/* Адаптация для мобильных устройств */
+@media (max-width: 768px) {
+    .formContainer {
+        margin: 30px 20px;
+        padding: 20px;
+    }
+
+    .buttonGroup {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .addButton,
+    .submitButton {
+        width: 100%;
+    }
 }

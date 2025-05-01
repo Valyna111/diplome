@@ -126,6 +126,40 @@
     padding: 24px;
 }
 
+.status {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+    display: inline-block;
+}
+
+.statusNew {
+    background-color: #e3f2fd;
+    color: #1976d2;
+}
+
+.statusInProcess {
+    background-color: #fff3e0;
+    color: #f57c00;
+}
+
+.statusCollected {
+    background-color: #e8f5e9;
+    color: #388e3c;
+}
+
+.statusDelivered {
+    background-color: #f3e5f5;
+    color: #7b1fa2;
+}
+
+.statusCancelled {
+    background-color: #ffebee;
+    color: #d32f2f;
+}
+
 @media (max-width: 768px) {
     .container {
         flex-direction: column;

@@ -1,4 +1,4 @@
-import React, {useContext, useState} from "react";
+import React, {useContext, useMemo, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {FaHeart, FaMinus, FaPlus, FaRegHeart, FaShoppingCart, FaTrash} from "react-icons/fa";
 import {AnimatePresence, motion} from "framer-motion";
@@ -20,12 +20,14 @@ const ProductCard = observer(({
                                   showRemoveButton = false,
                                   onRemove,
                                   showQuantityControls = true,
-                                  availableAmount = Infinity // Добавляем пропс для доступного количества
                               }) => {
     const rootStore = useContext(StoreContext);
     const navigate = useNavigate();
     const [isAnimating, setIsAnimating] = useState(false);
     const [isCartAnimating, setIsCartAnimating] = useState(false);
+
+    // Получаем максимально доступное количество из BouquetStore
+    const availableAmount = useMemo(() => rootStore.bouquetStore.getAvailableQuantity(id), [id, rootStore.bouquetStore.availableQuantities]);
 
     const handleCardClick = () => {
         navigate(`/main/catalog/${id}`);
@@ -51,7 +53,6 @@ const ProductCard = observer(({
     const handleCartAction = async (newQuantity) => {
         // Проверяем, не превышает ли новое количество доступное
         if (newQuantity > availableAmount) {
-            console.log(newQuantity);
             toast.error(`Доступно только ${availableAmount} шт. этого букета`);
             return;
         }

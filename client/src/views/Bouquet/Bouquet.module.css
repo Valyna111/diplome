@@ -358,3 +358,137 @@
         width: 100%;
     }
 }
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.ratingSection {
+    display: flex;
+    align-items: center;
+    margin: 1rem 0;
+}
+
+.ratingText {
+    margin-left: 1rem;
+    font-size: 1.1rem;
+    color: #666;
+}
+
+.reviewCount {
+    margin-left: 0.5rem;
+    color: #999;
+    font-size: 0.9rem;
+}
+
+.feedbackSection {
+    margin-top: 2rem;
+    width: 100%;
+}
+
+.feedbackSection h2 {
+    font-size: 1.5rem;
+    color: #333;
+    margin-bottom: 1.5rem;
+}
+
+.feedbackList {
+    background: #fff;
+    width: 100%;
+    padding: 0;
+}
+
+.feedbackList :global(.ant-list-item) {
+    padding: 2rem;
+    margin: 0;
+    border-bottom: 1px solid #eee;
+    width: 100%;
+}
+
+.feedbackList :global(.ant-list-item:last-child) {
+    border-bottom: none;
+}
+
+.feedbackList :global(.ant-comment) {
+    width: 100%;
+}
+
+.feedbackList :global(.ant-comment-content) {
+    width: 100%;
+}
+
+.feedbackList :global(.ant-comment-content-author) {
+    margin-bottom: 1rem;
+}
+
+.author {
+    font-size: 1.1rem;
+    color: #333;
+    font-weight: 500;
+}
+
+.avatarPlaceholder {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background-color: #e91e63;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    font-weight: 500;
+}
+
+.feedbackText {
+    margin-top: 0.8rem;
+    color: #444;
+    font-size: 1.1rem;
+    line-height: 1.6;
+}
+
+:global(.ant-rate-star) {
+    margin-right: 4px;
+    font-size: 1.2rem;
+}
+
+:global(.ant-comment-content-detail) {
+    margin-top: 0.5rem;
+}
+
+:global(.ant-empty) {
+    padding: 3rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+    width: 100%;
+}
+
+:global(.ant-empty-description) {
+    color: #666;
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 1rem;
+    }
+
+    .feedbackList :global(.ant-list-item) {
+        padding: 1.5rem;
+    }
+
+    .author {
+        font-size: 1rem;
+    }
+
+    .feedbackText {
+        font-size: 1rem;
+    }
+
+    .avatarPlaceholder {
+        width: 36px;
+        height: 36px;
+        font-size: 1.1rem;
+    }
+}

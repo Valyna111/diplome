@@ -7,6 +7,7 @@ import StoreContext from "@/store/StoreContext";
 import AccountSidebar from "@/components/AccountSidebar/AccountSidebar";
 import styles from "./NavBar.module.css";
 import SearchBar from "@/components/NavBar/SearchBar/SearchBar";
+import {EnvironmentOutlined} from "@ant-design/icons";
 
 const Navbar = observer(() => {
     const rootStore = useContext(StoreContext);
@@ -127,6 +128,35 @@ const Navbar = observer(() => {
                 {/* Иконки */}
                 <div className={styles.icons}>
                     <SearchBar/>
+                    {/* Адрес пользователя */}
+                    {authStore?.currentUser && authStore.currentUser?.role_name === "customer" && (
+                        <div className={styles.addressWrapper}>
+                            {authStore.currentUser.address ? (
+                                <div className={styles.addressContainer}>
+                                    <div className={styles.addressContent}>
+                                        <EnvironmentOutlined className={styles.addressIcon} />
+                                        <span className={styles.addressText}>
+                                            {authStore.currentUser.address}
+                                        </span>
+                                    </div>
+                                    <button 
+                                        className={styles.changeAddressButton}
+                                        onClick={() => authStore.setAddressModalOpen(true)}
+                                    >
+                                        Изменить
+                                    </button>
+                                </div>
+                            ) : (
+                                <button 
+                                    className={styles.setAddressButton}
+                                    onClick={() => authStore.setAddressModalOpen(true)}
+                                >
+                                    <EnvironmentOutlined className={styles.addressIcon} />
+                                    Указать адрес
+                                </button>
+                            )}
+                        </div>
+                    )}
                     {/* Корзина ТОЛЬКО для customer */}
                     {authStore?.currentUser && authStore.currentUser?.role_name === "customer" && (
                         <div className={styles.cartWrapper}>

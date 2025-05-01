@@ -3,15 +3,19 @@ import {FaSearch, FaTimes} from "react-icons/fa";
 import {observer} from "mobx-react-lite";
 import styles from "./SearchBar.module.css";
 import {AnimatePresence, motion} from "framer-motion";
-import Slider1 from '@/assets/images/aliceblue_tulps.jpg';
+import {useNavigate} from "react-router-dom";
+import StoreContext from "@/store/StoreContext";
+import {useContext} from "react";
 
 const SearchBar = observer(() => {
     const [isExpanded, setIsExpanded] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
     const [searchResults, setSearchResults] = useState([]);
-    const [isLoading, setIsLoading] = useState(false);
     const searchRef = useRef(null);
     const inputRef = useRef(null);
+    const navigate = useNavigate();
+    const rootStore = useContext(StoreContext);
+    const {bouquetStore} = rootStore;
 
     // Закрытие поиска при клике вне области
     useEffect(() => {
@@ -32,24 +36,19 @@ const SearchBar = observer(() => {
         }
     }, [isExpanded]);
 
-    // Заглушка для поиска с имитацией загрузки
-    const handleSearch = (query) => {
-        if (query.length < 2) {
+    // Поиск по локальному массиву
+    useEffect(() => {
+        if (searchQuery.length >= 2) {
+            const results = bouquetStore.searchBouquets(searchQuery);
+            setSearchResults(results);
+        } else {
             setSearchResults([]);
-            return;
         }
+    }, [searchQuery, bouquetStore.bouquets]);
 
-        setIsLoading(true);
-
-        // Имитация API-запроса
-        setTimeout(() => {
-            setSearchResults([
-                {id: 1, name: "Букет 'Романтика'", type: "bouquet", image: "/images/bouquet1.jpg"},
-                {id: 2, name: "Букет 'Нежность'", type: "bouquet", image: "/images/bouquet2.jpg"},
-                {id: 3, name: "Статья 'Как ухаживать за розами'", type: "article"}
-            ]);
-            setIsLoading(false);
-        }, 500);
+    const handleResultClick = (bouquet) => {
+        navigate(`/main/catalog/${bouquet.id}`);
+        collapseSearch();
     };
 
     const collapseSearch = () => {
@@ -66,11 +65,11 @@ const SearchBar = observer(() => {
                         initial={{opacity: 1}}
                         exit={{opacity: 0}}
                         transition={{duration: 0.2}}
+                        className={styles.searchIconWrapper}
                     >
                         <FaSearch
                             className={styles.searchIcon}
                             onClick={() => setIsExpanded(true)}
-                            whileHover={{scale: 1.1}}
                         />
                     </motion.div>
                 ) : (
@@ -81,8 +80,8 @@ const SearchBar = observer(() => {
                             width: isExpanded ? 300 : 0,
                             opacity: isExpanded ? 1 : 0
                         }}
+                        exit={{width: 0, opacity: 0}}
                         transition={{duration: 0.3}}
-                        style={{originX: 1}}
                     >
                         <motion.div
                             className={styles.searchInputContainer}
@@ -93,12 +92,9 @@ const SearchBar = observer(() => {
                             <input
                                 ref={inputRef}
                                 type="text"
-                                placeholder="Поиск букетов, статей..."
+                                placeholder="Поиск букетов..."
                                 value={searchQuery}
-                                onChange={(e) => {
-                                    setSearchQuery(e.target.value);
-                                    handleSearch(e.target.value);
-                                }}
+                                onChange={(e) => setSearchQuery(e.target.value)}
                                 className={styles.searchInput}
                             />
                             <motion.div
@@ -121,35 +117,27 @@ const SearchBar = observer(() => {
                                     exit={{opacity: 0, height: 0}}
                                     transition={{duration: 0.3}}
                                 >
-                                    {searchResults.map((item) => (
+                                    {searchResults.map((bouquet) => (
                                         <motion.div
-                                            key={item.id}
+                                            key={bouquet.id}
                                             className={styles.resultItem}
                                             whileHover={{scale: 1.02}}
                                             whileTap={{scale: 0.98}}
+                                            onClick={() => handleResultClick(bouquet)}
                                         >
-                                            {item.image && (
+                                            {bouquet.image && (
                                                 <img
-                                                    src={Slider1}
-                                                    alt={item.name}
+                                                    src={`http://localhost:4000${bouquet.image}`}
+                                                    alt={bouquet.name}
                                                     className={styles.resultImage}
                                                 />
                                             )}
-                                            <span>{item.name}</span>
+                                            <span>{bouquet.name}</span>
                                         </motion.div>
                                     ))}
                                 </motion.div>
                             )}
                         </AnimatePresence>
-
-                        {isLoading && (
-                            <motion.div
-                                className={styles.loadingBar}
-                                initial={{width: 0}}
-                                animate={{width: "100%"}}
-                                transition={{duration: 0.5}}
-                            />
-                        )}
                     </motion.div>
                 )}
             </AnimatePresence>

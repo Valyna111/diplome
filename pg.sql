@@ -105,10 +105,12 @@ ALTER TABLE public.deliveryman_info
 CREATE TABLE public.feedback
 (
     id         SERIAL PRIMARY KEY,
-    order_id   INT          NOT NULL,
-    user_id    INT          NOT NULL,
+    order_id   INT          REFERENCES public.orders (id),
+    bouquet_id INT          REFERENCES public.bouquets (id),
+    user_id    INT          REFERENCES public.users (id) NOT NULL,
     text       VARCHAR(300) NOT NULL,
     score      INT          NOT NULL,
+    ref_id     INT          REFERENCES public.feedback (id),
     created_at TIMESTAMP DEFAULT NOW()
 );
 ALTER TABLE public.feedback
@@ -131,6 +133,8 @@ CREATE TABLE public.ocp
 (
     id         SERIAL PRIMARY KEY,
     address    VARCHAR(100) NOT NULL,
+    latitude FLOAT,
+    longitude FLOAT,
     created_at TIMESTAMP DEFAULT NOW()
 );
 ALTER TABLE public.ocp
@@ -226,7 +230,11 @@ CREATE TABLE public.users
     surname       VARCHAR(50)         NOT NULL,
     is_blocked    BOOLEAN   DEFAULT FALSE,
     address       VARCHAR(250),
-    created_at    TIMESTAMP DEFAULT NOW()
+    ocp_id INT REFERENCES public.ocp(id),
+    force_password_change BOOLEAN DEFAULT FALSE,
+    created_at    TIMESTAMP DEFAULT NOW(),
+    reset_token VARCHAR(64),
+    reset_token_expires TIMESTAMP
 );
 ALTER TABLE public.users
     OWNER TO postgres;
@@ -251,18 +259,23 @@ CREATE TABLE IF NOT EXISTS public.events
     created_at  TIMESTAMP DEFAULT NOW()
 );
 
--- Таблица articles
+-- Создаем новую таблицу articles
 CREATE TABLE IF NOT EXISTS public.articles
 (
-    id           SERIAL PRIMARY KEY,
-    header       TEXT NOT NULL,
-    image1       TEXT,
-    image2       TEXT,
-    image3       TEXT,
-    description1 TEXT,
-    description2 TEXT,
-    description3 TEXT,
-    created_at   TIMESTAMP DEFAULT NOW()
+    id         SERIAL PRIMARY KEY,
+    header     TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Создаем таблицу для блоков статей
+CREATE TABLE IF NOT EXISTS public.article_blocks
+(
+    id         SERIAL PRIMARY KEY,
+    article_id INT  NOT NULL REFERENCES public.articles(id) ON DELETE CASCADE,
+    image      TEXT,
+    text       TEXT,
+    order_num  INT  NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW()
 );
 
 -- Таблица user_sessions (уже имеет created_at)
@@ -297,9 +310,6 @@ ALTER TABLE ONLY public.ocp_item
 ALTER TABLE ONLY public.ocp_item
     ADD CONSTRAINT fk_ocp FOREIGN KEY (ocp_id) REFERENCES public.ocp (id);
 
-ALTER TABLE ONLY public.feedback
-    ADD CONSTRAINT fk_order FOREIGN KEY (order_id) REFERENCES public.orders (id);
-
 ALTER TABLE ONLY public.users
     ADD CONSTRAINT fk_role FOREIGN KEY (role_id) REFERENCES public.role (id);
 
@@ -322,9 +332,6 @@ ALTER TABLE ONLY public.wishlist
     ADD CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES public.users (id);
 
 ALTER TABLE ONLY public.orders
-    ADD CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES public.users (id);
-
-ALTER TABLE ONLY public.feedback
     ADD CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES public.users (id);
 
 ALTER TABLE ONLY public.deliveryman_info

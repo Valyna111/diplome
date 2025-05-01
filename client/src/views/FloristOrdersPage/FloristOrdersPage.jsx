@@ -29,6 +29,23 @@ const FloristOrdersPage = observer(() => {
 
     const filteredOrders = orderStore.availableOrders;
 
+    const getStatusColor = (status) => {
+        switch (status) {
+            case 'Новый':
+                return 'blue';
+            case 'В процессе':
+                return 'orange';
+            case 'Собран':
+                return 'green';
+            case 'Доставлен':
+                return 'purple';
+            case 'Отменён':
+                return 'red';
+            default:
+                return 'default';
+        }
+    };
+
     return (
         <div className={styles.container}>
             {/* Left Column - Orders List */}
@@ -62,7 +79,7 @@ const FloristOrdersPage = observer(() => {
                                     >
                                         <Badge.Ribbon
                                             text={order.status.name}
-                                            color={order.status.id === 1 ? 'blue' : 'orange'}
+                                            color={getStatusColor(order.status.name)}
                                         >
                                             <Card
                                                 hoverable
@@ -146,11 +163,6 @@ const FloristOrdersPage = observer(() => {
                                                 <Text className={styles.itemDescription}>
                                                     {item.bouquet.description}
                                                 </Text>
-                                                {/*{item.addons && item.addons.length > 0 && (*/}
-                                                {/*    <Text type="secondary">*/}
-                                                {/*        Дополнения: {item.addons.join(', ')}*/}
-                                                {/*    </Text>*/}
-                                                {/*)}*/}
                                             </div>
                                             <div className={styles.itemMeta}>
                                                 <Text>{item.quantity} шт.</Text>

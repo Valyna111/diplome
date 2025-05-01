@@ -373,31 +373,52 @@ export const GET_OCP_ITEM_BY_ID = gql`
 
 // Запросы для таблицы orders
 export const GET_ALL_ORDERS = gql`
-    query GetAllOrders {
-        orders {
-            id
-            user {
+    query GetAllOrders($limit: Int, $offset: Int) {
+        allOrders(limit: $limit, offset: $offset) {
+            nodes {
                 id
-                username
-            }
-            bouquet {
-                id
-                name
-            }
-            orderDate
-            price
-            status {
-                id
-                name
-            }
-            customerAddress
-            delivery {
-                id
-                user {
+                orderDate
+                orderTime
+                price
+                status {
+                    id
+                    name
+                }
+                address
+                paymentType
+                orderType
+                items {
+                    id
+                    quantity
+                    price
+                    addons
+                    bouquet {
+                        id
+                        name
+                        price
+                        image
+                        description
+                    }
+                }
+                customer {
                     id
                     username
+                    phone
+                }
+                deliveryInfo {
+                    deliveryman {
+                        id
+                        username
+                        phone
+                    }
+                    assignedAt
+                }
+                ocp {
+                    id
+                    address
                 }
             }
+            totalCount
         }
     }
 `;
@@ -591,19 +612,21 @@ export const GET_EVENT_BY_ID = gql`
     }
 `;
 
-// Запросы для таблицы articles
 export const GET_ALL_ARTICLES = gql`
-    query allArticles {
+    query GetAllArticles {
         allArticles {
             nodes {
                 id
                 header
-                image1
-                image2
-                image3
-                description1
-                description2
-                description3
+                createdAt
+                articleBlocksByArticleId {
+                    nodes {
+                        id
+                        image
+                        text
+                        orderNum
+                    }
+                }
             }
         }
     }
@@ -614,12 +637,15 @@ export const GET_ARTICLE_BY_ID = gql`
         articleById(id: $id) {
             id
             header
-            image1
-            image2
-            image3
-            description1
-            description2
-            description3
+            createdAt
+            articleBlocksByArticleId {
+                nodes {
+                    id
+                    image
+                    text
+                    orderNum
+                }
+            }
         }
     }
 `;
@@ -834,6 +860,32 @@ export const GET_AVAILABLE_FLORIS_ORDERS = gql`
                 }
             }
             totalCount
+        }
+    }
+`;
+
+export const GET_SALES_REPORT = gql`
+    query GetSalesReport($startDate: String!, $endDate: String!, $statuses: [String!]!) {
+        getSalesByMonth(startDate: $startDate, endDate: $endDate, statuses: $statuses) {
+            month
+            total
+        }
+        getSalesByBouquet(startDate: $startDate, endDate: $endDate, statuses: $statuses) {
+            name
+            count
+        }
+        getSalesByCategory(startDate: $startDate, endDate: $endDate, statuses: $statuses) {
+            name
+            total
+        }
+    }
+`;
+
+export const GET_AVAILABLE_BOUQUET_QUANTITIES = gql`
+    query GetAvailableBouquetQuantities($ocpId: Int!) {
+        getAvailableBouquetQuantities(ocpId: $ocpId) {
+            bouquetId
+            maxQuantity
         }
     }
 `;
