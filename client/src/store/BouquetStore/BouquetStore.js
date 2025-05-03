@@ -7,6 +7,7 @@ import {
     UPDATE_BOUQUET
 } from '@/graphql/mutations';
 import {GET_ALL_BOUQUETS, GET_BOUQUET_BY_ID, GET_AVAILABLE_BOUQUET_QUANTITIES} from '@/graphql/queries';
+import { gql } from '@apollo/client'; 
 
 export default class BouquetStore {
     bouquets = [];
@@ -158,15 +159,50 @@ export default class BouquetStore {
     // Метод для удаления букета
     async deleteBouquet(id) {
         try {
+            // 1. Сначала получаем все компоненты букета
+            const { data } = await this.rootStore.client.query({
+                query: gql`
+                    query GetBouquetItems($bouquetId: Int!) {
+                        bouquetById(id: $bouquetId) {
+                            itemsInBouquetsByBouquetId {
+                                nodes {
+                                    id
+                                }
+                            }
+                        }
+                    }
+                `,
+                variables: { bouquetId: id }
+            });
+    
+            const itemsToDelete = data.bouquetById.itemsInBouquetsByBouquetId.nodes;
+    
+            // 2. Удаляем все связанные компоненты
+            if (itemsToDelete.length > 0) {
+                await Promise.all(
+                    itemsToDelete.map(item => 
+                        this.rootStore.client.mutate({
+                            mutation: DELETE_FLOWERS_IN_BOUQUET,
+                            variables: { id: item.id }
+                        })
+                    )
+                );
+            }
+    
+            // 3. Теперь удаляем сам букет
             await this.rootStore.client.mutate({
                 mutation: DELETE_BOUQUET,
-                variables: {id},
+                variables: { id },
             });
+    
+            // 4. Обновляем локальное состояние
             runInAction(() => {
                 this.bouquets = this.bouquets.filter((b) => b.id !== id);
             });
+    
         } catch (error) {
             console.error('Error deleting bouquet:', error);
+            throw error; // Пробрасываем ошибку для обработки в UI
         }
     }
 
