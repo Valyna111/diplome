@@ -70,7 +70,6 @@ const UserDataPlugin = makeExtendSchemaPlugin(build => {
                                     b.price,
                                     b.image,
                                     b.description,
-                                    b.amount,
                                     b.sale
                              FROM cart_items ci
                                       JOIN bouquets b ON ci.bouquet_id = b.id
@@ -93,7 +92,6 @@ const UserDataPlugin = makeExtendSchemaPlugin(build => {
                                     price: row.price,
                                     image: row.image,
                                     description: row.description,
-                                    amount: row.amount,
                                     sale: row.sale,
                                 }
                             }))

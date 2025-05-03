@@ -55,7 +55,6 @@ const CategoryCard = observer(({title, withDiscount, data = []}) => {
                             className={styles.slider_item}
                             withDiscount={withDiscount}
                             discountPercentage={b.sale}
-                            availableAmount={b.amount}
                         />
                     ))}
                 </Slider>

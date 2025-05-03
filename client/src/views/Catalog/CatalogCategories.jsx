@@ -132,7 +132,6 @@ const CatalogCategories = observer(() => {
                                 description={bouquet.description}
                                 price={bouquet.price}
                                 discountPercentage={bouquet.sale}
-                                availableAmount={bouquet.amount}
                             />
                         </div>
                     ))

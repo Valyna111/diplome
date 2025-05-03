@@ -30,7 +30,6 @@ CREATE TABLE public.bouquets
     price        REAL         NOT NULL,
     image        TEXT         NOT NULL,
     description  VARCHAR(250) NOT NULL,
-    amount       INT          NOT NULL,
     sale         INT,
     second_image TEXT,
     created_at   TIMESTAMP DEFAULT NOW()

@@ -86,8 +86,8 @@ export const DELETE_BONUS = gql`
 
 // Мутации для таблицы bouquets
 export const CREATE_BOUQUET = gql`
-    mutation CreateBouquet($name: String!, $categoryId: Int!, $price: Float!, $image: String!, $description: String!, $amount: Int!, $sale: Int, $secondImage: String) {
-        createBouquet(input: { bouquet: { name: $name, categoryId: $categoryId, price: $price, image: $image, description: $description, amount: $amount, sale: $sale, secondImage: $secondImage } }) {
+    mutation CreateBouquet($name: String!, $categoryId: Int!, $price: Float!, $image: String!, $description: String!, $sale: Int, $secondImage: String) {
+        createBouquet(input: { bouquet: { name: $name, categoryId: $categoryId, price: $price, image: $image, description: $description, sale: $sale, secondImage: $secondImage } }) {
             bouquet {
                 id
                 name
@@ -98,7 +98,6 @@ export const CREATE_BOUQUET = gql`
                 price
                 image
                 description
-                amount
                 sale
                 secondImage
             }
@@ -107,8 +106,8 @@ export const CREATE_BOUQUET = gql`
 `;
 
 export const UPDATE_BOUQUET = gql`
-    mutation UpdateBouquet($id: Int!, $name: String!, $categoryId: Int!, $price: Float!, $image: String!, $description: String!, $amount: Int!, $sale: Int, $secondImage: String) {
-        updateBouquetById(input: { id: $id, bouquetPatch: { name: $name, categoryId: $categoryId, price: $price, image: $image, description: $description, amount: $amount, sale: $sale, secondImage: $secondImage } }) {
+    mutation UpdateBouquet($id: Int!, $name: String!, $categoryId: Int!, $price: Float!, $image: String!, $description: String!, $sale: Int, $secondImage: String) {
+        updateBouquetById(input: { id: $id, bouquetPatch: { name: $name, categoryId: $categoryId, price: $price, image: $image, description: $description, sale: $sale, secondImage: $secondImage } }) {
             bouquet {
                 id
                 name
@@ -119,7 +118,6 @@ export const UPDATE_BOUQUET = gql`
                 price
                 image
                 description
-                amount
                 sale
                 secondImage
             }

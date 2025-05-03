@@ -21,7 +21,6 @@ const BouquetDetails = observer(({
         categoryId: {label: '', value: ''},
         price: '0',
         description: '',
-        amount: '',
         sale: '',
         image: '',
         secondImage: '',
@@ -58,7 +57,6 @@ const BouquetDetails = observer(({
                     categoryId: {label: item?.categoryByCategoryId?.name, value: item.categoryByCategoryId?.id},
                     price: item.price?.toString() || '0',
                     description: item?.description || '',
-                    amount: item.amount?.toString() || '',
                     sale: item.sale?.toString() || '',
                     image: item.image,
                     secondImage: item.secondImage,
@@ -127,7 +125,6 @@ const BouquetDetails = observer(({
                 secondImage: form.secondImage,
                 categoryId: form.categoryId.value,
                 price: parseFloat(form.price.replace(/\s/g, '')),
-                amount: parseInt(form.amount.replace(/\s/g, '')),
                 sale: parseInt(form.sale.replace(/\s/g, '')),
                 items: selectedItems.map((item) => ({
                     itemId: item.id,
@@ -222,11 +219,6 @@ const BouquetDetails = observer(({
                 placeholder="Описание"
                 value={form.description}
                 onChange={(e) => setForm({...form, description: e.target.value})}
-            />
-            <Input
-                placeholder="Количество"
-                value={form.amount}
-                onChange={(e) => setForm({...form, amount: e.target.value})}
             />
             <Input
                 placeholder="Скидка"

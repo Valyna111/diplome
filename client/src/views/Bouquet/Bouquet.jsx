@@ -21,7 +21,6 @@ const GET_BOUQUET = gql`
             price
             description
             image
-            amount
             sale
             feedbacksByBouquetId {
                 nodes {

@@ -72,7 +72,6 @@ export const GET_ALL_BOUQUETS = gql`
                 price
                 image
                 description
-                amount
                 sale
                 secondImage
                 itemsInBouquetsByBouquetId {
@@ -103,7 +102,6 @@ export const GET_BOUQUET_BY_ID = gql`
             price
             image
             description
-            amount
             sale
             secondImage
             itemsInBouquetsByBouquetId {
@@ -671,7 +669,6 @@ export const GET_USER_RELATIVE_DATA = gql`
                         name
                         price
                         image
-                        amount
                         sale
                     }
                 }

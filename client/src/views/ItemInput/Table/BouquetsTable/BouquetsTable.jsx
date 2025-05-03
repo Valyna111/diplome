@@ -52,11 +52,6 @@ const BouquetsTable = observer(({
             key: 'description',
         },
         {
-            title: 'Количество',
-            dataIndex: 'amount',
-            key: 'amount',
-        },
-        {
             title: 'Скидка',
             dataIndex: 'sale',
             key: 'sale',

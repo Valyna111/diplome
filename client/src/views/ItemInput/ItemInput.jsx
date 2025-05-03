@@ -50,7 +50,6 @@ const ItemInput = observer(() => {
         key: item?.id,
         id: item?.id,
         name: item?.name,
-        amount: item?.amount,
         category: item?.categoryByCategoryId?.name,
         image: item?.image,
         description: item?.description,
