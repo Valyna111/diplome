@@ -47,8 +47,6 @@ const FloristOrdersPage = observer(() => {
         }
     };
 
-    console.log(toJS(selectedOrder));
-
     return (
         <div className={styles.container}>
             {/* Left Column - Orders List */}
