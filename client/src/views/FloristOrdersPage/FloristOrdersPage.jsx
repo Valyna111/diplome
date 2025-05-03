@@ -4,6 +4,7 @@ import {AnimatePresence, motion} from 'framer-motion';
 import styles from './FloristOrdersPage.module.css';
 import StoreContext from "@/store/StoreContext";
 import {observer} from "mobx-react-lite";
+import { toJS } from 'mobx';
 
 const {Text, Title} = Typography;
 
@@ -45,6 +46,8 @@ const FloristOrdersPage = observer(() => {
                 return 'default';
         }
     };
+
+    console.log(toJS(selectedOrder));
 
     return (
         <div className={styles.container}>
@@ -187,12 +190,12 @@ const FloristOrdersPage = observer(() => {
                                 size="large"
                                 className={styles.actionButton}
                                 onClick={() => handleStatusChange(selectedOrder.id, 2)} // Собран
-                                disabled={selectedOrder.status.id === 2}
+                                disabled={selectedOrder.status.id === "2"}
                                 loading={orderStore.isLoading}
                             >
                                 Заказ собран
                             </Button>
-                            {selectedOrder.status.id === 2 && selectedOrder.orderType === 'pickup' && (
+                            {selectedOrder.status.id === "2" && selectedOrder.orderType === 'pickup' && (
                                 <Button
                                     type="primary"
                                     size="large"
@@ -200,7 +203,7 @@ const FloristOrdersPage = observer(() => {
                                     onClick={() => handleStatusChange(selectedOrder.id, 4)} // Доставлен
                                     loading={orderStore.isLoading}
                                 >
-                                    Заказ доставлен
+                                    Клиент забрал заказ
                                 </Button>
                             )}
                         </div>
