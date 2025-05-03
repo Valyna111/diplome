@@ -192,6 +192,17 @@ const FloristOrdersPage = observer(() => {
                             >
                                 Заказ собран
                             </Button>
+                            {selectedOrder.status.id === 2 && selectedOrder.orderType === 'pickup' && (
+                                <Button
+                                    type="primary"
+                                    size="large"
+                                    className={styles.actionButton}
+                                    onClick={() => handleStatusChange(selectedOrder.id, 4)} // Доставлен
+                                    loading={orderStore.isLoading}
+                                >
+                                    Заказ доставлен
+                                </Button>
+                            )}
                         </div>
                     </motion.div>
                 )}

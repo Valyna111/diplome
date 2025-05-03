@@ -1102,7 +1102,7 @@ const OrderPlugin = makeExtendSchemaPlugin(build => {
                             FROM orders o
                                      JOIN order_items oi ON oi.order_id = o.id
                                      JOIN bouquets b ON b.id = oi.bouquet_id
-                            WHERE o.status_id IN (1, 2, 3) -- Using your custom status IDs (1=Новый, 2=Собран, 3=В процессе)
+                            WHERE o.status_id IN (1, 2, 3, 4) -- Using your custom status IDs (1=Новый, 2=Собран, 3=В процессе)
                             GROUP BY o.id
                             ORDER BY CASE o.status_id
                                          WHEN 1 THEN 1 -- Новый - highest priority
@@ -1121,8 +1121,7 @@ const OrderPlugin = makeExtendSchemaPlugin(build => {
                     const {rows: [{count}]} = await pgClient.query(
                         `SELECT COUNT(*)
                          FROM orders
-                         WHERE order_type = 'delivery'
-                           AND delivery_id IS NULL
+                         WHERE delivery_id IS NULL
                            AND status_id IN (1, 2, 3)`
                     );
 
